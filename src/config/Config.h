@@ -2,6 +2,6 @@
 
 #include <Arduino.h>
 
-namespace SoftwareConfig {
+namespace Config {
 
 }

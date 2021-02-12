@@ -1,7 +1,9 @@
 #include <Arduino.h>
 
-void setup() {
+#include "hardware/Hardware.h"
 
+void setup() {
+    Hardware::initialize();
 }
 
 void loop() {
