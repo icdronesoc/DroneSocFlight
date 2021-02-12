@@ -1,5 +1,1 @@
-const HardwareSerial UARTs[] = {
-        Serial,
-        Serial1,
-        Serial2,
-};
+#include "_ESP32_Common.h"
