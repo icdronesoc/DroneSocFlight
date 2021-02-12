@@ -1,12 +1,17 @@
-const Stream* configurationUart = &bluetoothSerial;
+Stream* configurationUart = &bluetoothSerial;
 
-const HardwareSerial UARTs[] = {
+HardwareSerial UARTs[] = {
         Serial,
         Serial1,
         Serial2,
 };
 
-const SPIClass SPIs[] = {
+SPIClass SPIs[] = {
         SPIClass(HSPI),
         SPIClass(VSPI),
+};
+
+TwoWire I2Cs[] = {
+        Wire,
+        Wire1,
 };

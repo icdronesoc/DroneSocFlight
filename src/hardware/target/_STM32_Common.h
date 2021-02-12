@@ -1,1 +1,1 @@
-const Stream* configurationUart = &SerialUSB;
+Stream* configurationUart = &SerialUSB;
