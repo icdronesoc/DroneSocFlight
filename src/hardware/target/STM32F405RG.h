@@ -8,3 +8,9 @@ const HardwareSerial UARTs[] = {
         HardwareSerial(PD2, PC12),
         HardwareSerial(PC7, PC6),
 };
+
+const SPIClass SPIs[] = {
+        SPIClass(PA7, PA6, PA5),
+        SPIClass(PB15, PB14, PB13),
+        SPIClass(PC12, PC11, PC10),
+};

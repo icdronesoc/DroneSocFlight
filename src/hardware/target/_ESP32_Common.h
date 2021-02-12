@@ -5,3 +5,8 @@ const HardwareSerial UARTs[] = {
         Serial1,
         Serial2,
 };
+
+const SPIClass SPIs[] = {
+        SPIClass(HSPI),
+        SPIClass(VSPI),
+};

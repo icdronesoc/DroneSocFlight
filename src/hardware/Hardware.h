@@ -2,7 +2,9 @@
 
 #include <Arduino.h>
 
-namespace HardwareConfig {
+#include <SPI.h>
+
+namespace Hardware {
     /**
      * Initialize all hardware
      */
@@ -12,17 +14,27 @@ namespace HardwareConfig {
      * The configuration UART interface, if it exists (null if it doesn't).
      * Typically USB.
      */
-    const extern Stream* configurationUart;
+    extern const Stream* configurationUart;
 
     /**
      * Number of available UARTs
      */
-    const extern size_t uartCount;
+    extern const size_t uartCount;
 
     /**
-     * Safely get a UART
-     * @param uart The UART number, zero-indexed
-     * @return The UART if it exists, or null if it does not
+     * All available UARTs except for the configuration UART
+     * Contains uartCount elements, all accesses must have their indexes checked!
      */
-    const HardwareSerial* getUart(size_t uart);
+    extern const HardwareSerial UARTs[];
+
+    /**
+     * Number of available SPI buses
+     */
+    extern const size_t spiCount;
+
+    /**
+     * All available SPIs
+     * Contains spiCount elements, all accesses must have their indexes checked!
+     */
+    extern const SPIClass SPIs[];
 }

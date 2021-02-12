@@ -5,10 +5,11 @@
 BluetoothSerial bluetoothSerial;
 #endif
 
-namespace HardwareConfig {
+namespace Hardware {
     // The variables we expect the target file to set
     extern const Stream* configurationUart;
     extern const HardwareSerial UARTs[];
+    extern const SPIClass SPIs[];
 
     // Include target file
 #ifdef BUILD_TARGET
@@ -23,10 +24,6 @@ namespace HardwareConfig {
 #endif
     }
 
-    const HardwareSerial* getUart(size_t uart) {
-        if (uart >= uartCount) return nullptr;
-        return &UARTs[uart];
-    }
-
     constexpr size_t uartCount = sizeof(UARTs) / sizeof(HardwareSerial);
+    const extern size_t spiCount = sizeof(SPIs) / sizeof(SPIClass);
 }
