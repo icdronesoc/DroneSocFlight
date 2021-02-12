@@ -2,6 +2,7 @@
 
 #define STM32F405RG 1
 #define ESP32CAM 2
+#define STM32F411CE 3
 
 namespace HardwareConfig {
     namespace { // private
@@ -19,6 +20,11 @@ namespace HardwareConfig {
             Serial,
             Serial1,
             Serial2,
+        };
+#elif BUILD_TARGET == STM32F411CE
+        const HardwareSerial UARTs[] = {
+            HardwareSerial(PA10, PA9),
+            HardwareSerial(PA3, PA2)
         };
 #else
 #error No hardware config found.
