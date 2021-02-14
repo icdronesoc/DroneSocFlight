@@ -1,17 +1,22 @@
-Stream* configurationUart = &bluetoothSerial;
+BluetoothSerial bluetoothSerial;
+Stream* configUart = &bluetoothSerial;
 
-HardwareSerial UARTs[] = {
-        Serial,
-        Serial1,
-        Serial2,
-};
+void setupEspHardware() {
+    bluetoothSerial.begin("DroneSoc FC");
+}
 
-SPIClass SPIs[] = {
-        SPIClass(HSPI),
-        SPIClass(VSPI),
-};
-
-TwoWire I2Cs[] = {
-        Wire,
-        Wire1,
-};
+//HardwareSerial UARTs[] = {
+//        Serial,
+//        Serial1,
+//        Serial2,
+//};
+//
+//SPIClass SPIs[] = {
+//        SPIClass(HSPI),
+//        SPIClass(VSPI),
+//};
+//
+//TwoWire I2Cs[] = {
+//        Wire,
+//        Wire1,
+//};

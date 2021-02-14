@@ -6,13 +6,22 @@
 #error Regenerate this file with the current version of nanopb generator.
 #endif
 
-PB_BIND(HardwareConfiguration, HardwareConfiguration, AUTO)
+PB_BIND(HardwareConfig, HardwareConfig, 2)
 
 
-PB_BIND(SoftwareConfiguration, SoftwareConfiguration, AUTO)
+PB_BIND(SoftwareConfig, SoftwareConfig, AUTO)
 
 
-PB_BIND(BusConfig, BusConfig, AUTO)
+PB_BIND(IOConfig, IOConfig, 2)
+
+
+PB_BIND(UartConfig, UartConfig, AUTO)
+
+
+PB_BIND(I2cConfig, I2cConfig, AUTO)
+
+
+PB_BIND(SpiConfig, SpiConfig, AUTO)
 
 
 PB_BIND(AccelerometerConfig, AccelerometerConfig, AUTO)
@@ -31,6 +40,9 @@ PB_BIND(MotorConfig, MotorConfig, AUTO)
 
 
 PB_BIND(ServoConfig, ServoConfig, AUTO)
+
+
+PB_BIND(Pin, Pin, AUTO)
 
 
 

@@ -5,27 +5,27 @@
 
 namespace Config {
     /**
-     * Hardware Configuration holds information about how the FC board and attached peripherals are configured.
+     * Hardware Config holds information about how the FC board and attached peripherals are configured.
      * This is determined by the protobuf type.
      */
-    extern HardwareConfiguration hardwareConfiguration;
+    extern HardwareConfig hardwareConfig;
 
     /**
-     * Software Configuration holds information about how the FC software is configured.
+     * Software Config holds information about how the FC software is configured.
      * This should be completely board-agnostic and portable between different boards.
      */
-     extern SoftwareConfiguration softwareConfiguration;
+     extern SoftwareConfig softwareConfig;
 
      /**
-      * Loads hardware and software configuration from non-volatile storage (EEPROM or Flash).
-      * Should be called immediately after boot, as until this is called the configurations will be their default value.
+      * Loads hardware and software config from non-volatile storage (EEPROM or Flash).
+      * Should be called immediately after boot, as until this is called the configs will be their default value.
       */
-     void loadConfiguration();
+     void loadConfig();
 
      /**
-      * Stores configuration into non-volatile storage (EEPROM or Flash).
-      * Once configuration has been changed, it should be stored and the FC should be rebooted,
+      * Stores config into non-volatile storage (EEPROM or Flash).
+      * Once config has been changed, it should be stored and the FC should be rebooted,
       * in order to guarantee any changes are picked up.
       */
-     void saveConfiguration();
+     void saveConfig();
 }

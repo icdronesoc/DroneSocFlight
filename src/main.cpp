@@ -1,11 +1,11 @@
 #include <Arduino.h>
 
-#include "hardware/McuHardware.h"
+#include "hardware/IO.h"
 #include "hardware/Hardware.h"
 
 void setup() {
-    McuHardware::initialize();
-    Config::loadConfiguration();
+    Config::loadConfig();
+    IO::initialize();
     Hardware::initialize();
 }
 

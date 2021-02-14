@@ -1,6 +1,6 @@
 #include "Hardware.h"
 #include "config/Config.h"
-#include "McuHardware.h"
+#include "IO.h"
 #include "hardware/drivers/AllDrivers.h"
 
 namespace Hardware {
@@ -10,18 +10,8 @@ namespace Hardware {
     etl::vector<Servo*, maxServoCount> servos;
 
     void initialize() {
-        if (Config::hardwareConfiguration.has_busConfig) {
-            for (size_t i = 0; i < McuHardware::i2cCount; i++) {
-                switch (Config::hardwareConfiguration.busConfig.i2cSpeed) {
-                    case BusConfig_I2CSpeed__100KHz:
-                        McuHardware::I2Cs[i].setClock(100000);
-                        break;
-                }
-            }
-        }
-
-        if (Config::hardwareConfiguration.has_accelerometerConfig) {
-            switch(Config::hardwareConfiguration.accelerometerConfig.which_driverConfig) {
+        if (Config::hardwareConfig.has_accelerometerConfig) {
+            switch(Config::hardwareConfig.accelerometerConfig.which_driverConfig) {
                 case AccelerometerConfig_mpuI2c_tag:
                     accelerometer = new AccelerometerDrivers::MpuI2cAccelerometer();
                     break;
@@ -32,8 +22,8 @@ namespace Hardware {
             if (accelerometer != nullptr) accelerometer->initialize();
         }
 
-        if (Config::hardwareConfiguration.has_gyroscopeConfig) {
-            switch(Config::hardwareConfiguration.gyroscopeConfig.which_driverConfig) {
+        if (Config::hardwareConfig.has_gyroscopeConfig) {
+            switch(Config::hardwareConfig.gyroscopeConfig.which_driverConfig) {
                 case GyroscopeConfig_mpuI2c_tag:
                     gyroscope = new GyroscopeDrivers::MpuI2cGyroscope();
                     break;
@@ -44,9 +34,9 @@ namespace Hardware {
             if (gyroscope != nullptr) gyroscope->initialize();
         }
 
-        for (int i = 0; i < Config::hardwareConfiguration.motors_count; i++) {
+        for (int i = 0; i < Config::hardwareConfig.motors_count; i++) {
             Motor* motorOutput = nullptr;
-            switch (Config::hardwareConfiguration.motors[i].motorProtocol) {
+            switch (Config::hardwareConfig.motors[i].motorProtocol) {
                 case MotorConfig_MotorProtocol_PWM:
                     motorOutput = new MotorDrivers::PwmMotor();
                     break;
@@ -60,7 +50,7 @@ namespace Hardware {
             motors.push_back(motorOutput);
         }
 
-        for (int i = 0; i < Config::hardwareConfiguration.servos_count; i++) {
+        for (int i = 0; i < Config::hardwareConfig.servos_count; i++) {
             Servo* servoOutput = new ServoDrivers::PwmServo();
             servos.push_back(servoOutput);
         }

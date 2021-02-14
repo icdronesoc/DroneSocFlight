@@ -1,14 +1,14 @@
 #include "Config.h"
 
 namespace Config {
-    HardwareConfiguration hardwareConfiguration = HardwareConfiguration_init_default;
-    SoftwareConfiguration softwareConfiguration = SoftwareConfiguration_init_default;
+    HardwareConfig hardwareConfig = HardwareConfig_init_default;
+    SoftwareConfig softwareConfig = SoftwareConfig_init_default;
 
-    void loadConfiguration() {
+    void loadConfig() {
         // TODO
     }
 
-    void saveConfiguration() {
+    void saveConfig() {
         // TODO
     }
 }

@@ -1,27 +1,47 @@
 syntax = "proto3";
 
-message HardwareConfiguration {
-    BusConfig busConfig = 1;
+message HardwareConfig {
+    IOConfig ioConfig = 1;
     AccelerometerConfig accelerometerConfig = 2;
     GyroscopeConfig gyroscopeConfig = 3;
     repeated MotorConfig motors = 4;
     repeated ServoConfig servos = 5;
 }
 
-message SoftwareConfiguration {
+message SoftwareConfig {
 
 }
 
-// Bus configuration
-message BusConfig {
-    I2CSpeed i2cSpeed = 1;
+// Bus config
+message IOConfig {
+    repeated UartConfig uartConfigs = 1;
+    repeated UartConfig softwareUartConfigs = 2;
+    repeated I2cConfig i2cConfigs = 3;
+    repeated SpiConfig spiConfigs = 4;
+}
 
-    enum I2CSpeed {
+message UartConfig {
+    Pin tx = 1;
+    Pin rx = 2;
+}
+
+message I2cConfig {
+    Pin scl = 1;
+    Pin sda = 2;
+    Speed speed = 3;
+
+    enum Speed {
         _100KHz = 0;
     }
 }
 
-// Configuration options for Accelerometer
+message SpiConfig {
+    Pin mosi = 1;
+    Pin miso = 2;
+    Pin sck = 3;
+}
+
+// Config options for Accelerometer
 message AccelerometerConfig {
     oneof driverConfig {
         MpuI2cConfig mpuI2c = 1;
@@ -29,7 +49,7 @@ message AccelerometerConfig {
     }
 }
 
-// Configuration options for Gyroscope
+// Config options for Gyroscope
 message GyroscopeConfig {
     oneof driverConfig {
         MpuI2cConfig mpuI2c = 1;
@@ -37,21 +57,21 @@ message GyroscopeConfig {
     }
 }
 
-// Driver for MPU6000 / MPU9250 over SPI
+// Driver for MPU6000 / MPU9250 accelerometer and gyroscope over SPI
 message MpuSpiConfig {
     uint32 busIndex = 1;
-    uint32 csPin = 2;
+    Pin csPin = 2;
 }
 
-// Driver for MPU6000 / MPU6050 / MPU9250 over I2C
+// Driver for MPU6000 / MPU6050 / MPU9250 accelerometer and gyroscope over I2C
 message MpuI2cConfig {
     uint32 busIndex = 1;
     uint32 address = 2;
 }
 
-// Motor configuration
+// Motor config
 message MotorConfig {
-    uint32 outputPin = 1;
+    Pin outputPin = 1;
     MotorProtocol motorProtocol = 2;
 
     enum MotorProtocol {
@@ -61,11 +81,15 @@ message MotorConfig {
 }
 
 message ServoConfig {
-    uint32 outputPin = 1;
+    Pin outputPin = 1;
     ServoRefreshRate refreshRate = 2;
 
     enum ServoRefreshRate {
         _50Hz = 0;
         _330Hz = 1;
     }
+}
+
+message Pin {
+    string pinName = 1;
 }

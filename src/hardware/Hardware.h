@@ -10,9 +10,7 @@
  */
 namespace Hardware {
     /**
-     * Setup hardware as described in the board configuration
-     * @param hardwareConfiguration The hardware configuration, to initialize the correct drivers with the correct parameters
-     * @param softwareConfiguration The software configuration, primarily to be passed to the hardware drivers.
+     * Setup hardware as described in the board config. This expects that all IO has been initialized.
      */
     void initialize();
 
@@ -26,9 +24,9 @@ namespace Hardware {
      */
     extern Gyroscope* gyroscope;
 
-    constexpr size_t maxMotorCount = sizeof(HardwareConfiguration::motors) / sizeof(MotorConfig);
+    constexpr size_t maxMotorCount = sizeof(HardwareConfig::motors) / sizeof(MotorConfig);
     extern etl::vector<Motor*, maxMotorCount> motors;
 
-    constexpr size_t maxServoCount = sizeof(HardwareConfiguration::servos) / sizeof(ServoConfig);
+    constexpr size_t maxServoCount = sizeof(HardwareConfig::servos) / sizeof(ServoConfig);
     extern etl::vector<Servo*, maxServoCount> servos;
 }
