@@ -14,6 +14,7 @@ public:
 };
 
 class Accelerometer : public HasInitializer {
+public:
     /**
      * @return Data for each axis in TODO units
      */
@@ -28,7 +29,7 @@ public:
     virtual ThreeAxisData getRotationData() = 0;
 };
 
-class MotorOutput : public HasInitializer {
+class Motor : public HasInitializer {
 public:
     /**
      * @param output The speed the motor should be set to, ranging from 0 to 2047
@@ -36,7 +37,7 @@ public:
     virtual void setOutput(int16_t output) = 0;
 };
 
-class ServoOutput : public HasInitializer {
+class Servo : public HasInitializer {
 public:
     /**
      * @param output The position the Servo should move to, ranging from -1024 to 1023

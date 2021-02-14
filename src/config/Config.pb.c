@@ -9,6 +9,9 @@
 PB_BIND(HardwareConfiguration, HardwareConfiguration, AUTO)
 
 
+PB_BIND(SoftwareConfiguration, SoftwareConfiguration, AUTO)
+
+
 PB_BIND(BusConfig, BusConfig, AUTO)
 
 

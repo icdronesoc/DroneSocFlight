@@ -14,7 +14,7 @@ namespace Hardware {
      * @param hardwareConfiguration The hardware configuration, to initialize the correct drivers with the correct parameters
      * @param softwareConfiguration The software configuration, primarily to be passed to the hardware drivers.
      */
-    void initialize(Config::HardwareConfiguration hardwareConfiguration, Config::SoftwareConfiguration softwareConfiguration);
+    void initialize();
 
     /**
      * The accelerometer, or null if none is configured
@@ -27,8 +27,8 @@ namespace Hardware {
     extern Gyroscope* gyroscope;
 
     constexpr size_t maxMotorCount = sizeof(HardwareConfiguration::motors) / sizeof(MotorConfig);
-    extern etl::vector<MotorOutput*, maxMotorCount> motors;
+    extern etl::vector<Motor*, maxMotorCount> motors;
 
     constexpr size_t maxServoCount = sizeof(HardwareConfiguration::servos) / sizeof(ServoConfig);
-    extern etl::vector<ServoOutput*, maxServoCount> servos;
+    extern etl::vector<Servo*, maxServoCount> servos;
 }

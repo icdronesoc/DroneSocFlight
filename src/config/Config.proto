@@ -8,6 +8,10 @@ message HardwareConfiguration {
     repeated ServoConfig servos = 5;
 }
 
+message SoftwareConfiguration {
+
+}
+
 // Bus configuration
 message BusConfig {
     I2CSpeed i2cSpeed = 1;
@@ -20,16 +24,16 @@ message BusConfig {
 // Configuration options for Accelerometer
 message AccelerometerConfig {
     oneof driverConfig {
-        MpuSpiConfig mpuSpi = 4;
-        MpuI2cConfig mpuI2c = 5;
+        MpuI2cConfig mpuI2c = 1;
+        MpuSpiConfig mpuSpi = 2;
     }
 }
 
 // Configuration options for Gyroscope
 message GyroscopeConfig {
     oneof driverConfig {
-        MpuSpiConfig mpuSpi = 4;
-        MpuI2cConfig mpuI2c = 5;
+        MpuI2cConfig mpuI2c = 1;
+        MpuSpiConfig mpuSpi = 2;
     }
 }
 

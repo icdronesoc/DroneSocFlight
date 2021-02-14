@@ -30,12 +30,12 @@ namespace McuHardware {
         // Don't initialize other UARTs here as we don't know their baud rate yet
 
         // Initialize SPI buses
-        for (int i = 0; i < spiCount; i++) {
+        for (size_t i = 0; i < spiCount; i++) {
             SPIs[i].begin();
         }
 
         // Initialize I2C buses
-        for (int i = 0; i < i2cCount; i++) {
+        for (size_t i = 0; i < i2cCount; i++) {
             I2Cs[i].begin();
         }
     }

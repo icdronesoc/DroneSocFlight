@@ -17,6 +17,7 @@ namespace McuHardware {
     /**
      * The configuration UART interface, if it exists (null if it doesn't).
      * Typically USB.
+     * TODO allow this to be dynamic or on multiple UARTs
      */
     extern Stream* configurationUart;
 
@@ -28,6 +29,7 @@ namespace McuHardware {
     /**
      * All available UARTs except for the configuration UART
      * Contains uartCount elements, all accesses must have their indexes checked!
+     * TODO give UARTs names
      */
     extern HardwareSerial UARTs[];
 

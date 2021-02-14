@@ -1,12 +1,14 @@
 #include <Arduino.h>
 
 #include "hardware/McuHardware.h"
-#include "config/Config.pb.h"
+#include "hardware/Hardware.h"
 
 void setup() {
     McuHardware::initialize();
+    Config::loadConfiguration();
+    Hardware::initialize();
 }
 
 void loop() {
-    HardwareConfiguration hardwareConfiguration = HardwareConfiguration_init_zero;
+
 }
