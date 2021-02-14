@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include "AbstractHardware.h"
 #include "config/Config.h"
+#include "etl/vector.h"
 
 /**
  * Hardware is hardware that is on, or connected to, the FC board.
@@ -24,4 +25,10 @@ namespace Hardware {
      * The gyroscope, or null if none is configured
      */
     extern Gyroscope* gyroscope;
+
+    constexpr size_t maxMotorCount = sizeof(HardwareConfiguration::motors) / sizeof(MotorConfig);
+    extern etl::vector<MotorOutput*, maxMotorCount> motors;
+
+    constexpr size_t maxServoCount = sizeof(HardwareConfiguration::servos) / sizeof(ServoConfig);
+    extern etl::vector<ServoOutput*, maxServoCount> servos;
 }

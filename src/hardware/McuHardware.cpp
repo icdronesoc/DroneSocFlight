@@ -16,7 +16,7 @@ namespace McuHardware {
 #ifdef BUILD_TARGET
 #include STRINGIFY(BUILD_TARGET)
 #else
-#error No hardware config found.
+#error No MCU hardware config found.
 #endif
 
     size_t uartCount = sizeof(UARTs) / sizeof(HardwareSerial);

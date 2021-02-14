@@ -18,10 +18,6 @@ typedef enum _BusConfig_I2CSpeed {
     BusConfig_I2CSpeed__100KHz = 0
 } BusConfig_I2CSpeed;
 
-typedef enum _BusConfig_SpiSpeed {
-    BusConfig_SpiSpeed__2MHz = 0
-} BusConfig_SpiSpeed;
-
 typedef enum _MotorConfig_MotorProtocol {
     MotorConfig_MotorProtocol_PWM = 0,
     MotorConfig_MotorProtocol_DShot = 1
@@ -35,7 +31,6 @@ typedef enum _ServoConfig_ServoRefreshRate {
 /* Struct definitions */
 typedef struct _BusConfig {
     BusConfig_I2CSpeed i2cSpeed;
-    BusConfig_SpiSpeed spiSpeed;
 } BusConfig;
 
 typedef struct _MotorConfig {
@@ -81,8 +76,10 @@ typedef struct _HardwareConfiguration {
     AccelerometerConfig accelerometerConfig;
     bool has_gyroscopeConfig;
     GyroscopeConfig gyroscopeConfig;
-    pb_callback_t motors;
-    pb_callback_t servos;
+    pb_size_t motors_count;
+    MotorConfig motors[8];
+    pb_size_t servos_count;
+    ServoConfig servos[8];
 } HardwareConfiguration;
 
 
@@ -90,10 +87,6 @@ typedef struct _HardwareConfiguration {
 #define _BusConfig_I2CSpeed_MIN BusConfig_I2CSpeed__100KHz
 #define _BusConfig_I2CSpeed_MAX BusConfig_I2CSpeed__100KHz
 #define _BusConfig_I2CSpeed_ARRAYSIZE ((BusConfig_I2CSpeed)(BusConfig_I2CSpeed__100KHz+1))
-
-#define _BusConfig_SpiSpeed_MIN BusConfig_SpiSpeed__2MHz
-#define _BusConfig_SpiSpeed_MAX BusConfig_SpiSpeed__2MHz
-#define _BusConfig_SpiSpeed_ARRAYSIZE ((BusConfig_SpiSpeed)(BusConfig_SpiSpeed__2MHz+1))
 
 #define _MotorConfig_MotorProtocol_MIN MotorConfig_MotorProtocol_PWM
 #define _MotorConfig_MotorProtocol_MAX MotorConfig_MotorProtocol_DShot
@@ -105,16 +98,16 @@ typedef struct _HardwareConfiguration {
 
 
 /* Initializer values for message structs */
-#define HardwareConfiguration_init_default       {false, BusConfig_init_default, false, AccelerometerConfig_init_default, false, GyroscopeConfig_init_default, {{NULL}, NULL}, {{NULL}, NULL}}
-#define BusConfig_init_default                   {_BusConfig_I2CSpeed_MIN, _BusConfig_SpiSpeed_MIN}
+#define HardwareConfiguration_init_default       {false, BusConfig_init_default, false, AccelerometerConfig_init_default, false, GyroscopeConfig_init_default, 0, {MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default}, 0, {ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default}}
+#define BusConfig_init_default                   {_BusConfig_I2CSpeed_MIN}
 #define AccelerometerConfig_init_default         {0, {MpuSpiConfig_init_default}}
 #define GyroscopeConfig_init_default             {0, {MpuSpiConfig_init_default}}
 #define MpuSpiConfig_init_default                {0, 0}
 #define MpuI2cConfig_init_default                {0, 0}
 #define MotorConfig_init_default                 {0, _MotorConfig_MotorProtocol_MIN}
 #define ServoConfig_init_default                 {0, _ServoConfig_ServoRefreshRate_MIN}
-#define HardwareConfiguration_init_zero          {false, BusConfig_init_zero, false, AccelerometerConfig_init_zero, false, GyroscopeConfig_init_zero, {{NULL}, NULL}, {{NULL}, NULL}}
-#define BusConfig_init_zero                      {_BusConfig_I2CSpeed_MIN, _BusConfig_SpiSpeed_MIN}
+#define HardwareConfiguration_init_zero          {false, BusConfig_init_zero, false, AccelerometerConfig_init_zero, false, GyroscopeConfig_init_zero, 0, {MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero}, 0, {ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero}}
+#define BusConfig_init_zero                      {_BusConfig_I2CSpeed_MIN}
 #define AccelerometerConfig_init_zero            {0, {MpuSpiConfig_init_zero}}
 #define GyroscopeConfig_init_zero                {0, {MpuSpiConfig_init_zero}}
 #define MpuSpiConfig_init_zero                   {0, 0}
@@ -124,7 +117,6 @@ typedef struct _HardwareConfiguration {
 
 /* Field tags (for use in manual encoding/decoding) */
 #define BusConfig_i2cSpeed_tag                   1
-#define BusConfig_spiSpeed_tag                   2
 #define MotorConfig_outputPin_tag                1
 #define MotorConfig_motorProtocol_tag            2
 #define MpuI2cConfig_busIndex_tag                1
@@ -148,9 +140,9 @@ typedef struct _HardwareConfiguration {
 X(a, STATIC,   OPTIONAL, MESSAGE,  busConfig,         1) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  accelerometerConfig,   2) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  gyroscopeConfig,   3) \
-X(a, CALLBACK, REPEATED, MESSAGE,  motors,            4) \
-X(a, CALLBACK, REPEATED, MESSAGE,  servos,            5)
-#define HardwareConfiguration_CALLBACK pb_default_field_callback
+X(a, STATIC,   REPEATED, MESSAGE,  motors,            4) \
+X(a, STATIC,   REPEATED, MESSAGE,  servos,            5)
+#define HardwareConfiguration_CALLBACK NULL
 #define HardwareConfiguration_DEFAULT NULL
 #define HardwareConfiguration_busConfig_MSGTYPE BusConfig
 #define HardwareConfiguration_accelerometerConfig_MSGTYPE AccelerometerConfig
@@ -159,8 +151,7 @@ X(a, CALLBACK, REPEATED, MESSAGE,  servos,            5)
 #define HardwareConfiguration_servos_MSGTYPE ServoConfig
 
 #define BusConfig_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UENUM,    i2cSpeed,          1) \
-X(a, STATIC,   SINGULAR, UENUM,    spiSpeed,          2)
+X(a, STATIC,   SINGULAR, UENUM,    i2cSpeed,          1)
 #define BusConfig_CALLBACK NULL
 #define BusConfig_DEFAULT NULL
 
@@ -224,8 +215,8 @@ extern const pb_msgdesc_t ServoConfig_msg;
 #define ServoConfig_fields &ServoConfig_msg
 
 /* Maximum encoded size of messages (where known) */
-/* HardwareConfiguration_size depends on runtime parameters */
-#define BusConfig_size                           4
+#define HardwareConfiguration_size               196
+#define BusConfig_size                           2
 #define AccelerometerConfig_size                 14
 #define GyroscopeConfig_size                     14
 #define MpuSpiConfig_size                        12

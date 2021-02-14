@@ -1,0 +1,2 @@
+HardwareConfiguration.motors max_count:8
+HardwareConfiguration.servos max_count:8

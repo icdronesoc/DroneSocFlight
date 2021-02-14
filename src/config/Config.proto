@@ -11,14 +11,9 @@ message HardwareConfiguration {
 // Bus configuration
 message BusConfig {
     I2CSpeed i2cSpeed = 1;
-    SpiSpeed spiSpeed = 2;
 
     enum I2CSpeed {
         _100KHz = 0;
-    }
-
-    enum SpiSpeed {
-        _2MHz = 0;
     }
 }
 
