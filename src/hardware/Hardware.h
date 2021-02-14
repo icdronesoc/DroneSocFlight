@@ -1,51 +1,27 @@
 #pragma once
 
 #include <Arduino.h>
-#include <SPI.h>
-#include <Wire.h>
+#include "AbstractHardware.h"
+#include "config/Config.h"
 
+/**
+ * Hardware is hardware that is on, or connected to, the FC board.
+ */
 namespace Hardware {
     /**
-     * Initialize all hardware
+     * Setup hardware as described in the board configuration
+     * @param hardwareConfiguration The hardware configuration, to initialize the correct drivers with the correct parameters
+     * @param softwareConfiguration The software configuration, primarily to be passed to the hardware drivers.
      */
-    void initialize();
+    void initialize(Config::HardwareConfiguration hardwareConfiguration, Config::SoftwareConfiguration softwareConfiguration);
 
     /**
-     * The configuration UART interface, if it exists (null if it doesn't).
-     * Typically USB.
+     * The accelerometer, or null if none is configured
      */
-    extern Stream* configurationUart;
+    extern Accelerometer* accelerometer;
 
     /**
-     * Number of available UARTs
+     * The gyroscope, or null if none is configured
      */
-    extern size_t uartCount;
-
-    /**
-     * All available UARTs except for the configuration UART
-     * Contains uartCount elements, all accesses must have their indexes checked!
-     */
-    extern HardwareSerial UARTs[];
-
-    /**
-     * Number of available SPI buses
-     */
-    extern size_t spiCount;
-
-    /**
-     * All available SPIs
-     * Contains spiCount elements, all accesses must have their indexes checked!
-     */
-    extern SPIClass SPIs[];
-
-    /**
-     * Number of available I2C buses
-     */
-    extern size_t i2cCount;
-
-    /**
-     * All available I2Cs
-     * Contains i2cCount elements, all accesses must have their indexes checked!
-     */
-    extern TwoWire I2Cs[];
+    extern Gyroscope* gyroscope;
 }

@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+message HardwareConfiguration {
+    BusConfig busConfig = 1;
+    AccelerometerConfig accelerometerConfig = 2;
+    GyroscopeConfig gyroscopeConfig = 3;
+    repeated MotorConfig motors = 4;
+    repeated ServoConfig servos = 5;
+}
+
+// Bus configuration
+message BusConfig {
+    I2CSpeed i2cSpeed = 1;
+    SpiSpeed spiSpeed = 2;
+
+    enum I2CSpeed {
+        _100KHz = 0;
+    }
+
+    enum SpiSpeed {
+        _2MHz = 0;
+    }
+}
+
+// Configuration options for Accelerometer
+message AccelerometerConfig {
+    oneof driverConfig {
+        MpuSpiConfig mpuSpi = 4;
+        MpuI2cConfig mpuI2c = 5;
+    }
+}
+
+// Configuration options for Gyroscope
+message GyroscopeConfig {
+    oneof driverConfig {
+        MpuSpiConfig mpuSpi = 4;
+        MpuI2cConfig mpuI2c = 5;
+    }
+}
+
+// Driver for MPU6000 / MPU9250 over SPI
+message MpuSpiConfig {
+    uint32 busIndex = 1;
+    uint32 csPin = 2;
+}
+
+// Driver for MPU6000 / MPU6050 / MPU9250 over I2C
+message MpuI2cConfig {
+    uint32 busIndex = 1;
+    uint32 address = 2;
+}
+
+// Motor configuration
+message MotorConfig {
+    uint32 outputPin = 1;
+    MotorProtocol motorProtocol = 2;
+
+    enum MotorProtocol {
+        PWM = 0;
+        DShot = 1;
+    }
+}
+
+message ServoConfig {
+    uint32 outputPin = 1;
+    ServoRefreshRate refreshRate = 2;
+
+    enum ServoRefreshRate {
+        _50Hz = 0;
+        _330Hz = 1;
+    }
+}

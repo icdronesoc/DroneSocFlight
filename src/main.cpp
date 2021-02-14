@@ -1,9 +1,9 @@
 #include <Arduino.h>
 
-#include "hardware/Hardware.h"
+#include "hardware/McuHardware.h"
 
 void setup() {
-    Hardware::initialize();
+    McuHardware::initialize();
 }
 
 void loop() {
