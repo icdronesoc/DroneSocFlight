@@ -39,7 +39,7 @@ typedef struct _MpuI2cConfig {
 } MpuI2cConfig;
 
 typedef struct _Pin {
-    char pinName[4];
+    char pinName[5];
 } Pin;
 
 typedef struct _I2cConfig {
@@ -336,19 +336,19 @@ extern const pb_msgdesc_t Pin_msg;
 #define Pin_fields &Pin_msg
 
 /* Maximum encoded size of messages (where known) */
-#define HardwareConfig_size                      537
+#define HardwareConfig_size                      595
 #define SoftwareConfig_size                      0
-#define IOConfig_size                            324
-#define UartConfig_size                          14
-#define I2cConfig_size                           16
-#define SpiConfig_size                           21
-#define AccelerometerConfig_size                 15
-#define GyroscopeConfig_size                     15
-#define MpuSpiConfig_size                        13
+#define IOConfig_size                            364
+#define UartConfig_size                          16
+#define I2cConfig_size                           18
+#define SpiConfig_size                           24
+#define AccelerometerConfig_size                 16
+#define GyroscopeConfig_size                     16
+#define MpuSpiConfig_size                        14
 #define MpuI2cConfig_size                        12
-#define MotorConfig_size                         9
-#define ServoConfig_size                         9
-#define Pin_size                                 5
+#define MotorConfig_size                         10
+#define ServoConfig_size                         10
+#define Pin_size                                 6
 
 #ifdef __cplusplus
 } /* extern "C" */
