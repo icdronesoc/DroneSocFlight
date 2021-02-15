@@ -1,4 +1,11 @@
+void resetWatchdogTimer() {
+    IWatchdog.reload();
+}
+
 void setupMcuHardware(IOConfig ioConfig) {
+    // Setup WDT
+    IWatchdog.begin(WatchDogTimeout * 1000000);
+
     auto usbSerial = &SerialUSB;
     usbSerial->begin();
     UARTs.push_back(new StreamSerialPort(usbSerial));

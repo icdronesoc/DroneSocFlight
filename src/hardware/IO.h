@@ -13,9 +13,14 @@
  */
 namespace IO {
     /**
-     * Initialize all hardware
+     * Initialize all hardware and the watchdog timer
      */
     void initialize();
+
+    /**
+     * Reset the watchdog timer
+     */
+    void resetWatchdogTimer();
 
     constexpr size_t maxPinNameLength = sizeof(Pin::pinName) / sizeof(char);
     constexpr size_t maxNumberOfUARTs = sizeof(IOConfig::uartConfigs) / sizeof(UartConfig) + sizeof(IOConfig::softwareUartConfigs) / sizeof(UartConfig); // TODO when config UART gets moved here, always add 1

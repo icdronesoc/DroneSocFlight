@@ -2,7 +2,15 @@ const pb_size_t ESP32_MAX_UARTS = 3;
 const pb_size_t ESP32_MAX_I2Cs = 2;
 const pb_size_t ESP32_MAX_SPIs = 2;
 
+void resetWatchdogTimer() {
+    esp_task_wdt_reset();
+}
+
 void setupMcuHardware(IOConfig ioConfig) {
+    // Setup WDT
+    esp_task_wdt_init(WatchDogTimeout, true);
+    esp_task_wdt_add(nullptr);
+
     auto bluetoothSerial = new BluetoothSerial();
     bluetoothSerial->begin("DroneSoc FC");
     UARTs.push_back(new StreamSerialPort(bluetoothSerial));
