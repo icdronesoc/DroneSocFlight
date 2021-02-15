@@ -4,9 +4,9 @@
 #include "hardware/AbstractHardware.h"
 
 namespace GyroscopeDrivers {
-    class MpuSpiGyroscope : public Gyroscope {
+    class MpuSpiGyroscope : public Hardware::Gyroscope {
     public:
         void initialize() override;
-        ThreeAxisData getRotationData() override;
+        Hardware::ThreeAxisData getRotationData() override;
     };
 }

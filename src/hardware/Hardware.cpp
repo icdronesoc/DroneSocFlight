@@ -35,24 +35,42 @@ namespace Hardware {
         }
 
         for (pb_size_t i = 0; i < Config::hardwareConfig.motors_count; i++) {
-            Motor* motorOutput = nullptr;
+            Motor* motor = nullptr;
             switch (Config::hardwareConfig.motors[i].motorProtocol) {
                 case MotorConfig_MotorProtocol_PWM:
-                    motorOutput = new MotorDrivers::PwmMotor();
+                    motor = new MotorDrivers::PwmMotor();
                     break;
                 case MotorConfig_MotorProtocol_DShot:
-                    motorOutput = new MotorDrivers::DShotMotor();
+                    motor = new MotorDrivers::DShotMotor();
                     break;
             }
             // Even if the motor driver was not initialized, we want to fill the hole so that indexing is constant.
             // eg. If the mixer expects a motor to be index 4, we don't want it to move to index 3 because a previous
             // motor failed to initialize.
-            motors.push_back(motorOutput);
+            motors.push_back(motor);
         }
 
         for (pb_size_t i = 0; i < Config::hardwareConfig.servos_count; i++) {
-            Servo* servoOutput = new ServoDrivers::PwmServo();
-            servos.push_back(servoOutput);
+            Servo* servo = nullptr;
+            if (Config::hardwareConfig.servos[i].has_outputPin) {
+                auto pin = IO::pinNameToNumber(Config::hardwareConfig.servos[i].outputPin.pinName);
+                if (pin != 0) { // TODO better error checking
+                    uint32_t refreshRate = 50;
+                    switch(Config::hardwareConfig.servos[i].refreshRate) {
+                        case ServoConfig_ServoRefreshRate__50Hz:
+                            refreshRate = 50;
+                            break;
+                        case ServoConfig_ServoRefreshRate__330Hz:
+                            refreshRate = 330;
+                            break;
+                    }
+                    servo = new ServoDrivers::PwmServo(pin, refreshRate);
+                }
+            }
+            // Even if the servo driver was not initialized, we want to fill the hole so that indexing is constant.
+            // eg. If the mixer expects a servo to be index 4, we don't want it to move to index 3 because a previous
+            // servo failed to initialize.
+            servos.push_back(servo);
         }
     }
 }

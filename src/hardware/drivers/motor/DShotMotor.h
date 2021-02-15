@@ -4,7 +4,7 @@
 #include "hardware/AbstractHardware.h"
 
 namespace MotorDrivers {
-    class DShotMotor : public Motor {
+    class DShotMotor : public Hardware::Motor {
     public:
         void initialize() override;
         void setOutput(int16_t output) override;

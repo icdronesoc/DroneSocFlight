@@ -2,6 +2,6 @@ HardwareConfig.motors max_count:8
 HardwareConfig.servos max_count:8
 IOConfig.uartConfigs max_count:8
 IOConfig.softwareUartConfigs max_count:2
-IOConfig.i2cConfigs max_count:4
-IOConfig.spiConfigs max_count:4
+IOConfig.i2cConfigs max_count:4 # TODO this could probably go down to 2 or 3
+IOConfig.spiConfigs max_count:4 # TODO this could probably go down to 2 or 3
 Pin.pinName max_size:5 # 4 Characters and \0

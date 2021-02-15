@@ -3,71 +3,74 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 
+namespace IO {
 /**
- * SerialPort solves the issue that there is no common superclass for Hardware, Software, and other (USB / Bluetooth) serial ports.
+ * SerialPort solves the issue that there is no common superclass for Hardware, Software, and other (USB / Bluetooth) hardwareSerial ports.
  */
-class SerialPort {
-    /**
-     * Begin communication
-     * @param baud The baud rate to use. Some implementations don't use this.
-     */
-    virtual void begin(unsigned long baud) = 0;
-    virtual Stream* operator->() = 0;
-};
+    class SerialPort {
+        /**
+         * Begin communication
+         * @param baud The baud rate to use. Some implementations don't use this.
+         */
+        virtual void begin(unsigned long baud) = 0;
 
-class HardwareSerialPort : public SerialPort {
-private:
-    HardwareSerial* serial;
+        virtual Stream *operator->() = 0;
+    };
 
-public:
-    /**
-     * Wraps a HardwareSerial, WHICH MUST NOT BE NULL.
-     */
-    explicit HardwareSerialPort(HardwareSerial* s) : serial(s) {}
+    class HardwareSerialPort : public SerialPort {
+    private:
+        HardwareSerial *hardwareSerial;
 
-    void begin(unsigned long baud) override {
-        serial->begin(baud);
-    }
+    public:
+        /**
+         * Wraps a HardwareSerial, WHICH MUST NOT BE NULL.
+         */
+        explicit HardwareSerialPort(HardwareSerial *hardwareSerial) : hardwareSerial(hardwareSerial) {}
 
-    Stream* operator->() override {
-        return serial;
-    }
-};
+        void begin(unsigned long baud) override {
+            hardwareSerial->begin(baud);
+        }
 
-class SoftwareSerialPort : public SerialPort {
-private:
-    SoftwareSerial* serial;
+        Stream *operator->() override {
+            return hardwareSerial;
+        }
+    };
 
-public:
-    /**
-     * Wraps a SoftwareSerial, WHICH MUST NOT BE NULL.
-     */
-    explicit SoftwareSerialPort(SoftwareSerial* s) : serial(s) {}
+    class SoftwareSerialPort : public SerialPort {
+    private:
+        SoftwareSerial *softwareSerial;
 
-    void begin(unsigned long baud) override {
-        serial->begin(static_cast<long>(baud));
-    }
+    public:
+        /**
+         * Wraps a SoftwareSerial, WHICH MUST NOT BE NULL.
+         */
+        explicit SoftwareSerialPort(SoftwareSerial *softwareSerial) : softwareSerial(softwareSerial) {}
 
-    Stream* operator->() override {
-        return serial;
-    }
-};
+        void begin(unsigned long baud) override {
+            softwareSerial->begin(static_cast<long>(baud));
+        }
 
-class StreamSerialPort : public SerialPort {
-private:
-    Stream* serial;
+        Stream *operator->() override {
+            return softwareSerial;
+        }
+    };
 
-public:
-    /**
-     * Wraps a Stream, WHICH MUST NOT BE NULL.
-     */
-    explicit StreamSerialPort(Stream* s) : serial(s) {}
+    class StreamSerialPort : public SerialPort {
+    private:
+        Stream *stream;
 
-    void begin(unsigned long baud) override {
-        // Do nothing
-    }
+    public:
+        /**
+         * Wraps a Stream, WHICH MUST NOT BE NULL.
+         */
+        explicit StreamSerialPort(Stream *stream) : stream(stream) {}
 
-    Stream* operator->() override {
-        return serial;
-    }
-};
+        void begin(unsigned long baud) override {
+            // Do nothing
+        }
+
+        Stream *operator->() override {
+            return stream;
+        }
+    };
+}

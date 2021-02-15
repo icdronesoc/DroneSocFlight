@@ -4,9 +4,9 @@
 #include "hardware/AbstractHardware.h"
 
 namespace AccelerometerDrivers {
-    class MpuSpiAccelerometer : public Accelerometer {
+    class MpuSpiAccelerometer : public Hardware::Accelerometer {
     public:
         void initialize() override;
-        ThreeAxisData getAccelerationData() override;
+        Hardware::ThreeAxisData getAccelerationData() override;
     };
 }
