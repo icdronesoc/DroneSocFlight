@@ -5,7 +5,7 @@ namespace GyroscopeDrivers {
         // TODO
     }
 
-    ThreeAxisData MpuSpiGyroscope::getRotationData() {
+    Hardware::ThreeAxisData MpuSpiGyroscope::getRotationData() {
         // TODO
     }
 }

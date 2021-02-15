@@ -5,7 +5,7 @@ namespace AccelerometerDrivers {
         // TODO
     }
 
-    ThreeAxisData MpuI2cAccelerometer::getAccelerationData() {
+    Hardware::ThreeAxisData MpuI2cAccelerometer::getAccelerationData() {
         // TODO
     }
 }

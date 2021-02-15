@@ -3,7 +3,7 @@
 namespace ServoDrivers {
     void PwmServo::initialize() {
         this->servo.setPeriodHertz(this->refreshRate);
-        this->servo.attach(this->pin);
+        this->servo.attach(this->pin, 1000, 2000);
     }
 
     void PwmServo::setOutput(int16_t output) {

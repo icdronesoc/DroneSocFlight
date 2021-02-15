@@ -36,13 +36,18 @@ namespace Hardware {
 
         for (pb_size_t i = 0; i < Config::hardwareConfig.motors_count; i++) {
             Motor* motor = nullptr;
-            switch (Config::hardwareConfig.motors[i].motorProtocol) {
-                case MotorConfig_MotorProtocol_PWM:
-                    motor = new MotorDrivers::PwmMotor();
-                    break;
-                case MotorConfig_MotorProtocol_DShot:
-                    motor = new MotorDrivers::DShotMotor();
-                    break;
+            if (Config::hardwareConfig.motors[i].has_outputPin) {
+                auto pin = IO::pinNameToNumber(Config::hardwareConfig.motors[i].outputPin.pinName);
+                if (pin != 0) { // TODO better error checking
+                    switch (Config::hardwareConfig.motors[i].motorProtocol) {
+                        case MotorConfig_MotorProtocol_PWM:
+                            motor = new MotorDrivers::PwmMotor(pin);
+                            break;
+                        case MotorConfig_MotorProtocol_DShot:
+                            motor = new MotorDrivers::DShotMotor();
+                            break;
+                    }
+                }
             }
             // Even if the motor driver was not initialized, we want to fill the hole so that indexing is constant.
             // eg. If the mixer expects a motor to be index 4, we don't want it to move to index 3 because a previous

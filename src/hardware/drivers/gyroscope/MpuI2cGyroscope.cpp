@@ -5,7 +5,7 @@ namespace GyroscopeDrivers {
         // TODO
     }
 
-    ThreeAxisData MpuI2cGyroscope::getRotationData() {
+    Hardware::ThreeAxisData MpuI2cGyroscope::getRotationData() {
         // TODO
     }
 }

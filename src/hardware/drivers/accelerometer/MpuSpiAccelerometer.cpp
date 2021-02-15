@@ -5,7 +5,7 @@ namespace AccelerometerDrivers {
         // TODO
     }
 
-    ThreeAxisData MpuSpiAccelerometer::getAccelerationData() {
+    Hardware::ThreeAxisData MpuSpiAccelerometer::getAccelerationData() {
         // TODO
     }
 }
