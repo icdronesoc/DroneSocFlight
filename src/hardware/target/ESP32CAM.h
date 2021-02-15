@@ -1,6 +1,8 @@
-#include "_ESP32_Common.h"
+#include "_Setup_ESP32.h"
 
 Pin pins[] = {
+        // https://randomnerdtutorials.com/esp32-cam-ai-thinker-pinout/
+        // https://github.com/SeeedDocument/forum_doc/raw/master/reg/ESP32_CAM_V1.6.pdf
         {"0",  0},
         {"1",  1},
         {"2",  2},
@@ -12,10 +14,3 @@ Pin pins[] = {
         {"15", 15},
         {"16", 16},
 };
-
-void setupMcuHardware(IOConfig ioConfig) {
-    setupEspHardware();
-
-    // https://randomnerdtutorials.com/esp32-cam-ai-thinker-pinout/
-    // https://github.com/SeeedDocument/forum_doc/raw/master/reg/ESP32_CAM_V1.6.pdf
-}

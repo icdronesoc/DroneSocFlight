@@ -43,10 +43,10 @@ typedef struct _Pin {
 } Pin;
 
 typedef struct _I2cConfig {
-    bool has_scl;
-    Pin scl;
     bool has_sda;
     Pin sda;
+    bool has_scl;
+    Pin scl;
     I2cConfig_Speed speed;
 } I2cConfig;
 
@@ -171,8 +171,8 @@ typedef struct _HardwareConfig {
 #define MpuI2cConfig_busIndex_tag                1
 #define MpuI2cConfig_address_tag                 2
 #define Pin_pinName_tag                          1
-#define I2cConfig_scl_tag                        1
-#define I2cConfig_sda_tag                        2
+#define I2cConfig_sda_tag                        1
+#define I2cConfig_scl_tag                        2
 #define I2cConfig_speed_tag                      3
 #define MotorConfig_outputPin_tag                1
 #define MotorConfig_motorProtocol_tag            2
@@ -240,13 +240,13 @@ X(a, STATIC,   OPTIONAL, MESSAGE,  rx,                2)
 #define UartConfig_rx_MSGTYPE Pin
 
 #define I2cConfig_FIELDLIST(X, a) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  scl,               1) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  sda,               2) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  sda,               1) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  scl,               2) \
 X(a, STATIC,   SINGULAR, UENUM,    speed,             3)
 #define I2cConfig_CALLBACK NULL
 #define I2cConfig_DEFAULT NULL
-#define I2cConfig_scl_MSGTYPE Pin
 #define I2cConfig_sda_MSGTYPE Pin
+#define I2cConfig_scl_MSGTYPE Pin
 
 #define SpiConfig_FIELDLIST(X, a) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  mosi,              1) \

@@ -26,8 +26,8 @@ message UartConfig {
 }
 
 message I2cConfig {
-    Pin scl = 1;
-    Pin sda = 2;
+    Pin sda = 1;
+    Pin scl = 2;
     Speed speed = 3;
 
     enum Speed {

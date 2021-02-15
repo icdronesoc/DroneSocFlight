@@ -1,10 +1,5 @@
-#include "_ESP32_Common.h"
+#include "_Setup_ESP32.h"
 
 Pin pins[] = {
         // TODO
 };
-
-void setupMcuHardware(IOConfig ioConfig) {
-    // TODO use ioConfig
-    setupEspHardware();
-}
