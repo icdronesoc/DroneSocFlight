@@ -1,88 +1,56 @@
 #include "MpuGyroscope.h"
 
 namespace GyroscopeDrivers {
-    MpuGyroscope::MpuGyroscope(TwoWire* i2c, uint8_t address) {
-        auto device = new Adafruit_I2CDevice(address, i2c);
+    namespace { // private
+        constexpr uint32_t SAMPLE_RATE = 8000;
+        constexpr uint32_t GYROSCOPE_CONFIG = 0b00011000; // Self Tests disabled, +-2000 degrees per second full scale range
 
-        this->selfTestX = new Adafruit_BusIO_Register(device, 13, ADDRBIT8_HIGH_TOREAD);
-        this->selfTestY = new Adafruit_BusIO_Register(device, 14, ADDRBIT8_HIGH_TOREAD);
-        this->selfTestZ = new Adafruit_BusIO_Register(device, 15, ADDRBIT8_HIGH_TOREAD);
-        this->selfTestA = new Adafruit_BusIO_Register(device, 16, ADDRBIT8_HIGH_TOREAD);
-        this->sampleRateDivider = new Adafruit_BusIO_Register(device, 25, ADDRBIT8_HIGH_TOREAD);
-        this->config = new Adafruit_BusIO_Register(device, 26, ADDRBIT8_HIGH_TOREAD);
-        this->gyroConfig = new Adafruit_BusIO_Register(device, 27, ADDRBIT8_HIGH_TOREAD);
-        this->accelerometerConfig = new Adafruit_BusIO_Register(device, 28, ADDRBIT8_HIGH_TOREAD);
-        this->fifoEnabled = new Adafruit_BusIO_Register(device, 35, ADDRBIT8_HIGH_TOREAD);
-        this->i2cMasterControl = new Adafruit_BusIO_Register(device, 36, ADDRBIT8_HIGH_TOREAD);
-        this->interruptPinConfig = new Adafruit_BusIO_Register(device, 55, ADDRBIT8_HIGH_TOREAD);
-        this->interruptPinEnable = new Adafruit_BusIO_Register(device, 56, ADDRBIT8_HIGH_TOREAD);
-        this->interruptPinStatus = new Adafruit_BusIO_Register(device, 58, ADDRBIT8_HIGH_TOREAD);
-        this->accelerometerXOutputHigh = new Adafruit_BusIO_Register(device, 59, ADDRBIT8_HIGH_TOREAD);
-        this->accelerometerXOutputLow = new Adafruit_BusIO_Register(device, 60, ADDRBIT8_HIGH_TOREAD);
-        this->accelerometerYOutputHigh = new Adafruit_BusIO_Register(device, 61, ADDRBIT8_HIGH_TOREAD);
-        this->accelerometerYOutputLow = new Adafruit_BusIO_Register(device, 62, ADDRBIT8_HIGH_TOREAD);
-        this->accelerometerZOutputHigh = new Adafruit_BusIO_Register(device, 63, ADDRBIT8_HIGH_TOREAD);
-        this->accelerometerZOutputLow = new Adafruit_BusIO_Register(device, 64, ADDRBIT8_HIGH_TOREAD);
-        this->temperatureOutputHigh = new Adafruit_BusIO_Register(device, 65, ADDRBIT8_HIGH_TOREAD);
-        this->temperatureOutputLow = new Adafruit_BusIO_Register(device, 66, ADDRBIT8_HIGH_TOREAD);
-        this->gyroscopeXOutputHigh = new Adafruit_BusIO_Register(device, 67, ADDRBIT8_HIGH_TOREAD);
-        this->gyroscopeXOutputLow = new Adafruit_BusIO_Register(device, 68, ADDRBIT8_HIGH_TOREAD);
-        this->gyroscopeYOutputHigh = new Adafruit_BusIO_Register(device, 69, ADDRBIT8_HIGH_TOREAD);
-        this->gyroscopeYOutputLow = new Adafruit_BusIO_Register(device, 70, ADDRBIT8_HIGH_TOREAD);
-        this->gyroscopeZOutputHigh = new Adafruit_BusIO_Register(device, 71, ADDRBIT8_HIGH_TOREAD);
-        this->gyroscopeZOutputLow = new Adafruit_BusIO_Register(device, 72, ADDRBIT8_HIGH_TOREAD);
-        this->signalPathReset = new Adafruit_BusIO_Register(device, 104, ADDRBIT8_HIGH_TOREAD);
-        this->userControl = new Adafruit_BusIO_Register(device, 106, ADDRBIT8_HIGH_TOREAD);
-        this->powerManagement1 = new Adafruit_BusIO_Register(device, 107, ADDRBIT8_HIGH_TOREAD);
-        this->powerManagement2 = new Adafruit_BusIO_Register(device, 108, ADDRBIT8_HIGH_TOREAD);
-        this->fifoCountHigh = new Adafruit_BusIO_Register(device, 114, ADDRBIT8_HIGH_TOREAD);
-        this->fifoCountLow = new Adafruit_BusIO_Register(device, 115, ADDRBIT8_HIGH_TOREAD);
-        this->fifoRW = new Adafruit_BusIO_Register(device, 116, ADDRBIT8_HIGH_TOREAD);
-        this->whoAmI = new Adafruit_BusIO_Register(device, 117, ADDRBIT8_HIGH_TOREAD);
+        const SPISettings defaultSettings = SPISettings(1000000, MSBFIRST, SPI_MODE0);
+        // When reading sensor register data, SPI can be clocked at 20MHz
+        const SPISettings fastSettings = SPISettings(20000000, MSBFIRST, SPI_MODE0);
+
+        // Register addresses
+        constexpr uint8_t gyroscopeConfigAddress = 27;
+        constexpr uint8_t i2cMasterControlAddress = 36;
+        constexpr uint8_t interruptPinConfigAddress = 55;
+        constexpr uint8_t interruptPinEnableAddress = 56;
+        constexpr uint8_t interruptPinStatusAddress = 58;
+        constexpr uint8_t temperatureOutputHighAddress = 65;
+        constexpr uint8_t temperatureOutputLowAddress = 66;
+        constexpr uint8_t gyroscopeXOutputHighAddress = 67;
+        constexpr uint8_t gyroscopeXOutputLowAddress = 68;
+        constexpr uint8_t gyroscopeYOutputHighAddress = 69;
+        constexpr uint8_t gyroscopeYOutputLowAddress = 70;
+        constexpr uint8_t gyroscopeZOutputHighAddress = 71;
+        constexpr uint8_t gyroscopeZOutputLowAddress = 72;
+        constexpr uint8_t signalPathResetAddress = 104;
+        constexpr uint8_t userControlAddress = 106;
+        constexpr uint8_t powerManagement1Address = 107;
+        constexpr uint8_t powerManagement2Address = 108;
+        constexpr uint8_t fifoCountHighAddress = 114;
+        constexpr uint8_t fifoCountLowAddress = 115;
+        constexpr uint8_t fifoRWAddress = 116;
+        constexpr uint8_t whoAmIAddress = 117;
     }
 
-    MpuGyroscope::MpuGyroscope(SPIClass* spi, uint32_t csPin) {
-        auto device = new Adafruit_SPIDevice(csPin, 100000, SPI_BITORDER_MSBFIRST, SPI_MODE0, spi);
+    MpuGyroscope::MpuGyroscope(TwoWire* i2c, uint8_t address) : Hardware::Gyroscope(SAMPLE_RATE), device(new BusIO::I2CDevice(i2c, address)) {
+        this->initialize();
+    }
 
-        this->selfTestX = new Adafruit_BusIO_Register(device, 13, ADDRBIT8_HIGH_TOREAD);
-        this->selfTestY = new Adafruit_BusIO_Register(device, 14, ADDRBIT8_HIGH_TOREAD);
-        this->selfTestZ = new Adafruit_BusIO_Register(device, 15, ADDRBIT8_HIGH_TOREAD);
-        this->selfTestA = new Adafruit_BusIO_Register(device, 16, ADDRBIT8_HIGH_TOREAD);
-        this->sampleRateDivider = new Adafruit_BusIO_Register(device, 25, ADDRBIT8_HIGH_TOREAD);
-        this->config = new Adafruit_BusIO_Register(device, 26, ADDRBIT8_HIGH_TOREAD);
-        this->gyroConfig = new Adafruit_BusIO_Register(device, 27, ADDRBIT8_HIGH_TOREAD);
-        this->accelerometerConfig = new Adafruit_BusIO_Register(device, 28, ADDRBIT8_HIGH_TOREAD);
-        this->fifoEnabled = new Adafruit_BusIO_Register(device, 35, ADDRBIT8_HIGH_TOREAD);
-        this->i2cMasterControl = new Adafruit_BusIO_Register(device, 36, ADDRBIT8_HIGH_TOREAD);
-        this->interruptPinConfig = new Adafruit_BusIO_Register(device, 55, ADDRBIT8_HIGH_TOREAD);
-        this->interruptPinEnable = new Adafruit_BusIO_Register(device, 56, ADDRBIT8_HIGH_TOREAD);
-        this->interruptPinStatus = new Adafruit_BusIO_Register(device, 58, ADDRBIT8_HIGH_TOREAD);
-        this->accelerometerXOutputHigh = new Adafruit_BusIO_Register(device, 59, ADDRBIT8_HIGH_TOREAD);
-        this->accelerometerXOutputLow = new Adafruit_BusIO_Register(device, 60, ADDRBIT8_HIGH_TOREAD);
-        this->accelerometerYOutputHigh = new Adafruit_BusIO_Register(device, 61, ADDRBIT8_HIGH_TOREAD);
-        this->accelerometerYOutputLow = new Adafruit_BusIO_Register(device, 62, ADDRBIT8_HIGH_TOREAD);
-        this->accelerometerZOutputHigh = new Adafruit_BusIO_Register(device, 63, ADDRBIT8_HIGH_TOREAD);
-        this->accelerometerZOutputLow = new Adafruit_BusIO_Register(device, 64, ADDRBIT8_HIGH_TOREAD);
-        this->temperatureOutputHigh = new Adafruit_BusIO_Register(device, 65, ADDRBIT8_HIGH_TOREAD);
-        this->temperatureOutputLow = new Adafruit_BusIO_Register(device, 66, ADDRBIT8_HIGH_TOREAD);
-        this->gyroscopeXOutputHigh = new Adafruit_BusIO_Register(device, 67, ADDRBIT8_HIGH_TOREAD);
-        this->gyroscopeXOutputLow = new Adafruit_BusIO_Register(device, 68, ADDRBIT8_HIGH_TOREAD);
-        this->gyroscopeYOutputHigh = new Adafruit_BusIO_Register(device, 69, ADDRBIT8_HIGH_TOREAD);
-        this->gyroscopeYOutputLow = new Adafruit_BusIO_Register(device, 70, ADDRBIT8_HIGH_TOREAD);
-        this->gyroscopeZOutputHigh = new Adafruit_BusIO_Register(device, 71, ADDRBIT8_HIGH_TOREAD);
-        this->gyroscopeZOutputLow = new Adafruit_BusIO_Register(device, 72, ADDRBIT8_HIGH_TOREAD);
-        this->signalPathReset = new Adafruit_BusIO_Register(device, 104, ADDRBIT8_HIGH_TOREAD);
-        this->userControl = new Adafruit_BusIO_Register(device, 106, ADDRBIT8_HIGH_TOREAD);
-        this->powerManagement1 = new Adafruit_BusIO_Register(device, 107, ADDRBIT8_HIGH_TOREAD);
-        this->powerManagement2 = new Adafruit_BusIO_Register(device, 108, ADDRBIT8_HIGH_TOREAD);
-        this->fifoCountHigh = new Adafruit_BusIO_Register(device, 114, ADDRBIT8_HIGH_TOREAD);
-        this->fifoCountLow = new Adafruit_BusIO_Register(device, 115, ADDRBIT8_HIGH_TOREAD);
-        this->fifoRW = new Adafruit_BusIO_Register(device, 116, ADDRBIT8_HIGH_TOREAD);
-        this->whoAmI = new Adafruit_BusIO_Register(device, 117, ADDRBIT8_HIGH_TOREAD);
+    MpuGyroscope::MpuGyroscope(SPIClass* spi, uint32_t csPin) : Hardware::Gyroscope(SAMPLE_RATE) {
+        auto spiDevice = new BusIO::SPIDevice(spi, defaultSettings, csPin);
+        this->device = spiDevice;
+        this->initialize();
+        // Now that setup is complete we can switch to faster SPI.
+        spiDevice->setSettings(fastSettings);
     }
 
     void MpuGyroscope::initialize() {
-
+        // Default sample rate divider: Full Sample rate
+        // Default device config: External Sync disabled, Digital Low Pass Filter disabled
+        this->device->writeRegister(gyroscopeConfigAddress, GYROSCOPE_CONFIG);
+        // Default FIFO enable: All FIFOs disabled
+        // TODO finish setup
     }
 
     Hardware::ThreeAxisData MpuGyroscope::getRotationData() {

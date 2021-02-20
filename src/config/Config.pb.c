@@ -18,10 +18,10 @@ PB_BIND(IOConfig, IOConfig, 2)
 PB_BIND(UartConfig, UartConfig, AUTO)
 
 
-PB_BIND(I2cConfig, I2cConfig, AUTO)
+PB_BIND(I2CConfig, I2CConfig, AUTO)
 
 
-PB_BIND(SpiConfig, SpiConfig, AUTO)
+PB_BIND(SPIConfig, SPIConfig, AUTO)
 
 
 PB_BIND(AccelerometerConfig, AccelerometerConfig, AUTO)

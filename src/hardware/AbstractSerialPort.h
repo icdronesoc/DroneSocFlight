@@ -8,6 +8,7 @@ namespace IO {
  * SerialPort solves the issue that there is no common superclass for Hardware, Software, and other (USB / Bluetooth) hardwareSerial ports.
  */
     class SerialPort {
+    public:
         /**
          * Begin communication
          * @param baud The baud rate to use. Some implementations don't use this.
@@ -17,7 +18,7 @@ namespace IO {
         virtual Stream *operator->() = 0;
     };
 
-    class HardwareSerialPort : public SerialPort {
+    class HardwareSerialPort final : public SerialPort {
     private:
         HardwareSerial *hardwareSerial;
 
@@ -36,7 +37,7 @@ namespace IO {
         }
     };
 
-    class SoftwareSerialPort : public SerialPort {
+    class SoftwareSerialPort final : public SerialPort {
     private:
         SoftwareSerial *softwareSerial;
 
@@ -55,7 +56,7 @@ namespace IO {
         }
     };
 
-    class StreamSerialPort : public SerialPort {
+    class StreamSerialPort final : public SerialPort {
     private:
         Stream *stream;
 

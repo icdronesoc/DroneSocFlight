@@ -46,8 +46,10 @@ void setupMcuHardware(IOConfig ioConfig) {
             if (sdaPin != 0 && sclPin != 0) { // TODO better error checking
                 i2c = new TwoWire(sdaPin, sclPin);
                 switch (ioConfig.i2cConfigs[i].speed) {
-                    case I2cConfig_Speed__100KHz:
+                    case I2CConfig_Speed__100kHz:
                         i2c->setClock(100000);
+                    case I2CConfig_Speed__400kHz:
+                        i2c->setClock(400000);
                 }
             }
         }

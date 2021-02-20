@@ -5,7 +5,7 @@
 #include <Wire.h>
 #include <etl/vector.h>
 #include "config/Config.h"
-#include "AbstractIO.h"
+#include "AbstractSerialPort.h"
 
 /**
  * IO is hardware that is part of the microcontroller.
@@ -24,8 +24,8 @@ namespace IO {
 
     constexpr size_t maxPinNameLength = sizeof(Pin::pinName) / sizeof(char);
     constexpr size_t maxNumberOfUARTs = sizeof(IOConfig::uartConfigs) / sizeof(UartConfig) + sizeof(IOConfig::softwareUartConfigs) / sizeof(UartConfig); // TODO when config UART gets moved here, always add 1
-    constexpr size_t maxNumberOfI2Cs = sizeof(IOConfig::i2cConfigs) / sizeof(I2cConfig);
-    constexpr size_t maxNumberOfSPIs = sizeof(IOConfig::spiConfigs) / sizeof(SpiConfig);
+    constexpr size_t maxNumberOfI2Cs = sizeof(IOConfig::i2cConfigs) / sizeof(I2CConfig);
+    constexpr size_t maxNumberOfSPIs = sizeof(IOConfig::spiConfigs) / sizeof(SPIConfig);
 
     typedef struct {
         char name[maxPinNameLength];

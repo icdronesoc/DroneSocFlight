@@ -9,7 +9,7 @@
 #endif
 
 namespace IO {
-    const uint32_t WatchDogTimeout = 1; // Seconds
+    constexpr uint32_t WatchDogTimeout = 1; // Seconds
 
     etl::vector<SerialPort*, maxNumberOfUARTs> UARTs;
     etl::vector<SPIClass*, maxNumberOfSPIs> SPIs;
@@ -27,7 +27,7 @@ namespace IO {
 #error No MCU hardware config found.
 #endif
 
-    const size_t pinCount = sizeof(pins) / sizeof(Pin);
+    constexpr size_t pinCount = sizeof(pins) / sizeof(Pin);
 
     uint32_t pinNameToNumber(char* pinName) {
         for (auto & pin : pins) {

@@ -29,7 +29,6 @@ namespace Hardware {
                     break;
                 }
             }
-            if (accelerometer != nullptr) accelerometer->initialize();
         }
 
         if (Config::hardwareConfig.has_gyroscopeConfig) {
@@ -51,7 +50,6 @@ namespace Hardware {
                     break;
                 }
             }
-            if (gyroscope != nullptr) gyroscope->initialize();
         }
 
         for (pb_size_t i = 0; i < Config::hardwareConfig.motors_count; i++) {

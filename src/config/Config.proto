@@ -16,8 +16,8 @@ message SoftwareConfig {
 message IOConfig {
     repeated UartConfig uartConfigs = 1;
     repeated UartConfig softwareUartConfigs = 2;
-    repeated I2cConfig i2cConfigs = 3;
-    repeated SpiConfig spiConfigs = 4;
+    repeated I2CConfig i2cConfigs = 3;
+    repeated SPIConfig spiConfigs = 4;
 }
 
 message UartConfig {
@@ -25,17 +25,18 @@ message UartConfig {
     Pin rx = 2;
 }
 
-message I2cConfig {
+message I2CConfig {
     Pin sda = 1;
     Pin scl = 2;
     Speed speed = 3;
 
     enum Speed {
-        _100KHz = 0;
+        _100kHz = 0;
+        _400kHz = 1;
     }
 }
 
-message SpiConfig {
+message SPIConfig {
     Pin mosi = 1;
     Pin miso = 2;
     Pin sck = 3;

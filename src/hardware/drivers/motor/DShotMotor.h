@@ -6,7 +6,6 @@
 namespace MotorDrivers {
     class DShotMotor : public Hardware::Motor {
     public:
-        void initialize() override;
         void setOutput(int16_t output) override;
     };
 }

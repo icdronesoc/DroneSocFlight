@@ -1,7 +1,7 @@
 #include "PwmMotor.h"
 
 namespace MotorDrivers {
-    void PwmMotor::initialize() {
+    PwmMotor::PwmMotor(uint32_t pin) : pin(pin) {
 #ifdef PLATFORM_ESP32
         this->servo.setPeriodHertz(50);
 #endif

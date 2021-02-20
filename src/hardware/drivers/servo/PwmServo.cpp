@@ -1,7 +1,7 @@
 #include "PwmServo.h"
 
 namespace ServoDrivers {
-    void PwmServo::initialize() {
+    PwmServo::PwmServo(uint32_t pin, uint32_t refreshRate) : pin(pin), refreshRate(refreshRate) {
 #ifdef PLATFORM_ESP32
         this->servo.setPeriodHertz(this->refreshRate);
 #endif

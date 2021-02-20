@@ -1,6 +1,6 @@
-const pb_size_t ESP32_MAX_UARTS = 3;
-const pb_size_t ESP32_MAX_I2Cs = 2;
-const pb_size_t ESP32_MAX_SPIs = 2;
+constexpr pb_size_t ESP32_MAX_UARTS = 3;
+constexpr pb_size_t ESP32_MAX_I2Cs = 2;
+constexpr pb_size_t ESP32_MAX_SPIs = 2;
 
 void resetWatchdogTimer() {
     esp_task_wdt_reset();
@@ -53,8 +53,10 @@ void setupMcuHardware(IOConfig ioConfig) {
                 i2c = new TwoWire(i);
                 int frequency = 0;
                 switch (ioConfig.i2cConfigs[i].speed) {
-                    case I2cConfig_Speed__100KHz:
+                    case I2CConfig_Speed__100kHz:
                         frequency = 100000;
+                    case I2CConfig_Speed__400kHz:
+                        frequency = 400000;
                 }
                 i2c->begin(sdaPin, sclPin, frequency);
             }

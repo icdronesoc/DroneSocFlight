@@ -9,28 +9,46 @@ namespace Hardware {
         double z;
     } ThreeAxisData;
 
-    class HasInitializer {
+    /**
+     * Initialized in constructor.
+     */
+    class Accelerometer {
     public:
-        virtual void initialize() = 0;
-    };
+        Accelerometer(uint32_t sampleRate) : sampleRate(sampleRate) {}
 
-    class Accelerometer : public HasInitializer {
-    public:
         /**
          * @return Data for each axis in TODO units
          */
         virtual ThreeAxisData getAccelerationData() = 0;
+
+        /**
+         * The sample rate of the sensor, in Hz
+         */
+        uint32_t sampleRate;
     };
 
-    class Gyroscope : public HasInitializer {
+    /**
+     * Initialized in constructor.
+     */
+    class Gyroscope {
     public:
+        Gyroscope(uint32_t sampleRate) : sampleRate(sampleRate) {}
+
         /**
          * @return Data for each axis in degrees per second
          */
         virtual ThreeAxisData getRotationData() = 0;
+
+        /**
+         * The sample rate of the sensor, in Hz
+         */
+        uint32_t sampleRate;
     };
 
-    class Motor : public HasInitializer {
+    /**
+     * Initialized in constructor.
+     */
+    class Motor {
     public:
         /**
          * @param output The speed the motor should be set to, ranging from 0 to 2047
@@ -38,7 +56,7 @@ namespace Hardware {
         virtual void setOutput(int16_t output) = 0;
     };
 
-    class Servo : public HasInitializer {
+    class Servo {
     public:
         /**
          * @param output The position the Servo should move to, ranging from -1024 to 1023
