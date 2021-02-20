@@ -29,13 +29,13 @@ namespace IO {
 
     constexpr size_t pinCount = sizeof(pins) / sizeof(Pin);
 
-    uint32_t pinNameToNumber(char* pinName) {
+    Pin* findPin(char* pinName) {
         for (auto & pin : pins) {
             if (strncmp(pinName, pin.name, maxPinNameLength) == 0) {
-                return pin.number;
+                return &pin;
             }
         }
-        return 0; // TODO handle error
+        return nullptr;
     }
 
     void initialize() {

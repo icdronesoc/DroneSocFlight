@@ -34,11 +34,6 @@ typedef struct _SoftwareConfig {
     char dummy_field;
 } SoftwareConfig;
 
-typedef struct _MpuI2cConfig {
-    uint32_t busIndex;
-    uint32_t address;
-} MpuI2cConfig;
-
 typedef struct _Pin {
     char pinName[5];
 } Pin;
@@ -57,10 +52,19 @@ typedef struct _MotorConfig {
     MotorConfig_MotorProtocol motorProtocol;
 } MotorConfig;
 
+typedef struct _MpuI2cConfig {
+    uint32_t busIndex;
+    uint32_t address;
+    bool has_interruptPin;
+    Pin interruptPin;
+} MpuI2cConfig;
+
 typedef struct _MpuSpiConfig {
     uint32_t busIndex;
     bool has_csPin;
     Pin csPin;
+    bool has_interruptPin;
+    Pin interruptPin;
 } MpuSpiConfig;
 
 typedef struct _SPIConfig {
@@ -149,8 +153,8 @@ typedef struct _HardwareConfig {
 #define SPIConfig_init_default                   {false, Pin_init_default, false, Pin_init_default, false, Pin_init_default}
 #define AccelerometerConfig_init_default         {0, {MpuI2cConfig_init_default}}
 #define GyroscopeConfig_init_default             {0, {MpuI2cConfig_init_default}}
-#define MpuSpiConfig_init_default                {0, false, Pin_init_default}
-#define MpuI2cConfig_init_default                {0, 0}
+#define MpuSpiConfig_init_default                {0, false, Pin_init_default, false, Pin_init_default}
+#define MpuI2cConfig_init_default                {0, 0, false, Pin_init_default}
 #define MotorConfig_init_default                 {false, Pin_init_default, _MotorConfig_MotorProtocol_MIN}
 #define ServoConfig_init_default                 {false, Pin_init_default, _ServoConfig_ServoRefreshRate_MIN}
 #define Pin_init_default                         {""}
@@ -162,23 +166,25 @@ typedef struct _HardwareConfig {
 #define SPIConfig_init_zero                      {false, Pin_init_zero, false, Pin_init_zero, false, Pin_init_zero}
 #define AccelerometerConfig_init_zero            {0, {MpuI2cConfig_init_zero}}
 #define GyroscopeConfig_init_zero                {0, {MpuI2cConfig_init_zero}}
-#define MpuSpiConfig_init_zero                   {0, false, Pin_init_zero}
-#define MpuI2cConfig_init_zero                   {0, 0}
+#define MpuSpiConfig_init_zero                   {0, false, Pin_init_zero, false, Pin_init_zero}
+#define MpuI2cConfig_init_zero                   {0, 0, false, Pin_init_zero}
 #define MotorConfig_init_zero                    {false, Pin_init_zero, _MotorConfig_MotorProtocol_MIN}
 #define ServoConfig_init_zero                    {false, Pin_init_zero, _ServoConfig_ServoRefreshRate_MIN}
 #define Pin_init_zero                            {""}
 
 /* Field tags (for use in manual encoding/decoding) */
-#define MpuI2cConfig_busIndex_tag                1
-#define MpuI2cConfig_address_tag                 2
 #define Pin_pinName_tag                          1
 #define I2CConfig_sda_tag                        1
 #define I2CConfig_scl_tag                        2
 #define I2CConfig_speed_tag                      3
 #define MotorConfig_outputPin_tag                1
 #define MotorConfig_motorProtocol_tag            2
+#define MpuI2cConfig_busIndex_tag                1
+#define MpuI2cConfig_address_tag                 2
+#define MpuI2cConfig_interruptPin_tag            3
 #define MpuSpiConfig_busIndex_tag                1
 #define MpuSpiConfig_csPin_tag                   2
+#define MpuSpiConfig_interruptPin_tag            3
 #define SPIConfig_mosi_tag                       1
 #define SPIConfig_miso_tag                       2
 #define SPIConfig_sck_tag                        3
@@ -277,16 +283,20 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (driverConfig,mpuSpi,driverConfig.mpuSpi),   
 
 #define MpuSpiConfig_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   busIndex,          1) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  csPin,             2)
+X(a, STATIC,   OPTIONAL, MESSAGE,  csPin,             2) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  interruptPin,      3)
 #define MpuSpiConfig_CALLBACK NULL
 #define MpuSpiConfig_DEFAULT NULL
 #define MpuSpiConfig_csPin_MSGTYPE Pin
+#define MpuSpiConfig_interruptPin_MSGTYPE Pin
 
 #define MpuI2cConfig_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   busIndex,          1) \
-X(a, STATIC,   SINGULAR, UINT32,   address,           2)
+X(a, STATIC,   SINGULAR, UINT32,   address,           2) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  interruptPin,      3)
 #define MpuI2cConfig_CALLBACK NULL
 #define MpuI2cConfig_DEFAULT NULL
+#define MpuI2cConfig_interruptPin_MSGTYPE Pin
 
 #define MotorConfig_FIELDLIST(X, a) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  outputPin,         1) \
@@ -337,16 +347,16 @@ extern const pb_msgdesc_t Pin_msg;
 #define Pin_fields &Pin_msg
 
 /* Maximum encoded size of messages (where known) */
-#define HardwareConfig_size                      595
+#define HardwareConfig_size                      611
 #define SoftwareConfig_size                      0
 #define IOConfig_size                            364
 #define UartConfig_size                          16
 #define I2CConfig_size                           18
 #define SPIConfig_size                           24
-#define AccelerometerConfig_size                 16
-#define GyroscopeConfig_size                     16
-#define MpuSpiConfig_size                        14
-#define MpuI2cConfig_size                        12
+#define AccelerometerConfig_size                 24
+#define GyroscopeConfig_size                     24
+#define MpuSpiConfig_size                        22
+#define MpuI2cConfig_size                        20
 #define MotorConfig_size                         10
 #define ServoConfig_size                         10
 #define Pin_size                                 6

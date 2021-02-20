@@ -62,12 +62,14 @@ message GyroscopeConfig {
 message MpuSpiConfig {
     uint32 busIndex = 1;
     Pin csPin = 2;
+    Pin interruptPin = 3;
 }
 
 // Driver for MPU6000 / MPU6050 / MPU9250 accelerometer and gyroscope over I2C
 message MpuI2cConfig {
     uint32 busIndex = 1;
     uint32 address = 2;
+    Pin interruptPin = 3;
 }
 
 // Motor config

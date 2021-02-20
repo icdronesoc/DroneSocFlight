@@ -20,7 +20,7 @@ namespace Hardware {
     extern Accelerometer* accelerometer;
 
     /**
-     * The gyroscope, or null if none is configured
+     * The imu, or null if none is configured
      */
     extern Gyroscope* gyroscope;
 

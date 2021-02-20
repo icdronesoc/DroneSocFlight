@@ -44,11 +44,10 @@ namespace IO {
 
     /**
      * Convert pin name to number
-     * TODO handle error properly
      * @param pinName The pin name
-     * @return The pin number, or 0 if error TODO
+     * @return The pin number, or null if one with that name was not found
      */
-    uint32_t pinNameToNumber(char* pinName);
+    Pin* findPin(char* pinName);
 
     /**
      * All available UARTs except for the config UART.
