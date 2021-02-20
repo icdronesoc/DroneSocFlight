@@ -2,7 +2,9 @@
 
 namespace MotorDrivers {
     void PwmMotor::initialize() {
+#ifdef PLATFORM_ESP32
         this->servo.setPeriodHertz(50);
+#endif
         this->servo.attach(this->pin);
     }
 

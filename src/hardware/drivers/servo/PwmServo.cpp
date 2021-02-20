@@ -2,7 +2,9 @@
 
 namespace ServoDrivers {
     void PwmServo::initialize() {
+#ifdef PLATFORM_ESP32
         this->servo.setPeriodHertz(this->refreshRate);
+#endif
         this->servo.attach(this->pin, 1000, 2000);
     }
 

@@ -12,24 +12,44 @@ namespace Hardware {
     void initialize() {
         if (Config::hardwareConfig.has_accelerometerConfig) {
             switch(Config::hardwareConfig.accelerometerConfig.which_driverConfig) {
-                case AccelerometerConfig_mpuI2c_tag:
-                    accelerometer = new AccelerometerDrivers::MpuI2cAccelerometer();
+                case AccelerometerConfig_mpuI2c_tag: {
+                    auto index = Config::hardwareConfig.accelerometerConfig.driverConfig.mpuI2c.busIndex;
+                    auto address = Config::hardwareConfig.accelerometerConfig.driverConfig.mpuI2c.address;
+                    if (index < IO::I2Cs.size() && address < 128) {
+                        accelerometer = new AccelerometerDrivers::MpuAccelerometer(IO::I2Cs[index], address);
+                    }
                     break;
-                case AccelerometerConfig_mpuSpi_tag:
-                    accelerometer = new AccelerometerDrivers::MpuSpiAccelerometer();
+                }
+                case AccelerometerConfig_mpuSpi_tag: {
+                    auto index = Config::hardwareConfig.accelerometerConfig.driverConfig.mpuSpi.busIndex;
+                    auto csPin = IO::pinNameToNumber(Config::hardwareConfig.accelerometerConfig.driverConfig.mpuSpi.csPin.pinName);
+                    if (index < IO::SPIs.size() && Config::hardwareConfig.accelerometerConfig.driverConfig.mpuSpi.has_csPin && csPin != 0) { // TODO better error checking
+                        accelerometer = new AccelerometerDrivers::MpuAccelerometer(IO::SPIs[index], csPin);
+                    }
                     break;
+                }
             }
             if (accelerometer != nullptr) accelerometer->initialize();
         }
 
         if (Config::hardwareConfig.has_gyroscopeConfig) {
             switch(Config::hardwareConfig.gyroscopeConfig.which_driverConfig) {
-                case GyroscopeConfig_mpuI2c_tag:
-                    gyroscope = new GyroscopeDrivers::MpuI2cGyroscope();
+                case GyroscopeConfig_mpuI2c_tag: {
+                    auto index = Config::hardwareConfig.gyroscopeConfig.driverConfig.mpuI2c.busIndex;
+                    auto address = Config::hardwareConfig.gyroscopeConfig.driverConfig.mpuI2c.address;
+                    if (index < IO::I2Cs.size() && address < 128) {
+                        gyroscope = new GyroscopeDrivers::MpuGyroscope(IO::I2Cs[index], address);
+                    }
                     break;
-                case GyroscopeConfig_mpuSpi_tag:
-                    gyroscope = new GyroscopeDrivers::MpuSpiGyroscope();
+                }
+                case GyroscopeConfig_mpuSpi_tag: {
+                    auto index = Config::hardwareConfig.gyroscopeConfig.driverConfig.mpuSpi.busIndex;
+                    auto csPin = IO::pinNameToNumber(Config::hardwareConfig.gyroscopeConfig.driverConfig.mpuSpi.csPin.pinName);
+                    if (index < IO::SPIs.size() && Config::hardwareConfig.gyroscopeConfig.driverConfig.mpuSpi.has_csPin && csPin != 0) { // TODO better error checking
+                        gyroscope = new GyroscopeDrivers::MpuGyroscope(IO::SPIs[index], csPin);
+                    }
                     break;
+                }
             }
             if (gyroscope != nullptr) gyroscope->initialize();
         }
