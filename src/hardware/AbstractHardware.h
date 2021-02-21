@@ -17,7 +17,7 @@ namespace Hardware {
         Accelerometer(uint32_t sampleRate) : sampleRate(sampleRate) {}
 
         /**
-         * @return Data for each axis in TODO units
+         * @return Data for each axis in Gs
          */
         virtual ThreeAxisData getAccelerationData() = 0;
 

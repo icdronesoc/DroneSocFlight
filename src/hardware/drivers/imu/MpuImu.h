@@ -29,5 +29,6 @@ namespace IMUDrivers {
         IO::Pin* interruptPin;
         BusIO::RegisterBasedDevice* device;
         void initialize(bool disableDeviceI2C);
+        void handleInterrupt();
     };
 }
