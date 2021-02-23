@@ -17,18 +17,13 @@ namespace IMUDrivers {
      */
     class MpuImu : public Hardware::Gyroscope, public Hardware::Accelerometer {
     public:
-        MpuImu(TwoWire* i2c, uint8_t address, IO::Pin* interruptPin);
-        MpuImu(SPIClass* spi, uint32_t csPin, IO::Pin* interruptPin);
+        MpuImu(TwoWire* i2c, uint8_t address);
+        MpuImu(SPIClass* spi, uint32_t csPin);
         Hardware::ThreeAxisData getRotationData() override;
         Hardware::ThreeAxisData getAccelerationData() override;
 
     private:
-        /**
-         * nullptr if we aren't using interrupts.
-         */
-        IO::Pin* interruptPin;
         BusIO::RegisterBasedDevice* device;
         void initialize(bool disableDeviceI2C);
-        void handleInterrupt();
     };
 }

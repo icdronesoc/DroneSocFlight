@@ -14,8 +14,6 @@ namespace IMUDrivers {
         constexpr uint8_t SIGNAL_PATH_RESET_RESET = 0b00000111; // Resets the device's signal paths
         constexpr uint8_t POWER_MANAGEMENT_1_RESET = 0b10000000; // Resets the device
         constexpr uint8_t USER_CONTROL_I2C_DISABLED_VALUE = 0b00010000; // Disables I2C interface (for when using SPI)
-        constexpr uint8_t INTERRUPT_PIN_CONFIG_VALUE = 0b00010000; // Only clear interrupt flags when reading interrupt status register
-        constexpr uint8_t INTERRUPT_PIN_ENABLED_VALUE = 0b00000001; // For when interrupts are enabled
 
         const SPISettings defaultSettings = SPISettings(1000000, MSBFIRST, SPI_MODE0);
         // When reading sensor register data, SPI can be clocked at 20MHz
@@ -42,11 +40,11 @@ namespace IMUDrivers {
         }
     }
 
-    MpuImu::MpuImu(TwoWire* i2c, uint8_t address, IO::Pin* interruptPin) : Hardware::Gyroscope(GYROSCOPE_SAMPLE_RATE), Hardware::Accelerometer(ACCELEROMETER_SAMPLE_RATE), interruptPin(interruptPin), device(new BusIO::I2CDevice(i2c, address)) {
+    MpuImu::MpuImu(TwoWire* i2c, uint8_t address) : Hardware::Gyroscope(GYROSCOPE_SAMPLE_RATE), Hardware::Accelerometer(ACCELEROMETER_SAMPLE_RATE), device(new BusIO::I2CDevice(i2c, address)) {
         this->initialize(false);
     }
 
-    MpuImu::MpuImu(SPIClass* spi, uint32_t csPin, IO::Pin* interruptPin) : Hardware::Gyroscope(GYROSCOPE_SAMPLE_RATE), Hardware::Accelerometer(ACCELEROMETER_SAMPLE_RATE), interruptPin(interruptPin) {
+    MpuImu::MpuImu(SPIClass* spi, uint32_t csPin) : Hardware::Gyroscope(GYROSCOPE_SAMPLE_RATE), Hardware::Accelerometer(ACCELEROMETER_SAMPLE_RATE) {
         auto spiDevice = new BusIO::SPIDevice(spi, defaultSettings, csPin);
         this->device = spiDevice;
         this->initialize(true);
@@ -67,43 +65,23 @@ namespace IMUDrivers {
         this->device->writeRegister(accelerometerConfigAddress, ACCELEROMETER_CONFIG_VALUE);
         delayMicroseconds(15);
         this->device->writeRegister(gyroscopeConfigAddress, GYROSCOPE_CONFIG_VALUE);
-        delayMicroseconds(15);
         if (disableDeviceI2C) {
+            delayMicroseconds(15);
             this->device->writeRegister(userControlAddress, USER_CONTROL_I2C_DISABLED_VALUE);
-            delayMicroseconds(15);
-        }
-        this->device->writeRegister(interruptPinConfigAddress, INTERRUPT_PIN_CONFIG_VALUE);
-        if (this->interruptPin != nullptr) {
-            pinMode(this->interruptPin->number, INPUT);
-            attachInterrupt(digitalPinToInterrupt(this->interruptPin->number), this->handleInterrupt, RISING);
-            delayMicroseconds(15);
-            this->device->writeRegister(interruptPinEnableAddress, INTERRUPT_PIN_ENABLED_VALUE);
         }
     }
 
     Hardware::ThreeAxisData MpuImu::getRotationData() {
-        if (this->interruptPin != nullptr) {
-            // TODO
-        } else {
-            uint8_t buffer[6];
-            this->device->burstRead(gyroscopeXOutputHighAddress, buffer, 6);
-            // TODO calibration
-            return rawDataToThreeAxisData(buffer, GYROSCOPE_DPS_PER_LSB);
-        }
+        uint8_t buffer[6];
+        this->device->burstRead(gyroscopeXOutputHighAddress, buffer, 6);
+        // TODO calibration
+        return rawDataToThreeAxisData(buffer, GYROSCOPE_DPS_PER_LSB);
     }
 
     Hardware::ThreeAxisData MpuImu::getAccelerationData() {
-        if (this->interruptPin != nullptr) {
-            // TODO
-        } else {
-            uint8_t buffer[6];
-            this->device->burstRead(accelerometerXOutputHighAddress, buffer, 6);
-            // TODO calibration
-            return rawDataToThreeAxisData(buffer, ACCELEROMETER_Gs_PER_LSB);
-        }
-    }
-
-    void MpuImu::handleInterrupt() {
-        // TODO
+        uint8_t buffer[6];
+        this->device->burstRead(accelerometerXOutputHighAddress, buffer, 6);
+        // TODO calibration
+        return rawDataToThreeAxisData(buffer, ACCELEROMETER_Gs_PER_LSB);
     }
 }
