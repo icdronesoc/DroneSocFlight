@@ -16,7 +16,7 @@ void setupMcuHardware(IOConfig ioConfig) {
             auto txPin = findPin(ioConfig.uartConfigs[i].tx.pinName);
             auto rxPin = findPin(ioConfig.uartConfigs[i].tx.pinName);
             if (txPin != nullptr && rxPin != nullptr) {
-                hardwareSerial = new HardwareSerial(rxPin, txPin);
+                hardwareSerial = new HardwareSerial(rxPin->number, txPin->number);
             }
         }
         // Add to the array even if checks failed to preserve original indexing
@@ -30,7 +30,7 @@ void setupMcuHardware(IOConfig ioConfig) {
             auto txPin = findPin(ioConfig.softwareUartConfigs[i].tx.pinName);
             auto rxPin = findPin(ioConfig.softwareUartConfigs[i].tx.pinName);
             if (txPin != nullptr && rxPin != nullptr) {
-                softwareSerial = new SoftwareSerial(rxPin, txPin);
+                softwareSerial = new SoftwareSerial(rxPin->number, txPin->number);
             }
         }
         // Add to the array even if checks failed to preserve original indexing
@@ -44,7 +44,7 @@ void setupMcuHardware(IOConfig ioConfig) {
             auto sdaPin = findPin(ioConfig.i2cConfigs[i].sda.pinName);
             auto sclPin = findPin(ioConfig.i2cConfigs[i].scl.pinName);
             if (sdaPin != nullptr && sclPin != nullptr) {
-                i2c = new TwoWire(sdaPin, sclPin);
+                i2c = new TwoWire(sdaPin->number, sclPin->number);
                 switch (ioConfig.i2cConfigs[i].speed) {
                     case I2CConfig_Speed__100kHz:
                         i2c->setClock(100000);
@@ -64,7 +64,7 @@ void setupMcuHardware(IOConfig ioConfig) {
             auto misoPin = findPin(ioConfig.spiConfigs[i].miso.pinName);
             auto sckPin = findPin(ioConfig.spiConfigs[i].sck.pinName);
             if (mosiPin != nullptr && misoPin != nullptr && sckPin != nullptr) {
-                spi = new SPIClass(mosiPin, misoPin, sckPin);
+                spi = new SPIClass(mosiPin->number, misoPin->number, sckPin->number);
             }
         }
         // Add to the array even if checks failed to preserve original indexing
