@@ -98,10 +98,15 @@ message Pin {
 
 message RCConfig {
     oneof driverConfig {
-        IBUSRCConfig ibus = 1;
+        CrossfireConfig crossfire = 1;
+        IBUSConfig ibus = 2;
     }
 }
 
-message IBUSRCConfig {
+message IBUSConfig {
+    uint32 uartIndex = 1;
+}
+
+message CrossfireConfig {
     uint32 uartIndex = 1;
 }

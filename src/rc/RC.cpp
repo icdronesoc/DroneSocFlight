@@ -14,12 +14,20 @@ namespace RC {
     void initialize() {
         // Choose driver
         switch (Config::hardwareConfig.rcConfig.which_driverConfig) {
-            case RCConfig_ibus_tag:
+            case RCConfig_crossfire_tag: {
+                auto uartIndex = Config::hardwareConfig.rcConfig.driverConfig.ibus.uartIndex;
+                if (uartIndex < IO::UARTs.size() && IO::UARTs[uartIndex] != nullptr) {
+                    driver = new RcDrivers::CrossfireDriver(*IO::UARTs[uartIndex]);
+                }
+                break;
+            }
+            case RCConfig_ibus_tag: {
                 auto uartIndex = Config::hardwareConfig.rcConfig.driverConfig.ibus.uartIndex;
                 if (uartIndex < IO::UARTs.size() && IO::UARTs[uartIndex] != nullptr) {
                     driver = new RcDrivers::IBUSDriver(*IO::UARTs[uartIndex]);
                 }
                 break;
+            }
         }
 
         if (driver != nullptr) {

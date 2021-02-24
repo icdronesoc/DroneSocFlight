@@ -48,7 +48,10 @@ PB_BIND(Pin, Pin, AUTO)
 PB_BIND(RCConfig, RCConfig, AUTO)
 
 
-PB_BIND(IBUSRCConfig, IBUSRCConfig, AUTO)
+PB_BIND(IBUSConfig, IBUSConfig, AUTO)
+
+
+PB_BIND(CrossfireConfig, CrossfireConfig, AUTO)
 
 
 

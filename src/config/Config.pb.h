@@ -34,9 +34,13 @@ typedef struct _SoftwareConfig {
     char dummy_field;
 } SoftwareConfig;
 
-typedef struct _IBUSRCConfig {
+typedef struct _CrossfireConfig {
     uint32_t uartIndex;
-} IBUSRCConfig;
+} CrossfireConfig;
+
+typedef struct _IBUSConfig {
+    uint32_t uartIndex;
+} IBUSConfig;
 
 typedef struct _MpuI2cConfig {
     uint32_t busIndex;
@@ -70,7 +74,8 @@ typedef struct _MpuSpiConfig {
 typedef struct _RCConfig {
     pb_size_t which_driverConfig;
     union {
-        IBUSRCConfig ibus;
+        CrossfireConfig crossfire;
+        IBUSConfig ibus;
     } driverConfig;
 } RCConfig;
 
@@ -167,8 +172,9 @@ typedef struct _HardwareConfig {
 #define MotorConfig_init_default                 {false, Pin_init_default, _MotorConfig_MotorProtocol_MIN}
 #define ServoConfig_init_default                 {false, Pin_init_default, _ServoConfig_ServoRefreshRate_MIN}
 #define Pin_init_default                         {""}
-#define RCConfig_init_default                    {0, {IBUSRCConfig_init_default}}
-#define IBUSRCConfig_init_default                {0}
+#define RCConfig_init_default                    {0, {CrossfireConfig_init_default}}
+#define IBUSConfig_init_default                  {0}
+#define CrossfireConfig_init_default             {0}
 #define HardwareConfig_init_zero                 {false, IOConfig_init_zero, false, AccelerometerConfig_init_zero, false, GyroscopeConfig_init_zero, 0, {MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero}, 0, {ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero}, false, RCConfig_init_zero}
 #define SoftwareConfig_init_zero                 {0}
 #define IOConfig_init_zero                       {0, {UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero}, 0, {UartConfig_init_zero, UartConfig_init_zero}, 0, {I2CConfig_init_zero, I2CConfig_init_zero, I2CConfig_init_zero, I2CConfig_init_zero}, 0, {SPIConfig_init_zero, SPIConfig_init_zero, SPIConfig_init_zero, SPIConfig_init_zero}}
@@ -182,11 +188,13 @@ typedef struct _HardwareConfig {
 #define MotorConfig_init_zero                    {false, Pin_init_zero, _MotorConfig_MotorProtocol_MIN}
 #define ServoConfig_init_zero                    {false, Pin_init_zero, _ServoConfig_ServoRefreshRate_MIN}
 #define Pin_init_zero                            {""}
-#define RCConfig_init_zero                       {0, {IBUSRCConfig_init_zero}}
-#define IBUSRCConfig_init_zero                   {0}
+#define RCConfig_init_zero                       {0, {CrossfireConfig_init_zero}}
+#define IBUSConfig_init_zero                     {0}
+#define CrossfireConfig_init_zero                {0}
 
 /* Field tags (for use in manual encoding/decoding) */
-#define IBUSRCConfig_uartIndex_tag               1
+#define CrossfireConfig_uartIndex_tag            1
+#define IBUSConfig_uartIndex_tag                 1
 #define MpuI2cConfig_busIndex_tag                1
 #define MpuI2cConfig_address_tag                 2
 #define Pin_pinName_tag                          1
@@ -197,7 +205,8 @@ typedef struct _HardwareConfig {
 #define MotorConfig_motorProtocol_tag            2
 #define MpuSpiConfig_busIndex_tag                1
 #define MpuSpiConfig_csPin_tag                   2
-#define RCConfig_ibus_tag                        1
+#define RCConfig_crossfire_tag                   1
+#define RCConfig_ibus_tag                        2
 #define SPIConfig_mosi_tag                       1
 #define SPIConfig_miso_tag                       2
 #define SPIConfig_sck_tag                        3
@@ -330,15 +339,22 @@ X(a, STATIC,   SINGULAR, STRING,   pinName,           1)
 #define Pin_DEFAULT NULL
 
 #define RCConfig_FIELDLIST(X, a) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (driverConfig,ibus,driverConfig.ibus),   1)
+X(a, STATIC,   ONEOF,    MESSAGE,  (driverConfig,crossfire,driverConfig.crossfire),   1) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (driverConfig,ibus,driverConfig.ibus),   2)
 #define RCConfig_CALLBACK NULL
 #define RCConfig_DEFAULT NULL
-#define RCConfig_driverConfig_ibus_MSGTYPE IBUSRCConfig
+#define RCConfig_driverConfig_crossfire_MSGTYPE CrossfireConfig
+#define RCConfig_driverConfig_ibus_MSGTYPE IBUSConfig
 
-#define IBUSRCConfig_FIELDLIST(X, a) \
+#define IBUSConfig_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   uartIndex,         1)
-#define IBUSRCConfig_CALLBACK NULL
-#define IBUSRCConfig_DEFAULT NULL
+#define IBUSConfig_CALLBACK NULL
+#define IBUSConfig_DEFAULT NULL
+
+#define CrossfireConfig_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   uartIndex,         1)
+#define CrossfireConfig_CALLBACK NULL
+#define CrossfireConfig_DEFAULT NULL
 
 extern const pb_msgdesc_t HardwareConfig_msg;
 extern const pb_msgdesc_t SoftwareConfig_msg;
@@ -354,7 +370,8 @@ extern const pb_msgdesc_t MotorConfig_msg;
 extern const pb_msgdesc_t ServoConfig_msg;
 extern const pb_msgdesc_t Pin_msg;
 extern const pb_msgdesc_t RCConfig_msg;
-extern const pb_msgdesc_t IBUSRCConfig_msg;
+extern const pb_msgdesc_t IBUSConfig_msg;
+extern const pb_msgdesc_t CrossfireConfig_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
 #define HardwareConfig_fields &HardwareConfig_msg
@@ -371,7 +388,8 @@ extern const pb_msgdesc_t IBUSRCConfig_msg;
 #define ServoConfig_fields &ServoConfig_msg
 #define Pin_fields &Pin_msg
 #define RCConfig_fields &RCConfig_msg
-#define IBUSRCConfig_fields &IBUSRCConfig_msg
+#define IBUSConfig_fields &IBUSConfig_msg
+#define CrossfireConfig_fields &CrossfireConfig_msg
 
 /* Maximum encoded size of messages (where known) */
 #define HardwareConfig_size                      605
@@ -388,7 +406,8 @@ extern const pb_msgdesc_t IBUSRCConfig_msg;
 #define ServoConfig_size                         10
 #define Pin_size                                 6
 #define RCConfig_size                            8
-#define IBUSRCConfig_size                        6
+#define IBUSConfig_size                          6
+#define CrossfireConfig_size                     6
 
 #ifdef __cplusplus
 } /* extern "C" */
