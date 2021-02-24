@@ -17,8 +17,8 @@ namespace IMUDrivers {
      */
     class MpuImu : public Hardware::Gyroscope, public Hardware::Accelerometer {
     public:
-        MpuImu(TwoWire* i2c, uint8_t address);
-        MpuImu(SPIClass* spi, uint32_t csPin);
+        MpuImu(TwoWire& i2c, uint8_t address);
+        MpuImu(SPIClass& spi, uint32_t csPin);
         Hardware::ThreeAxisData getRotationData() override;
         Hardware::ThreeAxisData getAccelerationData() override;
 

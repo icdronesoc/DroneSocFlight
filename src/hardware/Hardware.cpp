@@ -14,16 +14,16 @@ namespace Hardware {
                 case AccelerometerConfig_mpuI2c_tag: {
                     auto index = Config::hardwareConfig.accelerometerConfig.driverConfig.mpuI2c.busIndex;
                     auto address = Config::hardwareConfig.accelerometerConfig.driverConfig.mpuI2c.address;
-                    if (index < IO::I2Cs.size() && address < 128) {
-                        accelerometer = new IMUDrivers::MpuImu(IO::I2Cs[index], address);
+                    if (index < IO::I2Cs.size() && IO::I2Cs[index] != nullptr && address < 128) {
+                        accelerometer = new IMUDrivers::MpuImu(*IO::I2Cs[index], address);
                     }
                     break;
                 }
                 case AccelerometerConfig_mpuSpi_tag: {
                     auto index = Config::hardwareConfig.accelerometerConfig.driverConfig.mpuSpi.busIndex;
                     auto csPin = IO::findPin(Config::hardwareConfig.accelerometerConfig.driverConfig.mpuSpi.csPin.pinName);
-                    if (index < IO::SPIs.size() && Config::hardwareConfig.accelerometerConfig.driverConfig.mpuSpi.has_csPin && csPin != nullptr) {
-                        accelerometer = new IMUDrivers::MpuImu(IO::SPIs[index], csPin->number);
+                    if (index < IO::SPIs.size() && IO::SPIs[index] != nullptr && Config::hardwareConfig.accelerometerConfig.driverConfig.mpuSpi.has_csPin && csPin != nullptr) {
+                        accelerometer = new IMUDrivers::MpuImu(*IO::SPIs[index], csPin->number);
                     }
                     break;
                 }
@@ -36,16 +36,16 @@ namespace Hardware {
                 case GyroscopeConfig_mpuI2c_tag: {
                     auto index = Config::hardwareConfig.gyroscopeConfig.driverConfig.mpuI2c.busIndex;
                     auto address = Config::hardwareConfig.gyroscopeConfig.driverConfig.mpuI2c.address;
-                    if (index < IO::I2Cs.size() && address < 128) {
-                        gyroscope = new IMUDrivers::MpuImu(IO::I2Cs[index], address);
+                    if (index < IO::I2Cs.size() && IO::I2Cs[index] != nullptr && address < 128) {
+                        gyroscope = new IMUDrivers::MpuImu(*IO::I2Cs[index], address);
                     }
                     break;
                 }
                 case GyroscopeConfig_mpuSpi_tag: {
                     auto index = Config::hardwareConfig.gyroscopeConfig.driverConfig.mpuSpi.busIndex;
                     auto csPin = IO::findPin(Config::hardwareConfig.gyroscopeConfig.driverConfig.mpuSpi.csPin.pinName);
-                    if (index < IO::SPIs.size() && Config::hardwareConfig.gyroscopeConfig.driverConfig.mpuSpi.has_csPin && csPin != nullptr) {
-                        gyroscope = new IMUDrivers::MpuImu(IO::SPIs[index], csPin->number);
+                    if (index < IO::SPIs.size() && IO::SPIs[index] != nullptr && Config::hardwareConfig.gyroscopeConfig.driverConfig.mpuSpi.has_csPin && csPin != nullptr) {
+                        gyroscope = new IMUDrivers::MpuImu(*IO::SPIs[index], csPin->number);
                     }
                     break;
                 }

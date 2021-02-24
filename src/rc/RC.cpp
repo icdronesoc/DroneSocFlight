@@ -16,14 +16,14 @@ namespace RC {
         switch (Config::hardwareConfig.rcConfig.which_driverConfig) {
             case RCConfig_ibus_tag:
                 auto uartIndex = Config::hardwareConfig.rcConfig.driverConfig.ibus.uartIndex;
-                if (uartIndex < IO::UARTs.size()) {
-                    driver = new RcDrivers::IBUSDriver(IO::UARTs[uartIndex]);
+                if (uartIndex < IO::UARTs.size() && IO::UARTs[uartIndex] != nullptr) {
+                    driver = new RcDrivers::IBUSDriver(*IO::UARTs[uartIndex]);
                 }
                 break;
         }
 
-        // Initialize channels
         if (driver != nullptr) {
+            // Initialize channels
             for (size_t i = 0; i < min(driver->channelCount, MaxChannelCount); i++) {
                 channels.push_back(0);
             }

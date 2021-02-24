@@ -8,7 +8,7 @@
 namespace RcDrivers {
     class IBUSDriver : public RC::Driver {
     public:
-        IBUSDriver(IO::SerialPort* uart);
+        explicit IBUSDriver(IO::SerialPort& uart);
         bool getFrame(RC::Channels& channels) override;
 
     private:

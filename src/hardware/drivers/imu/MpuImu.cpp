@@ -40,12 +40,12 @@ namespace IMUDrivers {
         }
     }
 
-    MpuImu::MpuImu(TwoWire* i2c, uint8_t address) : Hardware::Gyroscope(GYROSCOPE_SAMPLE_RATE), Hardware::Accelerometer(ACCELEROMETER_SAMPLE_RATE), device(new BusIO::I2CDevice(i2c, address)) {
+    MpuImu::MpuImu(TwoWire& i2c, uint8_t address) : Hardware::Gyroscope(GYROSCOPE_SAMPLE_RATE), Hardware::Accelerometer(ACCELEROMETER_SAMPLE_RATE), device(new BusIO::I2CDevice(&i2c, address)) {
         this->initialize(false);
     }
 
-    MpuImu::MpuImu(SPIClass* spi, uint32_t csPin) : Hardware::Gyroscope(GYROSCOPE_SAMPLE_RATE), Hardware::Accelerometer(ACCELEROMETER_SAMPLE_RATE) {
-        auto spiDevice = new BusIO::SPIDevice(spi, defaultSettings, csPin);
+    MpuImu::MpuImu(SPIClass& spi, uint32_t csPin) : Hardware::Gyroscope(GYROSCOPE_SAMPLE_RATE), Hardware::Accelerometer(ACCELEROMETER_SAMPLE_RATE) {
+        auto spiDevice = new BusIO::SPIDevice(&spi, defaultSettings, csPin);
         this->device = spiDevice;
         this->initialize(true);
         // Now that setup is complete we can switch to faster SPI.
