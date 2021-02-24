@@ -27,6 +27,7 @@ namespace RcDrivers {
          */
         uint32_t frameStartTime;
 
+        // TODO send as we go, buffer is unnecessary
         uint8_t telemetryFrameBuffer[MaxFrameLength];
         size_t telemetryFrameLength;
 

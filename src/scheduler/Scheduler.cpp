@@ -3,29 +3,55 @@
 
 namespace Scheduler {
     namespace { // private
-        etl::vector<Task, MaxNumberOfTasks> tasks;
+        constexpr size_t MaxNumberOfTaskSchedules = 32;
+
+        etl::vector<TaskSchedule*, MaxNumberOfTaskSchedules> taskSchedules;
     }
 
-    Task::Task(TaskFunction* task, const TaskName& name, uint32_t frequency) : name(name), task(task), period(1000000 / frequency), lastRunTime(0), averageRunTime(period), maxRunTime(0) {}
+    TaskSchedule::TaskSchedule(uint32_t frequency) : period(100000 / frequency), lastRunTime(0) {}
 
-    void Task::runIfNecessary() {
-        uint32_t start = micros();
-        if (start - this->lastRunTime > this->period) {
-            this->lastRunTime = start;
-            this->task();
-            uint32_t runTime = micros() - start;
-            if (this->maxRunTime < runTime) this->maxRunTime = runTime;
-            this->averageRunTime.add(runTime);
+    void TaskSchedule::runIfNecessary() {
+        uint32_t now = micros();
+        if (now - this->lastRunTime >= this->period) {
+            this->lastRunTime = now;
+            this->run();
         }
     }
 
-    void addTask(Task task) {
-        tasks.push_back(task);
+    IndependentTaskSchedule::IndependentTaskSchedule(const Task task, const uint32_t frequency) : TaskSchedule(frequency), task(task) {}
+
+    void IndependentTaskSchedule::run() {
+        this->task.run();
+    }
+
+    template<const size_t taskCount>
+    SequentialTaskSchedule<taskCount>::SequentialTaskSchedule(const Task tasks[taskCount], const uint8_t frequencyDividers[taskCount-1], uint32_t firstTaskFrequency) : TaskSchedule(firstTaskFrequency), tasks(tasks), frequencyDividers(frequencyDividers) {}
+
+    template<const size_t taskCount>
+    void SequentialTaskSchedule<taskCount>::run() {
+        // Loop through all tasks
+        for (size_t i = 0; i < taskCount; i++) {
+            // Run the task
+            this->tasks[i].run();
+
+            // Exit if this is the last task. The last task does not have an invocation count so this has to be done first.
+            if (i+1 == taskCount) return;
+
+            // Increment the invocation count
+            this->invocationCount[i]++;
+
+            // If the invocation count % the divider is not 0, it's not time to run the next task yet.
+            if (this->invocationCount % this->frequencyDividers[i] != 0) return;
+        }
+    }
+
+    void addTask(TaskSchedule* task) {
+        taskSchedules.push_back(task);
     }
 
     void loop() {
-        for (auto & task : tasks) {
-            task.runIfNecessary();
+        for (auto & task : taskSchedules) {
+            task->runIfNecessary();
         }
     }
 }
