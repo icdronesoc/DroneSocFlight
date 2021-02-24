@@ -15,21 +15,33 @@ namespace IO {
          */
         virtual void begin(unsigned long baud) = 0;
 
-        virtual Stream *operator->() = 0;
+        virtual Stream* operator->() = 0;
+        Stream& operator*() { return *operator->(); }
     };
 
     class HardwareSerialPort final : public SerialPort {
     private:
         HardwareSerial *hardwareSerial;
+#ifdef PLATFORM_ESP32
+        uint32_t txPin, rxPin;
+#endif
 
     public:
         /**
          * Wraps a HardwareSerial, WHICH MUST NOT BE NULL.
          */
-        explicit HardwareSerialPort(HardwareSerial *hardwareSerial) : hardwareSerial(hardwareSerial) {}
+#ifdef PLATFORM_ESP32
+        HardwareSerialPort(HardwareSerial *hardwareSerial, uint32_t txPin, uint32_t rxPin) : hardwareSerial(hardwareSerial), txPin(txPin), rxPin(rxPin) {}
+#else
+        HardwareSerialPort(HardwareSerial *hardwareSerial) : hardwareSerial(hardwareSerial) {}
+#endif
 
         void begin(unsigned long baud) override {
-            hardwareSerial->begin(baud); // TODO This breaks ESP32 as pin numbers are set in begin()
+#ifdef PLATFORM_ESP32
+            hardwareSerial->begin(baud, SERIAL_8N1, rxPin, txPin);
+#else
+            hardwareSerial->begin(baud);
+#endif
         }
 
         Stream *operator->() override {

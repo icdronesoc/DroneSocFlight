@@ -27,10 +27,10 @@ namespace IO {
     constexpr size_t maxNumberOfI2Cs = sizeof(IOConfig::i2cConfigs) / sizeof(I2CConfig);
     constexpr size_t maxNumberOfSPIs = sizeof(IOConfig::spiConfigs) / sizeof(SPIConfig);
 
-    typedef struct {
+    struct Pin {
         char name[maxPinNameLength];
         uint32_t number;
-    } Pin;
+    };
 
     /**
      * All available IO pins.

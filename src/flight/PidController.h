@@ -3,18 +3,18 @@
 #include <Arduino.h>
 
 namespace PidController {
-    typedef struct {
+    struct AxisGains {
         double P;
         double I;
         double D;
         double FF;
-    } AxisGains;
+    };
 
-    typedef struct {
+    struct Gains {
         AxisGains pitch;
         AxisGains roll;
         AxisGains yaw;
-    } Gains;
+    };
 
     void setGains(Gains gains);
 }

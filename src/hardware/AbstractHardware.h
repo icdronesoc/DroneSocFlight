@@ -3,11 +3,11 @@
 #include <Arduino.h>
 
 namespace Hardware {
-    typedef struct {
+    struct ThreeAxisData {
         double x;
         double y;
         double z;
-    } ThreeAxisData;
+    };
 
     /**
      * Initialized in constructor.

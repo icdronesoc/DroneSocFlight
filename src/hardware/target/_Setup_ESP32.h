@@ -16,33 +16,29 @@ void setupMcuHardware(IOConfig ioConfig) {
     UARTs.push_back(new StreamSerialPort(bluetoothSerial));
 
     for (pb_size_t i = 0; i < min(ESP32_MAX_UARTS, ioConfig.uartConfigs_count); i++) {
-        HardwareSerial* hardwareSerial = nullptr;
+        HardwareSerialPort* hardwareSerial = nullptr;
         if (ioConfig.uartConfigs[i].has_tx && ioConfig.uartConfigs[i].has_rx) {
             auto txPin = findPin(ioConfig.uartConfigs[i].tx.pinName);
             auto rxPin = findPin(ioConfig.uartConfigs[i].tx.pinName);
             if (txPin != nullptr && rxPin != nullptr) {
-                hardwareSerial = new HardwareSerial(i);
-                // TODO once a driver calls serial.begin() rxpin and txpin will be reset :(
-                hardwareSerial->begin(9600, SERIAL_8N1, rxPin->number, txPin->number);
+                hardwareSerial = new HardwareSerialPort(new HardwareSerial(i), txPin->number, rxPin->number);
             }
         }
         // Add to the array even if checks failed to preserve original indexing
-        auto serialPort = hardwareSerial == nullptr ? nullptr : new HardwareSerialPort(hardwareSerial);
-        UARTs.push_back(serialPort);
+        UARTs.push_back(hardwareSerial);
     }
 
     for (pb_size_t i = 0; i < ioConfig.softwareUartConfigs_count; i++) {
-        SoftwareSerial* softwareSerial = nullptr;
+        SoftwareSerialPort* softwareSerial = nullptr;
         if (ioConfig.softwareUartConfigs[i].has_tx && ioConfig.softwareUartConfigs[i].has_rx) {
             auto txPin = findPin(ioConfig.softwareUartConfigs[i].tx.pinName);
             auto rxPin = findPin(ioConfig.softwareUartConfigs[i].tx.pinName);
             if (txPin != nullptr && rxPin != nullptr) {
-                softwareSerial = new SoftwareSerial(rxPin->number, txPin->number);
+                softwareSerial = new SoftwareSerialPort(new SoftwareSerial(rxPin->number, txPin->number));
             }
         }
         // Add to the array even if checks failed to preserve original indexing
-        auto serialPort = softwareSerial == nullptr ? nullptr : new SoftwareSerialPort(softwareSerial);
-        UARTs.push_back(serialPort);
+        UARTs.push_back(softwareSerial);
     }
 
     for (pb_size_t i = 0; i < min(ESP32_MAX_I2Cs, ioConfig.i2cConfigs_count); i++) {

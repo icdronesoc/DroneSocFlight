@@ -2,11 +2,11 @@
 
 namespace RcDrivers {
     namespace { // private
-        const size_t ChannelCount = 14;
+        constexpr size_t ChannelCount = 14;
     }
 
     // TODO IBUS Telemetry
-    IBUSDriver::IBUSDriver(const IO::SerialPort* uart) : RC::Driver(ChannelCount) {
+    IBUSDriver::IBUSDriver(IO::SerialPort* uart) : RC::Driver(ChannelCount) {
         // TODO calling begin() initializes the serial
 //        this->ibus.begin(uart, IBUSBM_NOTIMER); TODO uart needs converting somehow
     }
