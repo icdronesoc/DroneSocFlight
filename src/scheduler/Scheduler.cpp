@@ -3,29 +3,39 @@
 
 namespace Scheduler {
     namespace { // private
-        constexpr size_t MaxNumberOfTaskSchedules = 32;
+        constexpr size_t MaxNumberOfTaskRunners = 32;
 
-        etl::vector<TaskSchedule*, MaxNumberOfTaskSchedules> taskSchedules;
+        etl::vector<TaskRunner*, MaxNumberOfTaskRunners> taskRunners;
     }
 
-    TaskSchedule::TaskSchedule(uint32_t frequency) : period(100000 / frequency), lastRunTime(0) {}
+    AdHocTask::AdHocTask(Task task, AdHocTask::TaskIsReadyFunction taskIsReady) : task(task), taskIsReady(taskIsReady) {}
+
+    void AdHocTask::runIfNecessary() {
+        if (this->taskIsReady()) this->task.run();
+    }
+
+    TaskSchedule::TaskSchedule(const ScheduleName &name, uint32_t frequency) : name(name), averageLateness(0), maxLateness(0), period(100000 / frequency), lastRunTime(0) {}
 
     void TaskSchedule::runIfNecessary() {
         uint32_t now = micros();
-        if (now - this->lastRunTime >= this->period) {
+        uint32_t elapsedTime = now - this->lastRunTime;
+        if (elapsedTime >= this->period) {
+            auto lateness = elapsedTime - this->period;
+            if (this->maxLateness < lateness) this->maxLateness = lateness;
+            this->averageLateness.add(lateness);
             this->lastRunTime = now;
             this->run();
         }
     }
 
-    IndependentTaskSchedule::IndependentTaskSchedule(const Task task, const uint32_t frequency) : TaskSchedule(frequency), task(task) {}
+    IndependentTaskSchedule::IndependentTaskSchedule(const ScheduleName &name, const Task task, const uint32_t frequency) : TaskSchedule(name, frequency), task(task) {}
 
     void IndependentTaskSchedule::run() {
         this->task.run();
     }
 
     template<const size_t taskCount>
-    SequentialTaskSchedule<taskCount>::SequentialTaskSchedule(const Task tasks[taskCount], const uint8_t frequencyDividers[taskCount-1], uint32_t firstTaskFrequency) : TaskSchedule(firstTaskFrequency), tasks(tasks), frequencyDividers(frequencyDividers) {}
+    SequentialTaskSchedule<taskCount>::SequentialTaskSchedule(const ScheduleName &name, const Task tasks[taskCount], const uint8_t frequencyDividers[taskCount-1], uint32_t firstTaskFrequency) : TaskSchedule(name, firstTaskFrequency), tasks(tasks), frequencyDividers(frequencyDividers) {}
 
     template<const size_t taskCount>
     void SequentialTaskSchedule<taskCount>::run() {
@@ -45,13 +55,13 @@ namespace Scheduler {
         }
     }
 
-    void addTask(TaskSchedule* task) {
-        taskSchedules.push_back(task);
+    void addTaskRunner(TaskRunner* taskRunner) {
+        taskRunners.push_back(taskRunner);
     }
 
     void loop() {
-        for (auto & task : taskSchedules) {
-            task->runIfNecessary();
+        for (auto & taskRunner : taskRunners) {
+            taskRunner->runIfNecessary();
         }
     }
 }

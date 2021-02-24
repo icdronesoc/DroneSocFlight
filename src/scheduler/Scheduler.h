@@ -4,15 +4,52 @@
 #include "Task.h"
 
 namespace Scheduler {
-    class TaskSchedule {
-    public:
-        // TODO track things like average and max delay in schedule being run
-        explicit TaskSchedule(uint32_t frequency);
+    constexpr size_t ScheduleNameMaxSize = 8;
+    constexpr size_t ScheduleAverageLatenessSampleCount = 32;
 
+    using ScheduleName = etl::string<ScheduleNameMaxSize>;
+
+    class TaskRunner {
+    public:
         /**
          * Runs the task if it is time for it to be run.
          */
-        void runIfNecessary();
+        virtual void runIfNecessary() = 0;
+    };
+
+    /**
+     * This defines a way for the scheduler to ask a task if it is ready,
+     * and run it as soon as it becomes ready.
+     *
+     * This is useful for tasks that need to be run at an irregular frequency.
+     */
+    class AdHocTask final : public TaskRunner {
+    public:
+        /**
+         * The Task is Ready Function tells the scheduler whether this task is ready to run, for example whether there is Serial data in the buffer waiting to be read.
+         * It should be treated like an ISR: it has to complete very quickly to avoid slowing down the whole program, as it is run very frequently.
+         */
+        using TaskIsReadyFunction = bool();
+        AdHocTask(Task task, TaskIsReadyFunction taskIsReady);
+        void runIfNecessary() override;
+
+    private:
+        Task task;
+        TaskIsReadyFunction* taskIsReady;
+    };
+
+    /**
+     * A task schedule schedules a task to run at a particular frequency.
+     */
+    class TaskSchedule : public TaskRunner {
+    public:
+        TaskSchedule(const ScheduleName &name, uint32_t frequency);
+
+        const ScheduleName& name;
+        etl::cumulative_moving_average<uint32_t, TaskAverageDurationSampleCount> averageLateness;
+        uint32_t maxLateness;
+
+        void runIfNecessary() final;
 
     protected:
         /**
@@ -32,19 +69,17 @@ namespace Scheduler {
         uint32_t lastRunTime;
     };
 
-    // TODO create AdHocTask
-
     /**
      * Schedules a single task to be run, independently of other tasks, at a fixed frequency.
      */
-    class IndependentTaskSchedule : public TaskSchedule {
+    class IndependentTaskSchedule final : public TaskSchedule {
     public:
         /**
          * Creates a Task Schedule
          * @param task The task to be run
          * @param frequency The frequency at which to run the task
          */
-        IndependentTaskSchedule(Task task, uint32_t frequency);
+        IndependentTaskSchedule(const ScheduleName &name, Task task, uint32_t frequency);
 
     protected:
         void run() override;
@@ -56,8 +91,12 @@ namespace Scheduler {
         Task task;
     };
 
+    /**
+     * TODO Documentation
+     * @tparam taskCount The number of tasks in the sequence
+     */
     template<const size_t taskCount>
-    class SequentialTaskSchedule : public TaskSchedule {
+    class SequentialTaskSchedule final : public TaskSchedule {
     public:
         /**
          * Creates a sequential task schedule.
@@ -68,7 +107,7 @@ namespace Scheduler {
          * index is the frequency divider for the third task, etc...
          * @param firstTaskFrequency The frequency to run the first task at
          */
-        SequentialTaskSchedule(const Task tasks[taskCount], const uint8_t frequencyDividers[taskCount-1], uint32_t firstTaskFrequency);
+        SequentialTaskSchedule(const ScheduleName &name, const Task tasks[taskCount], const uint8_t frequencyDividers[taskCount-1], uint32_t firstTaskFrequency);
 
     protected:
         void run() override;
@@ -86,7 +125,7 @@ namespace Scheduler {
         uint16_t invocationCount[taskCount-1];
     };
 
-    void addTask(TaskSchedule* task);
+    void addTaskRunner(TaskRunner* task);
 
     void loop();
 }
