@@ -22,6 +22,7 @@ void setupMcuHardware(IOConfig ioConfig) {
             auto rxPin = findPin(ioConfig.uartConfigs[i].tx.pinName);
             if (txPin != nullptr && rxPin != nullptr) {
                 hardwareSerial = new HardwareSerial(i);
+                // TODO once a driver calls serial.begin() rxpin and txpin will be reset :(
                 hardwareSerial->begin(9600, SERIAL_8N1, rxPin->number, txPin->number);
             }
         }

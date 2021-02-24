@@ -29,7 +29,7 @@ namespace IO {
         explicit HardwareSerialPort(HardwareSerial *hardwareSerial) : hardwareSerial(hardwareSerial) {}
 
         void begin(unsigned long baud) override {
-            hardwareSerial->begin(baud);
+            hardwareSerial->begin(baud); // TODO This breaks ESP32 as pin numbers are set in begin()
         }
 
         Stream *operator->() override {

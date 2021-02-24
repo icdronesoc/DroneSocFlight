@@ -34,6 +34,15 @@ typedef struct _SoftwareConfig {
     char dummy_field;
 } SoftwareConfig;
 
+typedef struct _IBUSRCConfig {
+    uint32_t uartIndex;
+} IBUSRCConfig;
+
+typedef struct _MpuI2cConfig {
+    uint32_t busIndex;
+    uint32_t address;
+} MpuI2cConfig;
+
 typedef struct _Pin {
     char pinName[5];
 } Pin;
@@ -52,20 +61,18 @@ typedef struct _MotorConfig {
     MotorConfig_MotorProtocol motorProtocol;
 } MotorConfig;
 
-typedef struct _MpuI2cConfig {
-    uint32_t busIndex;
-    uint32_t address;
-    bool has_interruptPin;
-    Pin interruptPin;
-} MpuI2cConfig;
-
 typedef struct _MpuSpiConfig {
     uint32_t busIndex;
     bool has_csPin;
     Pin csPin;
-    bool has_interruptPin;
-    Pin interruptPin;
 } MpuSpiConfig;
+
+typedef struct _RCConfig {
+    pb_size_t which_driverConfig;
+    union {
+        IBUSRCConfig ibus;
+    } driverConfig;
+} RCConfig;
 
 typedef struct _SPIConfig {
     bool has_mosi;
@@ -127,6 +134,8 @@ typedef struct _HardwareConfig {
     MotorConfig motors[8];
     pb_size_t servos_count;
     ServoConfig servos[8];
+    bool has_rcConfig;
+    RCConfig rcConfig;
 } HardwareConfig;
 
 
@@ -145,7 +154,7 @@ typedef struct _HardwareConfig {
 
 
 /* Initializer values for message structs */
-#define HardwareConfig_init_default              {false, IOConfig_init_default, false, AccelerometerConfig_init_default, false, GyroscopeConfig_init_default, 0, {MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default}, 0, {ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default}}
+#define HardwareConfig_init_default              {false, IOConfig_init_default, false, AccelerometerConfig_init_default, false, GyroscopeConfig_init_default, 0, {MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default}, 0, {ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default}, false, RCConfig_init_default}
 #define SoftwareConfig_init_default              {0}
 #define IOConfig_init_default                    {0, {UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default}, 0, {UartConfig_init_default, UartConfig_init_default}, 0, {I2CConfig_init_default, I2CConfig_init_default, I2CConfig_init_default, I2CConfig_init_default}, 0, {SPIConfig_init_default, SPIConfig_init_default, SPIConfig_init_default, SPIConfig_init_default}}
 #define UartConfig_init_default                  {false, Pin_init_default, false, Pin_init_default}
@@ -153,12 +162,14 @@ typedef struct _HardwareConfig {
 #define SPIConfig_init_default                   {false, Pin_init_default, false, Pin_init_default, false, Pin_init_default}
 #define AccelerometerConfig_init_default         {0, {MpuI2cConfig_init_default}}
 #define GyroscopeConfig_init_default             {0, {MpuI2cConfig_init_default}}
-#define MpuSpiConfig_init_default                {0, false, Pin_init_default, false, Pin_init_default}
-#define MpuI2cConfig_init_default                {0, 0, false, Pin_init_default}
+#define MpuSpiConfig_init_default                {0, false, Pin_init_default}
+#define MpuI2cConfig_init_default                {0, 0}
 #define MotorConfig_init_default                 {false, Pin_init_default, _MotorConfig_MotorProtocol_MIN}
 #define ServoConfig_init_default                 {false, Pin_init_default, _ServoConfig_ServoRefreshRate_MIN}
 #define Pin_init_default                         {""}
-#define HardwareConfig_init_zero                 {false, IOConfig_init_zero, false, AccelerometerConfig_init_zero, false, GyroscopeConfig_init_zero, 0, {MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero}, 0, {ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero}}
+#define RCConfig_init_default                    {0, {IBUSRCConfig_init_default}}
+#define IBUSRCConfig_init_default                {0}
+#define HardwareConfig_init_zero                 {false, IOConfig_init_zero, false, AccelerometerConfig_init_zero, false, GyroscopeConfig_init_zero, 0, {MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero}, 0, {ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero}, false, RCConfig_init_zero}
 #define SoftwareConfig_init_zero                 {0}
 #define IOConfig_init_zero                       {0, {UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero}, 0, {UartConfig_init_zero, UartConfig_init_zero}, 0, {I2CConfig_init_zero, I2CConfig_init_zero, I2CConfig_init_zero, I2CConfig_init_zero}, 0, {SPIConfig_init_zero, SPIConfig_init_zero, SPIConfig_init_zero, SPIConfig_init_zero}}
 #define UartConfig_init_zero                     {false, Pin_init_zero, false, Pin_init_zero}
@@ -166,25 +177,27 @@ typedef struct _HardwareConfig {
 #define SPIConfig_init_zero                      {false, Pin_init_zero, false, Pin_init_zero, false, Pin_init_zero}
 #define AccelerometerConfig_init_zero            {0, {MpuI2cConfig_init_zero}}
 #define GyroscopeConfig_init_zero                {0, {MpuI2cConfig_init_zero}}
-#define MpuSpiConfig_init_zero                   {0, false, Pin_init_zero, false, Pin_init_zero}
-#define MpuI2cConfig_init_zero                   {0, 0, false, Pin_init_zero}
+#define MpuSpiConfig_init_zero                   {0, false, Pin_init_zero}
+#define MpuI2cConfig_init_zero                   {0, 0}
 #define MotorConfig_init_zero                    {false, Pin_init_zero, _MotorConfig_MotorProtocol_MIN}
 #define ServoConfig_init_zero                    {false, Pin_init_zero, _ServoConfig_ServoRefreshRate_MIN}
 #define Pin_init_zero                            {""}
+#define RCConfig_init_zero                       {0, {IBUSRCConfig_init_zero}}
+#define IBUSRCConfig_init_zero                   {0}
 
 /* Field tags (for use in manual encoding/decoding) */
+#define IBUSRCConfig_uartIndex_tag               1
+#define MpuI2cConfig_busIndex_tag                1
+#define MpuI2cConfig_address_tag                 2
 #define Pin_pinName_tag                          1
 #define I2CConfig_sda_tag                        1
 #define I2CConfig_scl_tag                        2
 #define I2CConfig_speed_tag                      3
 #define MotorConfig_outputPin_tag                1
 #define MotorConfig_motorProtocol_tag            2
-#define MpuI2cConfig_busIndex_tag                1
-#define MpuI2cConfig_address_tag                 2
-#define MpuI2cConfig_interruptPin_tag            3
 #define MpuSpiConfig_busIndex_tag                1
 #define MpuSpiConfig_csPin_tag                   2
-#define MpuSpiConfig_interruptPin_tag            3
+#define RCConfig_ibus_tag                        1
 #define SPIConfig_mosi_tag                       1
 #define SPIConfig_miso_tag                       2
 #define SPIConfig_sck_tag                        3
@@ -205,6 +218,7 @@ typedef struct _HardwareConfig {
 #define HardwareConfig_gyroscopeConfig_tag       3
 #define HardwareConfig_motors_tag                4
 #define HardwareConfig_servos_tag                5
+#define HardwareConfig_rcConfig_tag              6
 
 /* Struct field encoding specification for nanopb */
 #define HardwareConfig_FIELDLIST(X, a) \
@@ -212,7 +226,8 @@ X(a, STATIC,   OPTIONAL, MESSAGE,  ioConfig,          1) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  accelerometerConfig,   2) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  gyroscopeConfig,   3) \
 X(a, STATIC,   REPEATED, MESSAGE,  motors,            4) \
-X(a, STATIC,   REPEATED, MESSAGE,  servos,            5)
+X(a, STATIC,   REPEATED, MESSAGE,  servos,            5) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  rcConfig,          6)
 #define HardwareConfig_CALLBACK NULL
 #define HardwareConfig_DEFAULT NULL
 #define HardwareConfig_ioConfig_MSGTYPE IOConfig
@@ -220,6 +235,7 @@ X(a, STATIC,   REPEATED, MESSAGE,  servos,            5)
 #define HardwareConfig_gyroscopeConfig_MSGTYPE GyroscopeConfig
 #define HardwareConfig_motors_MSGTYPE MotorConfig
 #define HardwareConfig_servos_MSGTYPE ServoConfig
+#define HardwareConfig_rcConfig_MSGTYPE RCConfig
 
 #define SoftwareConfig_FIELDLIST(X, a) \
 
@@ -283,20 +299,16 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (driverConfig,mpuSpi,driverConfig.mpuSpi),   
 
 #define MpuSpiConfig_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   busIndex,          1) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  csPin,             2) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  interruptPin,      3)
+X(a, STATIC,   OPTIONAL, MESSAGE,  csPin,             2)
 #define MpuSpiConfig_CALLBACK NULL
 #define MpuSpiConfig_DEFAULT NULL
 #define MpuSpiConfig_csPin_MSGTYPE Pin
-#define MpuSpiConfig_interruptPin_MSGTYPE Pin
 
 #define MpuI2cConfig_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   busIndex,          1) \
-X(a, STATIC,   SINGULAR, UINT32,   address,           2) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  interruptPin,      3)
+X(a, STATIC,   SINGULAR, UINT32,   address,           2)
 #define MpuI2cConfig_CALLBACK NULL
 #define MpuI2cConfig_DEFAULT NULL
-#define MpuI2cConfig_interruptPin_MSGTYPE Pin
 
 #define MotorConfig_FIELDLIST(X, a) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  outputPin,         1) \
@@ -317,6 +329,17 @@ X(a, STATIC,   SINGULAR, STRING,   pinName,           1)
 #define Pin_CALLBACK NULL
 #define Pin_DEFAULT NULL
 
+#define RCConfig_FIELDLIST(X, a) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (driverConfig,ibus,driverConfig.ibus),   1)
+#define RCConfig_CALLBACK NULL
+#define RCConfig_DEFAULT NULL
+#define RCConfig_driverConfig_ibus_MSGTYPE IBUSRCConfig
+
+#define IBUSRCConfig_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   uartIndex,         1)
+#define IBUSRCConfig_CALLBACK NULL
+#define IBUSRCConfig_DEFAULT NULL
+
 extern const pb_msgdesc_t HardwareConfig_msg;
 extern const pb_msgdesc_t SoftwareConfig_msg;
 extern const pb_msgdesc_t IOConfig_msg;
@@ -330,6 +353,8 @@ extern const pb_msgdesc_t MpuI2cConfig_msg;
 extern const pb_msgdesc_t MotorConfig_msg;
 extern const pb_msgdesc_t ServoConfig_msg;
 extern const pb_msgdesc_t Pin_msg;
+extern const pb_msgdesc_t RCConfig_msg;
+extern const pb_msgdesc_t IBUSRCConfig_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
 #define HardwareConfig_fields &HardwareConfig_msg
@@ -345,21 +370,25 @@ extern const pb_msgdesc_t Pin_msg;
 #define MotorConfig_fields &MotorConfig_msg
 #define ServoConfig_fields &ServoConfig_msg
 #define Pin_fields &Pin_msg
+#define RCConfig_fields &RCConfig_msg
+#define IBUSRCConfig_fields &IBUSRCConfig_msg
 
 /* Maximum encoded size of messages (where known) */
-#define HardwareConfig_size                      611
+#define HardwareConfig_size                      605
 #define SoftwareConfig_size                      0
 #define IOConfig_size                            364
 #define UartConfig_size                          16
 #define I2CConfig_size                           18
 #define SPIConfig_size                           24
-#define AccelerometerConfig_size                 24
-#define GyroscopeConfig_size                     24
-#define MpuSpiConfig_size                        22
-#define MpuI2cConfig_size                        20
+#define AccelerometerConfig_size                 16
+#define GyroscopeConfig_size                     16
+#define MpuSpiConfig_size                        14
+#define MpuI2cConfig_size                        12
 #define MotorConfig_size                         10
 #define ServoConfig_size                         10
 #define Pin_size                                 6
+#define RCConfig_size                            8
+#define IBUSRCConfig_size                        6
 
 #ifdef __cplusplus
 } /* extern "C" */

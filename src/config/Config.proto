@@ -6,6 +6,7 @@ message HardwareConfig {
     GyroscopeConfig gyroscopeConfig = 3;
     repeated MotorConfig motors = 4;
     repeated ServoConfig servos = 5;
+    RCConfig rcConfig = 6;
 }
 
 message SoftwareConfig {
@@ -93,4 +94,14 @@ message ServoConfig {
 
 message Pin {
     string pinName = 1;
+}
+
+message RCConfig {
+    oneof driverConfig {
+        IBUSRCConfig ibus = 1;
+    }
+}
+
+message IBUSRCConfig {
+    uint32 uartIndex = 1;
 }

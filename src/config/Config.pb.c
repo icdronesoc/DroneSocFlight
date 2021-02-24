@@ -45,6 +45,12 @@ PB_BIND(ServoConfig, ServoConfig, AUTO)
 PB_BIND(Pin, Pin, AUTO)
 
 
+PB_BIND(RCConfig, RCConfig, AUTO)
+
+
+PB_BIND(IBUSRCConfig, IBUSRCConfig, AUTO)
+
+
 
 
 
