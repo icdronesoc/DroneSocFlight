@@ -24,6 +24,6 @@ namespace IMUDrivers {
 
     private:
         BusIO::RegisterBasedDevice* device;
-        void initialize(bool disableDeviceI2C);
+        void initialize(bool usingI2C);
     };
 }
