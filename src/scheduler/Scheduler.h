@@ -3,8 +3,11 @@
 #include <Arduino.h>
 #include "Name.h"
 #include "Task.h"
+#include "etl/vector.h"
 
 namespace Scheduler {
+    constexpr size_t MaxNumberOfTasks = 32;
+    constexpr size_t MaxNumberOfTaskRunners = 32;
     constexpr size_t ScheduleAverageLatenessSampleCount = 32;
 
     class TaskRunner {
@@ -48,7 +51,7 @@ namespace Scheduler {
         /**
          * The average of the schedule's lateness (the delay in microseconds between it being supposed to run and it actually running)
          */
-        etl::cumulative_moving_average<uint32_t, TaskAverageDurationSampleCount> averageLateness;
+        etl::cumulative_moving_average<uint32_t, ScheduleAverageLatenessSampleCount> averageLateness;
 
         /**
          * The maximum lateness (the delay in microseconds between it being supposed to run and it actually running)
@@ -98,7 +101,18 @@ namespace Scheduler {
     };
 
     /**
-     * TODO Documentation
+     * A Sequential Task Schedule allows tasks that are very tightly coupled
+     * to be run in the correct order, whilst being profiled individually.
+     *
+     * A task list is established, which contains the tasks to be run.
+     * Tasks are run in order, one after the order.
+     *
+     * If a frequency divider is set for a task, this task's frequency is the
+     * previous task's frequency divided by the divider. So, if you had 3 tasks,
+     * A B and C, each had a frequency divider of 2, and the first task frequency
+     * was set to 8kHz, A would run at 8kHz, B would run at 4kHz (every other run
+     * of A), and C would run at 2kHz (every other run of B).
+     *
      * @tparam TaskCount The number of tasks in the sequence
      */
     template<const size_t TaskCount>
@@ -130,6 +144,16 @@ namespace Scheduler {
          */
         uint16_t invocationCount[TaskCount - 1];
     };
+
+    /**
+     * A list of all individual tasks, accessible for profiling.
+     */
+    extern etl::vector<Task*, MaxNumberOfTasks> allTasks;
+
+    /**
+     * A list of all individual schedules, accessible for profiling.
+     */
+    extern etl::vector<TaskSchedule*, MaxNumberOfTaskRunners> allSchedules;
 
     void addTaskRunner(TaskRunner* task);
 

@@ -1,12 +1,12 @@
 #include "Scheduler.h"
-#include <etl/vector.h>
 
 namespace Scheduler {
     namespace { // private
-        constexpr size_t MaxNumberOfTaskRunners = 32;
-
         etl::vector<TaskRunner*, MaxNumberOfTaskRunners> taskRunners;
     }
+
+    etl::vector<Task*, MaxNumberOfTasks> allTasks;
+    etl::vector<TaskSchedule*, MaxNumberOfTaskRunners> allSchedules;
 
     AdHocTaskRunner::AdHocTaskRunner(Task* task, AdHocTaskRunner::TaskIsReadyFunction taskIsReady) : task(task), taskIsReady(taskIsReady) {}
 
@@ -14,7 +14,9 @@ namespace Scheduler {
         if (this->taskIsReady()) this->task->run();
     }
 
-    TaskSchedule::TaskSchedule(const Name &name, uint32_t frequency) : name(name), averageLateness(0), maxLateness(0), period(100000 / frequency), lastRunTime(0) {}
+    TaskSchedule::TaskSchedule(const Name &name, uint32_t frequency) : name(name), averageLateness(0), maxLateness(0), period(100000 / frequency), lastRunTime(0) {
+        allSchedules.push_back(this);
+    }
 
     void TaskSchedule::runIfNecessary() {
         uint32_t now = micros();
