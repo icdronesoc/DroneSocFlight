@@ -141,6 +141,7 @@ typedef struct _HardwareConfig {
     ServoConfig servos[8];
     bool has_rcConfig;
     RCConfig rcConfig;
+    uint32_t pidLoopFrequencyDivider;
 } HardwareConfig;
 
 
@@ -159,7 +160,7 @@ typedef struct _HardwareConfig {
 
 
 /* Initializer values for message structs */
-#define HardwareConfig_init_default              {false, IOConfig_init_default, false, AccelerometerConfig_init_default, false, GyroscopeConfig_init_default, 0, {MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default}, 0, {ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default}, false, RCConfig_init_default}
+#define HardwareConfig_init_default              {false, IOConfig_init_default, false, AccelerometerConfig_init_default, false, GyroscopeConfig_init_default, 0, {MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default}, 0, {ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default}, false, RCConfig_init_default, 0}
 #define SoftwareConfig_init_default              {0}
 #define IOConfig_init_default                    {0, {UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default}, 0, {UartConfig_init_default, UartConfig_init_default}, 0, {I2CConfig_init_default, I2CConfig_init_default, I2CConfig_init_default, I2CConfig_init_default}, 0, {SPIConfig_init_default, SPIConfig_init_default, SPIConfig_init_default, SPIConfig_init_default}}
 #define UartConfig_init_default                  {false, Pin_init_default, false, Pin_init_default}
@@ -175,7 +176,7 @@ typedef struct _HardwareConfig {
 #define RCConfig_init_default                    {0, {CrossfireConfig_init_default}}
 #define IBUSConfig_init_default                  {0}
 #define CrossfireConfig_init_default             {0}
-#define HardwareConfig_init_zero                 {false, IOConfig_init_zero, false, AccelerometerConfig_init_zero, false, GyroscopeConfig_init_zero, 0, {MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero}, 0, {ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero}, false, RCConfig_init_zero}
+#define HardwareConfig_init_zero                 {false, IOConfig_init_zero, false, AccelerometerConfig_init_zero, false, GyroscopeConfig_init_zero, 0, {MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero}, 0, {ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero}, false, RCConfig_init_zero, 0}
 #define SoftwareConfig_init_zero                 {0}
 #define IOConfig_init_zero                       {0, {UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero}, 0, {UartConfig_init_zero, UartConfig_init_zero}, 0, {I2CConfig_init_zero, I2CConfig_init_zero, I2CConfig_init_zero, I2CConfig_init_zero}, 0, {SPIConfig_init_zero, SPIConfig_init_zero, SPIConfig_init_zero, SPIConfig_init_zero}}
 #define UartConfig_init_zero                     {false, Pin_init_zero, false, Pin_init_zero}
@@ -228,6 +229,7 @@ typedef struct _HardwareConfig {
 #define HardwareConfig_motors_tag                4
 #define HardwareConfig_servos_tag                5
 #define HardwareConfig_rcConfig_tag              6
+#define HardwareConfig_pidLoopFrequencyDivider_tag 7
 
 /* Struct field encoding specification for nanopb */
 #define HardwareConfig_FIELDLIST(X, a) \
@@ -236,7 +238,8 @@ X(a, STATIC,   OPTIONAL, MESSAGE,  accelerometerConfig,   2) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  gyroscopeConfig,   3) \
 X(a, STATIC,   REPEATED, MESSAGE,  motors,            4) \
 X(a, STATIC,   REPEATED, MESSAGE,  servos,            5) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  rcConfig,          6)
+X(a, STATIC,   OPTIONAL, MESSAGE,  rcConfig,          6) \
+X(a, STATIC,   SINGULAR, UINT32,   pidLoopFrequencyDivider,   7)
 #define HardwareConfig_CALLBACK NULL
 #define HardwareConfig_DEFAULT NULL
 #define HardwareConfig_ioConfig_MSGTYPE IOConfig
@@ -392,7 +395,7 @@ extern const pb_msgdesc_t CrossfireConfig_msg;
 #define CrossfireConfig_fields &CrossfireConfig_msg
 
 /* Maximum encoded size of messages (where known) */
-#define HardwareConfig_size                      605
+#define HardwareConfig_size                      611
 #define SoftwareConfig_size                      0
 #define IOConfig_size                            364
 #define UartConfig_size                          16

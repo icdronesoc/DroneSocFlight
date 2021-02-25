@@ -10,6 +10,8 @@ namespace RcDrivers {
         explicit CrossfireDriver(IO::SerialPort& uart);
         bool getFrame(RC::Channels& channels) override;
 
+        bool shouldTryToGetFrame() override;
+
     private:
         IO::SerialPort& uart;
         const static size_t MaxFrameLength = 64;

@@ -21,6 +21,14 @@ namespace RC {
          * @return Whether a frame was received
          */
         virtual bool getFrame(Channels& channels) = 0;
+
+        /**
+         * Called by the scheduler to check whether getFrame should be called.
+         * Normally this will check if there's any data in a Serial buffer.
+         *
+         * @return Whether we should try to get a frame
+         */
+        virtual bool shouldTryToGetFrame() = 0;
     };
 
     /**
@@ -32,8 +40,6 @@ namespace RC {
      * Initializes the RC driver using the current configuration
      */
     void initialize();
-
-    void loopTask();
 
     /**
      * @return The number of milliseconds since the last received frame

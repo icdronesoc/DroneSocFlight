@@ -6,7 +6,7 @@ namespace RcDrivers {
     }
 
     // TODO IBUS Telemetry
-    IBUSDriver::IBUSDriver(IO::SerialPort& uart) : RC::Driver(ChannelCount) {
+    IBUSDriver::IBUSDriver(IO::SerialPort& uart) : RC::Driver(ChannelCount), uart(uart) {
         // TODO calling begin() initializes the serial
 //        this->ibus.begin(uart, IBUSBM_NOTIMER); TODO uart needs converting somehow
     }
@@ -24,5 +24,9 @@ namespace RcDrivers {
             // No new frame.
             return false;
         }
+    }
+
+    bool IBUSDriver::shouldTryToGetFrame() {
+        return this->uart->available() > 0;
     }
 }

@@ -1,15 +1,13 @@
 #pragma once
 
 #include <Arduino.h>
-#include <etl/string.h>
+#include "Name.h"
 #include <etl/cumulative_moving_average.h>
 
 namespace Scheduler {
-    constexpr size_t TaskNameMaxSize = 8;
     constexpr size_t TaskAverageDurationSampleCount = 32;
 
     using TaskFunction = void();
-    using TaskName = etl::string<TaskNameMaxSize>;
 
     /**
      * A task is an arbitrary function and a name for the function.
@@ -22,8 +20,8 @@ namespace Scheduler {
          * @param task The function that is run when the task is run
          * @param name The name of the task
          */
-        Task(TaskFunction* task, const TaskName& name);
-        const TaskName& name;
+        Task(TaskFunction* task, const Name& name);
+        const Name& name;
         etl::cumulative_moving_average<uint32_t, TaskAverageDurationSampleCount> averageRunTime;
         uint32_t maxRunTime;
 

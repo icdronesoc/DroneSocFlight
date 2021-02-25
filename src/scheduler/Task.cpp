@@ -1,7 +1,7 @@
 #include "Task.h"
 
 namespace Scheduler {
-    Task::Task(TaskFunction* task, const TaskName& name) : name(name), averageRunTime(0), maxRunTime(0), task(task) {}
+    Task::Task(TaskFunction* task, const Name& name) : name(name), averageRunTime(0), maxRunTime(0), task(task) {}
 
     void Task::run() {
         uint32_t start = micros();

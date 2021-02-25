@@ -1,15 +1,29 @@
 #include "RC.h"
 #include "config/Config.h"
 #include "hardware/IO.h"
+#include "scheduler/Scheduler.h"
 #include "rc/drivers/AllDrivers.h"
 
 namespace RC {
-    Channels channels;
-
     namespace { // private
         Driver* driver = nullptr;
         uint32_t lastFrameTimeMs = 0;
+
+        bool shouldTryToGetFrame() {
+            if (driver == nullptr) return false;
+            return driver->shouldTryToGetFrame();
+        }
+
+        const Scheduler::Name RCTaskName = "RC RX";
+        void tryGetFrame() {
+            if (driver == nullptr) return;
+            if (driver->getFrame(channels)) {
+                lastFrameTimeMs = millis();
+            }
+        }
     }
+
+    Channels channels;
 
     void initialize() {
         // Choose driver
@@ -35,13 +49,11 @@ namespace RC {
             for (size_t i = 0; i < min(driver->channelCount, MaxChannelCount); i++) {
                 channels.push_back(0);
             }
-        }
-    }
 
-    void loopTask() {
-        if (driver == nullptr) return;
-        if (driver->getFrame(channels)) {
-            lastFrameTimeMs = millis();
+            // Setup get RC data task
+            auto task = new Scheduler::Task(tryGetFrame, RCTaskName);
+            auto runner = new Scheduler::AdHocTaskRunner(task, shouldTryToGetFrame);
+            Scheduler::addTaskRunner(runner);
         }
     }
 

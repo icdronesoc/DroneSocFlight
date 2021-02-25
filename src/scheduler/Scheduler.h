@@ -1,13 +1,11 @@
 #pragma once
 
 #include <Arduino.h>
+#include "Name.h"
 #include "Task.h"
 
 namespace Scheduler {
-    constexpr size_t ScheduleNameMaxSize = 8;
     constexpr size_t ScheduleAverageLatenessSampleCount = 32;
-
-    using ScheduleName = etl::string<ScheduleNameMaxSize>;
 
     class TaskRunner {
     public:
@@ -23,18 +21,18 @@ namespace Scheduler {
      *
      * This is useful for tasks that need to be run at an irregular frequency.
      */
-    class AdHocTask final : public TaskRunner {
+    class AdHocTaskRunner final : public TaskRunner {
     public:
         /**
          * The Task is Ready Function tells the scheduler whether this task is ready to run, for example whether there is Serial data in the buffer waiting to be read.
          * It should be treated like an ISR: it has to complete very quickly to avoid slowing down the whole program, as it is run very frequently.
          */
         using TaskIsReadyFunction = bool();
-        AdHocTask(Task task, TaskIsReadyFunction taskIsReady);
+        AdHocTaskRunner(Task* task, TaskIsReadyFunction taskIsReady);
         void runIfNecessary() override;
 
     private:
-        Task task;
+        Task* task;
         TaskIsReadyFunction* taskIsReady;
     };
 
@@ -43,10 +41,18 @@ namespace Scheduler {
      */
     class TaskSchedule : public TaskRunner {
     public:
-        TaskSchedule(const ScheduleName &name, uint32_t frequency);
+        TaskSchedule(const Name &name, uint32_t frequency);
 
-        const ScheduleName& name;
+        const Name& name;
+
+        /**
+         * The average of the schedule's lateness (the delay in microseconds between it being supposed to run and it actually running)
+         */
         etl::cumulative_moving_average<uint32_t, TaskAverageDurationSampleCount> averageLateness;
+
+        /**
+         * The maximum lateness (the delay in microseconds between it being supposed to run and it actually running)
+         */
         uint32_t maxLateness;
 
         void runIfNecessary() final;
@@ -79,7 +85,7 @@ namespace Scheduler {
          * @param task The task to be run
          * @param frequency The frequency at which to run the task
          */
-        IndependentTaskSchedule(const ScheduleName &name, Task task, uint32_t frequency);
+        IndependentTaskSchedule(const Name &name, Task* task, uint32_t frequency);
 
     protected:
         void run() override;
@@ -88,14 +94,14 @@ namespace Scheduler {
         /**
          * The task to be run
          */
-        Task task;
+        Task* task;
     };
 
     /**
      * TODO Documentation
-     * @tparam taskCount The number of tasks in the sequence
+     * @tparam TaskCount The number of tasks in the sequence
      */
-    template<const size_t taskCount>
+    template<const size_t TaskCount>
     class SequentialTaskSchedule final : public TaskSchedule {
     public:
         /**
@@ -107,14 +113,14 @@ namespace Scheduler {
          * index is the frequency divider for the third task, etc...
          * @param firstTaskFrequency The frequency to run the first task at
          */
-        SequentialTaskSchedule(const ScheduleName &name, const Task tasks[taskCount], const uint8_t frequencyDividers[taskCount-1], uint32_t firstTaskFrequency);
+        SequentialTaskSchedule(const Name &name, Task* tasks[TaskCount], const uint8_t frequencyDividers[TaskCount - 1], uint32_t firstTaskFrequency);
 
     protected:
         void run() override;
 
     private:
-        Task tasks[taskCount];
-        const uint8_t frequencyDividers[taskCount-1];
+        const Task* tasks[TaskCount];
+        const uint8_t frequencyDividers[TaskCount - 1];
         /**
          * Tracks how many times each task has been invoked for the purposes of frequency division.
          * The last task does not need to be tracked as there is no task after it.
@@ -122,7 +128,7 @@ namespace Scheduler {
          * uint16_t should be enough that even with a high divider overflows eg. 255 aren't a problem.
          * Therefore this doesn't need to be reset to 0.
          */
-        uint16_t invocationCount[taskCount-1];
+        uint16_t invocationCount[TaskCount - 1];
     };
 
     void addTaskRunner(TaskRunner* task);

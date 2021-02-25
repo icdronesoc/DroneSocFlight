@@ -126,6 +126,10 @@ namespace RcDrivers {
         return frameReceived;
     }
 
+    bool CrossfireDriver::shouldTryToGetFrame() {
+        return this->uart->available() > 0;
+    }
+
     bool CrossfireDriver::handleData(uint8_t newData, RC::Channels &channels) {
         bool rcFrameReceived = false;
         const uint32_t currentTime = micros();

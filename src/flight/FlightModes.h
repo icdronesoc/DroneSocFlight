@@ -6,6 +6,4 @@ namespace FlightModes {
     enum class FlightMode {
 
     };
-
-    void loopTask();
 }

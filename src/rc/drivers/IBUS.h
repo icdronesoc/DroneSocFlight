@@ -11,7 +11,10 @@ namespace RcDrivers {
         explicit IBUSDriver(IO::SerialPort& uart);
         bool getFrame(RC::Channels& channels) override;
 
+        bool shouldTryToGetFrame() override;
+
     private:
+        IO::SerialPort& uart;
         IBusBM ibus;
         uint8_t lastFrameCount = 0;
     };

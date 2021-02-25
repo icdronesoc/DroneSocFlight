@@ -7,6 +7,7 @@ message HardwareConfig {
     repeated MotorConfig motors = 4;
     repeated ServoConfig servos = 5;
     RCConfig rcConfig = 6;
+    uint32 pidLoopFrequencyDivider = 7;
 }
 
 message SoftwareConfig {

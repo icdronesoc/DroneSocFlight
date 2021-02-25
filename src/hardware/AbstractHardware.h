@@ -3,7 +3,7 @@
 #include <Arduino.h>
 
 namespace Hardware {
-    struct ThreeAxisData {
+    struct ThreeAxisData { // TODO define what is x, y, z for gyro/accelerometer
         double x;
         double y;
         double z;
