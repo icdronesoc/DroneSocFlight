@@ -29,6 +29,18 @@ typedef enum _ServoConfig_ServoRefreshRate {
     ServoConfig_ServoRefreshRate__330Hz = 1
 } ServoConfig_ServoRefreshRate;
 
+typedef enum _MixerRule_TargetType {
+    MixerRule_TargetType_MOTOR = 0,
+    MixerRule_TargetType_SERVO = 1
+} MixerRule_TargetType;
+
+typedef enum _MixerRule_Source {
+    MixerRule_Source_THROTTLE = 0,
+    MixerRule_Source_PITCH = 1,
+    MixerRule_Source_ROLL = 2,
+    MixerRule_Source_YAW = 3
+} MixerRule_Source;
+
 /* Struct definitions */
 typedef struct _SoftwareConfig {
     char dummy_field;
@@ -41,6 +53,13 @@ typedef struct _CrossfireConfig {
 typedef struct _IBUSConfig {
     uint32_t uartIndex;
 } IBUSConfig;
+
+typedef struct _MixerRule {
+    MixerRule_TargetType targetType;
+    uint32_t targetIndex;
+    MixerRule_Source source;
+    float weight;
+} MixerRule;
 
 typedef struct _MpuI2cConfig {
     uint32_t busIndex;
@@ -58,6 +77,11 @@ typedef struct _I2CConfig {
     Pin scl;
     I2CConfig_Speed speed;
 } I2CConfig;
+
+typedef struct _MixerConfig {
+    pb_size_t mixerRules_count;
+    MixerRule mixerRules[32];
+} MixerConfig;
 
 typedef struct _MotorConfig {
     bool has_outputPin;
@@ -139,6 +163,8 @@ typedef struct _HardwareConfig {
     MotorConfig motors[8];
     pb_size_t servos_count;
     ServoConfig servos[8];
+    bool has_mixerConfig;
+    MixerConfig mixerConfig;
     bool has_rcConfig;
     RCConfig rcConfig;
     uint32_t pidLoopFrequencyDivider;
@@ -158,9 +184,17 @@ typedef struct _HardwareConfig {
 #define _ServoConfig_ServoRefreshRate_MAX ServoConfig_ServoRefreshRate__330Hz
 #define _ServoConfig_ServoRefreshRate_ARRAYSIZE ((ServoConfig_ServoRefreshRate)(ServoConfig_ServoRefreshRate__330Hz+1))
 
+#define _MixerRule_TargetType_MIN MixerRule_TargetType_MOTOR
+#define _MixerRule_TargetType_MAX MixerRule_TargetType_SERVO
+#define _MixerRule_TargetType_ARRAYSIZE ((MixerRule_TargetType)(MixerRule_TargetType_SERVO+1))
+
+#define _MixerRule_Source_MIN MixerRule_Source_THROTTLE
+#define _MixerRule_Source_MAX MixerRule_Source_YAW
+#define _MixerRule_Source_ARRAYSIZE ((MixerRule_Source)(MixerRule_Source_YAW+1))
+
 
 /* Initializer values for message structs */
-#define HardwareConfig_init_default              {false, IOConfig_init_default, false, AccelerometerConfig_init_default, false, GyroscopeConfig_init_default, 0, {MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default}, 0, {ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default}, false, RCConfig_init_default, 0}
+#define HardwareConfig_init_default              {false, IOConfig_init_default, false, AccelerometerConfig_init_default, false, GyroscopeConfig_init_default, 0, {MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default}, 0, {ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default}, false, MixerConfig_init_default, false, RCConfig_init_default, 0}
 #define SoftwareConfig_init_default              {0}
 #define IOConfig_init_default                    {0, {UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default}, 0, {UartConfig_init_default, UartConfig_init_default}, 0, {I2CConfig_init_default, I2CConfig_init_default, I2CConfig_init_default, I2CConfig_init_default}, 0, {SPIConfig_init_default, SPIConfig_init_default, SPIConfig_init_default, SPIConfig_init_default}}
 #define UartConfig_init_default                  {false, Pin_init_default, false, Pin_init_default}
@@ -173,10 +207,12 @@ typedef struct _HardwareConfig {
 #define MotorConfig_init_default                 {false, Pin_init_default, _MotorConfig_MotorProtocol_MIN}
 #define ServoConfig_init_default                 {false, Pin_init_default, _ServoConfig_ServoRefreshRate_MIN}
 #define Pin_init_default                         {""}
+#define MixerConfig_init_default                 {0, {MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default}}
+#define MixerRule_init_default                   {_MixerRule_TargetType_MIN, 0, _MixerRule_Source_MIN, 0}
 #define RCConfig_init_default                    {0, {CrossfireConfig_init_default}}
 #define IBUSConfig_init_default                  {0}
 #define CrossfireConfig_init_default             {0}
-#define HardwareConfig_init_zero                 {false, IOConfig_init_zero, false, AccelerometerConfig_init_zero, false, GyroscopeConfig_init_zero, 0, {MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero}, 0, {ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero}, false, RCConfig_init_zero, 0}
+#define HardwareConfig_init_zero                 {false, IOConfig_init_zero, false, AccelerometerConfig_init_zero, false, GyroscopeConfig_init_zero, 0, {MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero}, 0, {ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero}, false, MixerConfig_init_zero, false, RCConfig_init_zero, 0}
 #define SoftwareConfig_init_zero                 {0}
 #define IOConfig_init_zero                       {0, {UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero}, 0, {UartConfig_init_zero, UartConfig_init_zero}, 0, {I2CConfig_init_zero, I2CConfig_init_zero, I2CConfig_init_zero, I2CConfig_init_zero}, 0, {SPIConfig_init_zero, SPIConfig_init_zero, SPIConfig_init_zero, SPIConfig_init_zero}}
 #define UartConfig_init_zero                     {false, Pin_init_zero, false, Pin_init_zero}
@@ -189,6 +225,8 @@ typedef struct _HardwareConfig {
 #define MotorConfig_init_zero                    {false, Pin_init_zero, _MotorConfig_MotorProtocol_MIN}
 #define ServoConfig_init_zero                    {false, Pin_init_zero, _ServoConfig_ServoRefreshRate_MIN}
 #define Pin_init_zero                            {""}
+#define MixerConfig_init_zero                    {0, {MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero}}
+#define MixerRule_init_zero                      {_MixerRule_TargetType_MIN, 0, _MixerRule_Source_MIN, 0}
 #define RCConfig_init_zero                       {0, {CrossfireConfig_init_zero}}
 #define IBUSConfig_init_zero                     {0}
 #define CrossfireConfig_init_zero                {0}
@@ -196,12 +234,17 @@ typedef struct _HardwareConfig {
 /* Field tags (for use in manual encoding/decoding) */
 #define CrossfireConfig_uartIndex_tag            1
 #define IBUSConfig_uartIndex_tag                 1
+#define MixerRule_targetType_tag                 1
+#define MixerRule_targetIndex_tag                2
+#define MixerRule_source_tag                     3
+#define MixerRule_weight_tag                     4
 #define MpuI2cConfig_busIndex_tag                1
 #define MpuI2cConfig_address_tag                 2
 #define Pin_pinName_tag                          1
 #define I2CConfig_sda_tag                        1
 #define I2CConfig_scl_tag                        2
 #define I2CConfig_speed_tag                      3
+#define MixerConfig_mixerRules_tag               1
 #define MotorConfig_outputPin_tag                1
 #define MotorConfig_motorProtocol_tag            2
 #define MpuSpiConfig_busIndex_tag                1
@@ -228,8 +271,9 @@ typedef struct _HardwareConfig {
 #define HardwareConfig_gyroscopeConfig_tag       3
 #define HardwareConfig_motors_tag                4
 #define HardwareConfig_servos_tag                5
-#define HardwareConfig_rcConfig_tag              6
-#define HardwareConfig_pidLoopFrequencyDivider_tag 7
+#define HardwareConfig_mixerConfig_tag           6
+#define HardwareConfig_rcConfig_tag              7
+#define HardwareConfig_pidLoopFrequencyDivider_tag 8
 
 /* Struct field encoding specification for nanopb */
 #define HardwareConfig_FIELDLIST(X, a) \
@@ -238,8 +282,9 @@ X(a, STATIC,   OPTIONAL, MESSAGE,  accelerometerConfig,   2) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  gyroscopeConfig,   3) \
 X(a, STATIC,   REPEATED, MESSAGE,  motors,            4) \
 X(a, STATIC,   REPEATED, MESSAGE,  servos,            5) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  rcConfig,          6) \
-X(a, STATIC,   SINGULAR, UINT32,   pidLoopFrequencyDivider,   7)
+X(a, STATIC,   OPTIONAL, MESSAGE,  mixerConfig,       6) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  rcConfig,          7) \
+X(a, STATIC,   SINGULAR, UINT32,   pidLoopFrequencyDivider,   8)
 #define HardwareConfig_CALLBACK NULL
 #define HardwareConfig_DEFAULT NULL
 #define HardwareConfig_ioConfig_MSGTYPE IOConfig
@@ -247,6 +292,7 @@ X(a, STATIC,   SINGULAR, UINT32,   pidLoopFrequencyDivider,   7)
 #define HardwareConfig_gyroscopeConfig_MSGTYPE GyroscopeConfig
 #define HardwareConfig_motors_MSGTYPE MotorConfig
 #define HardwareConfig_servos_MSGTYPE ServoConfig
+#define HardwareConfig_mixerConfig_MSGTYPE MixerConfig
 #define HardwareConfig_rcConfig_MSGTYPE RCConfig
 
 #define SoftwareConfig_FIELDLIST(X, a) \
@@ -341,6 +387,20 @@ X(a, STATIC,   SINGULAR, STRING,   pinName,           1)
 #define Pin_CALLBACK NULL
 #define Pin_DEFAULT NULL
 
+#define MixerConfig_FIELDLIST(X, a) \
+X(a, STATIC,   REPEATED, MESSAGE,  mixerRules,        1)
+#define MixerConfig_CALLBACK NULL
+#define MixerConfig_DEFAULT NULL
+#define MixerConfig_mixerRules_MSGTYPE MixerRule
+
+#define MixerRule_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UENUM,    targetType,        1) \
+X(a, STATIC,   SINGULAR, UINT32,   targetIndex,       2) \
+X(a, STATIC,   SINGULAR, UENUM,    source,            3) \
+X(a, STATIC,   SINGULAR, FLOAT,    weight,            4)
+#define MixerRule_CALLBACK NULL
+#define MixerRule_DEFAULT NULL
+
 #define RCConfig_FIELDLIST(X, a) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (driverConfig,crossfire,driverConfig.crossfire),   1) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (driverConfig,ibus,driverConfig.ibus),   2)
@@ -372,6 +432,8 @@ extern const pb_msgdesc_t MpuI2cConfig_msg;
 extern const pb_msgdesc_t MotorConfig_msg;
 extern const pb_msgdesc_t ServoConfig_msg;
 extern const pb_msgdesc_t Pin_msg;
+extern const pb_msgdesc_t MixerConfig_msg;
+extern const pb_msgdesc_t MixerRule_msg;
 extern const pb_msgdesc_t RCConfig_msg;
 extern const pb_msgdesc_t IBUSConfig_msg;
 extern const pb_msgdesc_t CrossfireConfig_msg;
@@ -390,12 +452,14 @@ extern const pb_msgdesc_t CrossfireConfig_msg;
 #define MotorConfig_fields &MotorConfig_msg
 #define ServoConfig_fields &ServoConfig_msg
 #define Pin_fields &Pin_msg
+#define MixerConfig_fields &MixerConfig_msg
+#define MixerRule_fields &MixerRule_msg
 #define RCConfig_fields &RCConfig_msg
 #define IBUSConfig_fields &IBUSConfig_msg
 #define CrossfireConfig_fields &CrossfireConfig_msg
 
 /* Maximum encoded size of messages (where known) */
-#define HardwareConfig_size                      611
+#define HardwareConfig_size                      1158
 #define SoftwareConfig_size                      0
 #define IOConfig_size                            364
 #define UartConfig_size                          16
@@ -408,6 +472,8 @@ extern const pb_msgdesc_t CrossfireConfig_msg;
 #define MotorConfig_size                         10
 #define ServoConfig_size                         10
 #define Pin_size                                 6
+#define MixerConfig_size                         544
+#define MixerRule_size                           15
 #define RCConfig_size                            8
 #define IBUSConfig_size                          6
 #define CrossfireConfig_size                     6

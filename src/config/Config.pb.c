@@ -45,6 +45,12 @@ PB_BIND(ServoConfig, ServoConfig, AUTO)
 PB_BIND(Pin, Pin, AUTO)
 
 
+PB_BIND(MixerConfig, MixerConfig, 2)
+
+
+PB_BIND(MixerRule, MixerRule, AUTO)
+
+
 PB_BIND(RCConfig, RCConfig, AUTO)
 
 
@@ -52,6 +58,8 @@ PB_BIND(IBUSConfig, IBUSConfig, AUTO)
 
 
 PB_BIND(CrossfireConfig, CrossfireConfig, AUTO)
+
+
 
 
 

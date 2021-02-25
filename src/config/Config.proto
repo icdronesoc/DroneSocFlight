@@ -6,8 +6,9 @@ message HardwareConfig {
     GyroscopeConfig gyroscopeConfig = 3;
     repeated MotorConfig motors = 4;
     repeated ServoConfig servos = 5;
-    RCConfig rcConfig = 6;
-    uint32 pidLoopFrequencyDivider = 7;
+    MixerConfig mixerConfig = 6;
+    RCConfig rcConfig = 7;
+    uint32 pidLoopFrequencyDivider = 8;
 }
 
 message SoftwareConfig {
@@ -95,6 +96,30 @@ message ServoConfig {
 
 message Pin {
     string pinName = 1;
+}
+
+message MixerConfig { // TODO mins/maxs
+    repeated MixerRule mixerRules = 1;
+}
+
+message MixerRule {
+    TargetType targetType = 1;
+    uint32 targetIndex = 2;
+    Source source = 3;
+    // Range -1 to 1
+    float weight = 4;
+
+    enum TargetType {
+        MOTOR = 0;
+        SERVO = 1;
+    }
+
+    enum Source {
+        THROTTLE = 0;
+        PITCH = 1;
+        ROLL = 2;
+        YAW = 3;
+    }
 }
 
 message RCConfig {
