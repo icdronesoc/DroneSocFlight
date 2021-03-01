@@ -51,16 +51,16 @@ namespace Hardware {
     class Motor {
     public:
         /**
-         * @param output The speed the motor should be set to, ranging from 0 to 2047
+         * @param output The speed the motor should be set to, ranging from -1 (full reverse, if supported) to 1 (full forwards)
          */
-        virtual void setOutput(int16_t output) = 0;
+        virtual void setOutput(double output) = 0;
     };
 
     class Servo {
     public:
         /**
-         * @param output The position the Servo should move to, ranging from -1024 to 1023
+         * @param output The position the Servo should move to, ranging from -1 to 1
          */
-        virtual void setOutput(int16_t output) = 0;
+        virtual void setOutput(double output) = 0;
     };
 }

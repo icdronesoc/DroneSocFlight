@@ -6,8 +6,8 @@ namespace PidController {
     Axis axisInputs;
     Axis axisSetpoints;
     Axis axisOutputs;
-    int16_t throttleInput;
-    int16_t throttleOutput;
+    double throttleInput;
+    double throttleOutput;
 
     namespace { // private
         // TODO replace with our own PID controller
@@ -21,11 +21,11 @@ namespace PidController {
         // TODO FF controller
     }
 
-    void setGains(Gains gains) {
-        pitchPid.SetTunings(gains.pitch.P, gains.pitch.I, gains.pitch.D);
-        rollPid.SetTunings(gains.roll.P, gains.roll.I, gains.roll.D);
-        yawPid.SetTunings(gains.yaw.P, gains.yaw.I, gains.yaw.D);
-    }
+//    void setGains(Gains gains) {
+//        pitchPid.SetTunings(gains.pitch.P, gains.pitch.I, gains.pitch.D);
+//        rollPid.SetTunings(gains.roll.P, gains.roll.I, gains.roll.D);
+//        yawPid.SetTunings(gains.yaw.P, gains.yaw.I, gains.yaw.D);
+//    }
 
     void compute() {
         // We don't do any throttle adjustments yet.

@@ -107,7 +107,7 @@ message MixerRule {
     uint32 targetIndex = 2;
     Source source = 3;
     // Range -1 to 1
-    float weight = 4;
+    double weight = 4;
 
     enum TargetType {
         MOTOR = 0;

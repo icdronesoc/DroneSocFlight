@@ -6,7 +6,7 @@
 namespace RC {
     constexpr size_t MaxChannelCount = 16;
 
-    using Channels = etl::vector<uint16_t, MaxChannelCount>;
+    using Channels = etl::vector<double, MaxChannelCount>;
 
     class Driver {
     public:
@@ -32,7 +32,7 @@ namespace RC {
     };
 
     /**
-     * Channels range from 0-2047.
+     * Channels range from -1 to 1.
      */
     extern Channels channels;
 

@@ -13,7 +13,7 @@ namespace ServoDrivers {
     class PwmServo : public Hardware::Servo {
     public:
         PwmServo(uint32_t pin, uint32_t refreshRate);
-        void setOutput(int16_t output) override;
+        void setOutput(double output) override;
     private:
         ::Servo servo; // Without :: you get a conflict between the namespaced and global "Servo" classes
         uint32_t pin, refreshRate;

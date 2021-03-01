@@ -4,6 +4,7 @@
 #include "Name.h"
 #include "Task.h"
 #include "etl/vector.h"
+#include "etl/array.h"
 
 namespace Scheduler {
     constexpr size_t MaxNumberOfTasks = 32;
@@ -127,14 +128,29 @@ namespace Scheduler {
          * index is the frequency divider for the third task, etc...
          * @param firstTaskFrequency The frequency to run the first task at
          */
-        SequentialTaskSchedule(const Name &name, Task* tasks[TaskCount], const uint8_t frequencyDividers[TaskCount - 1], uint32_t firstTaskFrequency);
+        SequentialTaskSchedule(const Name &name, const etl::array<Task*, TaskCount> tasks, const etl::array<uint8_t, TaskCount-1> frequencyDividers, const uint32_t firstTaskFrequency) : TaskSchedule(name, firstTaskFrequency), tasks(tasks), frequencyDividers(frequencyDividers), invocationCount(etl::array<uint16_t, TaskCount-1>()) {}
 
     protected:
-        void run() override;
+        void run() override {
+            // Loop through all tasks
+            for (size_t i = 0; i < TaskCount; i++) {
+                // Run the task
+                this->tasks[i]->run();
+
+                // Exit if this is the last task. The last task does not have an invocation count so this has to be done first.
+                if (i+1 == TaskCount) return;
+
+                // Increment the invocation count
+                this->invocationCount[i]++;
+
+                // If the invocation count % the divider is not 0, it's not time to run the next task yet.
+                if (this->invocationCount[i] % this->frequencyDividers[i] != 0) return;
+            }
+        }
 
     private:
-        const Task* tasks[TaskCount];
-        const uint8_t frequencyDividers[TaskCount - 1];
+        const etl::array<Task*, TaskCount> tasks;
+        const etl::array<uint8_t, TaskCount-1> frequencyDividers;
         /**
          * Tracks how many times each task has been invoked for the purposes of frequency division.
          * The last task does not need to be tracked as there is no task after it.
@@ -142,7 +158,7 @@ namespace Scheduler {
          * uint16_t should be enough that even with a high divider overflows eg. 255 aren't a problem.
          * Therefore this doesn't need to be reset to 0.
          */
-        uint16_t invocationCount[TaskCount - 1];
+        etl::array<uint16_t, TaskCount-1> invocationCount;
     };
 
     /**

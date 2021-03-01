@@ -56,8 +56,8 @@ namespace FlightControlTasks {
         auto gyroTask = new Scheduler::Task(readGyroscope, GyroscopeTaskName);
         auto pidTask = new Scheduler::Task(doPidTask, PidTaskName);
         auto mixerTask = new Scheduler::Task(doMixerTask, MixerTaskName);
-        auto pidLoopFrequencyDivider = Config::hardwareConfig.pidLoopFrequencyDivider == 0 ? 1 : Config::hardwareConfig.pidLoopFrequencyDivider;
-        auto sequenceSchedule = new Scheduler::SequentialTaskSchedule<3>(FlightControlScheduleName, new Scheduler::Task*[3]{gyroTask, pidTask, mixerTask}, new uint8_t[2]{static_cast<uint8_t>(pidLoopFrequencyDivider), 1}, Hardware::gyroscope->sampleRate);
+        uint8_t pidLoopFrequencyDivider = Config::hardwareConfig.pidLoopFrequencyDivider == 0 ? 1 : Config::hardwareConfig.pidLoopFrequencyDivider;
+        auto sequenceSchedule = new Scheduler::SequentialTaskSchedule<3>(FlightControlScheduleName, {gyroTask, pidTask, mixerTask}, {pidLoopFrequencyDivider, 1}, Hardware::gyroscope->sampleRate);
 
         Scheduler::addTaskRunner(sequenceSchedule);
     }

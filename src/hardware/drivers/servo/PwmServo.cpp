@@ -1,4 +1,5 @@
 #include "PwmServo.h"
+#include "utils/Maths.h"
 
 namespace ServoDrivers {
     PwmServo::PwmServo(uint32_t pin, uint32_t refreshRate) : pin(pin), refreshRate(refreshRate) {
@@ -8,7 +9,7 @@ namespace ServoDrivers {
         this->servo.attach(this->pin, 1000, 2000);
     }
 
-    void PwmServo::setOutput(int16_t output) {
-        this->servo.write(map(output, -1024, 1023, 0, 180));
+    void PwmServo::setOutput(double output) {
+        this->servo.write(static_cast<int>(Maths::map(output, -1, 1, 0, 180)));
     }
 }

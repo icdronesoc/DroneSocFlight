@@ -28,13 +28,13 @@ namespace PidController {
     /**
      * Throttle controller input
      */
-    extern int16_t throttleInput;
+    extern double throttleInput;
     /**
      * Throttle controller output
      */
-    extern int16_t throttleOutput;
+    extern double throttleOutput;
 
-    void setGains(Gains gains);
+//    void setGains(Gains gains);
 
     /**
      * Runs PID controller computations.

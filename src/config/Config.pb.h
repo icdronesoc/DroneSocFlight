@@ -58,7 +58,7 @@ typedef struct _MixerRule {
     MixerRule_TargetType targetType;
     uint32_t targetIndex;
     MixerRule_Source source;
-    float weight;
+    double weight;
 } MixerRule;
 
 typedef struct _MpuI2cConfig {
@@ -397,7 +397,7 @@ X(a, STATIC,   REPEATED, MESSAGE,  mixerRules,        1)
 X(a, STATIC,   SINGULAR, UENUM,    targetType,        1) \
 X(a, STATIC,   SINGULAR, UINT32,   targetIndex,       2) \
 X(a, STATIC,   SINGULAR, UENUM,    source,            3) \
-X(a, STATIC,   SINGULAR, FLOAT,    weight,            4)
+X(a, STATIC,   SINGULAR, DOUBLE,   weight,            4)
 #define MixerRule_CALLBACK NULL
 #define MixerRule_DEFAULT NULL
 
@@ -459,7 +459,7 @@ extern const pb_msgdesc_t CrossfireConfig_msg;
 #define CrossfireConfig_fields &CrossfireConfig_msg
 
 /* Maximum encoded size of messages (where known) */
-#define HardwareConfig_size                      1158
+#define HardwareConfig_size                      1286
 #define SoftwareConfig_size                      0
 #define IOConfig_size                            364
 #define UartConfig_size                          16
@@ -472,8 +472,8 @@ extern const pb_msgdesc_t CrossfireConfig_msg;
 #define MotorConfig_size                         10
 #define ServoConfig_size                         10
 #define Pin_size                                 6
-#define MixerConfig_size                         544
-#define MixerRule_size                           15
+#define MixerConfig_size                         672
+#define MixerRule_size                           19
 #define RCConfig_size                            8
 #define IBUSConfig_size                          6
 #define CrossfireConfig_size                     6

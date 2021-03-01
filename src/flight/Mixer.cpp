@@ -20,12 +20,12 @@ namespace Mixer {
             TargetType targetType;
             size_t targetIndex;
             MixerSource source;
-            float weight;
+            double weight;
         };
 
-        int16_t *motorOutputBuffer;
+        double *motorOutputBuffer;
         size_t motorOutputBufferSize;
-        int16_t *servoOutputBuffer;
+        double *servoOutputBuffer;
         size_t servoOutputBufferSize;
 
         etl::vector<ValidatedMixerRule, MaxMixerRuleCount> mixerRules;
@@ -33,9 +33,9 @@ namespace Mixer {
 
     void initialize() {
         motorOutputBufferSize = Hardware::motors.size();
-        motorOutputBuffer = new int16_t[motorOutputBufferSize];
+        motorOutputBuffer = new double[motorOutputBufferSize];
         servoOutputBufferSize = Hardware::servos.size();
-        servoOutputBuffer = new int16_t[servoOutputBufferSize];
+        servoOutputBuffer = new double[servoOutputBufferSize];
 
         // Validate mixer rules TODO produce error when validation fails
         for (pb_size_t i = 0; i < Config::hardwareConfig.mixerConfig.mixerRules_count; i++) {
@@ -89,12 +89,12 @@ namespace Mixer {
         }
     }
 
-    void applyMix(int16_t throttle, double pitchPidOutput, double rollPidOutput, double yawPidOutput) {
-        memset(motorOutputBuffer, 0, motorOutputBufferSize * sizeof(int16_t));
-        memset(servoOutputBuffer, 0, motorOutputBufferSize * sizeof(int16_t));
+    void applyMix(double throttle, double pitchPidOutput, double rollPidOutput, double yawPidOutput) {
+        memset(motorOutputBuffer, 0, motorOutputBufferSize * sizeof(double));
+        memset(servoOutputBuffer, 0, motorOutputBufferSize * sizeof(double));
 
         for (auto &mixerRule : mixerRules) {
-            float selectedInput;
+            double selectedInput;
             switch (mixerRule.source) {
                 case MixerSource::THROTTLE:
                     selectedInput = throttle;
@@ -108,9 +108,11 @@ namespace Mixer {
                 case MixerSource::YAW:
                     selectedInput = yawPidOutput;
                     break;
+                default:
+                    continue;
             }
 
-            int16_t** buffer;
+            double** buffer;
             switch (mixerRule.targetType) {
             case TargetType::MOTOR:
                 buffer = &motorOutputBuffer;
@@ -118,9 +120,11 @@ namespace Mixer {
             case TargetType::SERVO:
                 buffer = &servoOutputBuffer;
                 break;
+            default:
+                continue;
             }
 
-            buffer[mixerRule.targetIndex] += static_cast<int16_t>(mixerRule.weight * selectedInput);
+            (*buffer)[mixerRule.targetIndex] += mixerRule.weight * selectedInput;
         }
 
         for (size_t i = 0; i < motorOutputBufferSize; i++) {
