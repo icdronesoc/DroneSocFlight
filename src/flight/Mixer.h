@@ -11,5 +11,5 @@ namespace Mixer {
      * Requires configuration to be loaded.
      */
     void initialize();
-    void applyMix(int16_t throttle, int16_t pitchPidOutput, int16_t rollPidOutput, int16_t yawPidOutput);
+    void applyMix(int16_t throttle, double pitchPidOutput, double rollPidOutput, double yawPidOutput);
 }

@@ -1,6 +1,6 @@
 #include "Mixer.h"
-#include "hardware/Hardware.h"
 #include "etl/vector.h"
+#include "hardware/Hardware.h"
 
 namespace Mixer {
     namespace { // private
@@ -89,12 +89,12 @@ namespace Mixer {
         }
     }
 
-    void applyMix(int16_t throttle, int16_t pitchPidOutput, int16_t rollPidOutput, int16_t yawPidOutput) {
+    void applyMix(int16_t throttle, double pitchPidOutput, double rollPidOutput, double yawPidOutput) {
         memset(motorOutputBuffer, 0, motorOutputBufferSize * sizeof(int16_t));
         memset(servoOutputBuffer, 0, motorOutputBufferSize * sizeof(int16_t));
 
         for (auto &mixerRule : mixerRules) {
-            int16_t selectedInput;
+            float selectedInput;
             switch (mixerRule.source) {
                 case MixerSource::THROTTLE:
                     selectedInput = throttle;
@@ -120,14 +120,16 @@ namespace Mixer {
                 break;
             }
 
-            buffer[mixerRule.targetIndex] += static_cast<int16_t>(mixerRule.weight * static_cast<float>(selectedInput));
+            buffer[mixerRule.targetIndex] += static_cast<int16_t>(mixerRule.weight * selectedInput);
         }
 
         for (size_t i = 0; i < motorOutputBufferSize; i++) {
             // TODO constrain min/max
+            Hardware::motors[i]->setOutput(motorOutputBuffer[i]);
         }
         for (size_t i = 0; i < servoOutputBufferSize; i++) {
             // TODO constrain min/max
+            Hardware::servos[i]->setOutput(servoOutputBuffer[i]);
         }
     }
 }

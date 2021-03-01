@@ -1,6 +1,8 @@
 #include "FlightControlTasks.h"
 #include "hardware/Hardware.h"
 #include "scheduler/Scheduler.h"
+#include "PidController.h"
+#include "Mixer.h"
 
 namespace FlightControlTasks {
     namespace { // private
@@ -9,25 +11,33 @@ namespace FlightControlTasks {
         const Scheduler::Name GyroscopeTaskName = "Gyroscope";
 
         void readGyroscope() {
-            // TODO
+            // Hardware::gyroscope guaranteed not to be null because otherwise the task would never have been scheduled.
+            auto gyroscopeData = Hardware::gyroscope->getRotationData();
+            // TODO angle mode?
+            // TODO check axis are correct
+            PidController::axisSetpoints.pitch = gyroscopeData.x;
+            PidController::axisSetpoints.roll = gyroscopeData.y;
+            PidController::axisSetpoints.yaw = gyroscopeData.z;
         }
 
         const Scheduler::Name AccelerometerTaskName = "Accelerometer";
 
         void readAccelerometer() {
-            // TODO
+            // Hardware::accelerometer guaranteed not to be null because otherwise the task would never have been scheduled.
+            auto accelerometerData = Hardware::accelerometer->getAccelerationData();
+            // TODO store
         }
 
         const Scheduler::Name PidTaskName = "PID Loop";
 
         void doPidTask() {
-            // TODO
+            PidController::compute();
         }
 
         const Scheduler::Name MixerTaskName = "Mixer";
 
         void doMixerTask() {
-            // TODO
+            Mixer::applyMix(PidController::throttleOutput, PidController::axisOutputs.pitch, PidController::axisOutputs.roll, PidController::axisOutputs.yaw);
         }
     }
 
