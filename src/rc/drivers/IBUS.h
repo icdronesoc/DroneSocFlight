@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
-#include "IBusBM.h"
+//#include "IBusBM.h"
 #include "rc/RC.h"
 #include "hardware/AbstractSerialPort.h"
 
@@ -15,7 +15,7 @@ namespace RcDrivers {
 
     private:
         IO::SerialPort& uart;
-        IBusBM ibus;
+//        IBusBM ibus;
         uint8_t lastFrameCount = 0;
     };
 }

@@ -24,8 +24,6 @@ namespace Controllers {
 //    }
 
     void compute() {
-        uint32_t now = micros();
-
         // We don't do any throttle adjustments yet.
         throttleOutput = throttleInput;
 

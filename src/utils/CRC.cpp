@@ -1,6 +1,6 @@
 #include "CRC.h"
 
-namespace CRC {
+namespace CRCUtils {
     uint8_t crc8_dvb_s2(uint8_t crc, uint8_t a) {
         crc ^= a;
         for (int i = 0; i < 8; i++) {

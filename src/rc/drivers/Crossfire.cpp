@@ -24,8 +24,8 @@ namespace RcDrivers {
             constexpr uint8_t Address = 1; // Length of Address field
             constexpr uint8_t FrameLength = 1; // Length of Frame Length field
             constexpr uint8_t Type = 1; // Length of Type field
-            constexpr uint8_t CRC = 1; // Length of CRC field
-            constexpr uint8_t TypeAndCRC = Type + CRC; // Length of Type and CRC fields
+            constexpr uint8_t CRCField = 1; // Length of CRC field
+            constexpr uint8_t TypeAndCRC = Type + CRCField; // Length of Type and CRC fields
             constexpr uint8_t ExtendedTypeAndCRC = 2 + TypeAndCRC; // Length of Extended Destination / Origin, TYPE and CRC fields
             constexpr uint8_t Headers = 4; // Length of all non-payload fields
         }
@@ -137,7 +137,7 @@ namespace RcDrivers {
         if (this->frameStartTime - currentTime > MaxFrameTime) this->frameBufferIndex = 0;
         if (this->frameBufferIndex == 0) this->frameStartTime = currentTime;
 
-        const int frameLength = this->frameBufferIndex < HeaderLength ? 5 : this->frameBuffer[1] + FrameLengths::Address + FrameLengths::FrameLength;
+        const size_t frameLength = this->frameBufferIndex < HeaderLength ? 5 : this->frameBuffer[1] + FrameLengths::Address + FrameLengths::FrameLength;
 
         if (this->frameBufferIndex < frameLength && frameLength <= MaxFrameLength) {
             this->frameBuffer[this->frameBufferIndex++] = newData;
@@ -207,9 +207,9 @@ namespace RcDrivers {
 
     uint8_t CrossfireDriver::calculateCRC() {
         // CRC includes type and payload
-        uint8_t crc = CRC::crc8_dvb_s2(0, this->frameBuffer[2]);
+        uint8_t crc = CRCUtils::crc8_dvb_s2(0, this->frameBuffer[2]);
         for (uint8_t i = 0; i < this->frameBuffer[1] - FrameLengths::TypeAndCRC; i++) {
-            crc = CRC::crc8_dvb_s2(crc, this->frameBuffer[HeaderLength + i]);
+            crc = CRCUtils::crc8_dvb_s2(crc, this->frameBuffer[HeaderLength + i]);
         }
         return crc;
     }
@@ -222,7 +222,7 @@ namespace RcDrivers {
     void CrossfireDriver::finalizeTelemetryFrame() {
         uint8_t crc = 0;
         for (size_t i = 2; i < this->telemetryFrameLength; i++) {
-            crc = CRC::crc8_dvb_s2(crc, this->telemetryFrameBuffer[i]);
+            crc = CRCUtils::crc8_dvb_s2(crc, this->telemetryFrameBuffer[i]);
         }
         this->telemetryFrameBuffer[this->telemetryFrameLength++] = crc;
         this->uart->write(this->telemetryFrameBuffer, this->telemetryFrameLength);
