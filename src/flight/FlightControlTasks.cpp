@@ -1,7 +1,7 @@
 #include "FlightControlTasks.h"
 #include "hardware/Hardware.h"
 #include "scheduler/Scheduler.h"
-#include "PidController.h"
+#include "Controllers.h"
 #include "Mixer.h"
 
 namespace FlightControlTasks {
@@ -15,9 +15,9 @@ namespace FlightControlTasks {
             auto gyroscopeData = Hardware::gyroscope->getRotationData();
             // TODO angle mode?
             // TODO check axis are correct
-            PidController::axisSetpoints.pitch = gyroscopeData.x;
-            PidController::axisSetpoints.roll = gyroscopeData.y;
-            PidController::axisSetpoints.yaw = gyroscopeData.z;
+            Controllers::axisSetpoints.pitch = gyroscopeData.x;
+            Controllers::axisSetpoints.roll = gyroscopeData.y;
+            Controllers::axisSetpoints.yaw = gyroscopeData.z;
         }
 
         const Scheduler::Name AccelerometerTaskName = "Accelerometer";
@@ -31,13 +31,13 @@ namespace FlightControlTasks {
         const Scheduler::Name PidTaskName = "PID Loop";
 
         void doPidTask() {
-            PidController::compute();
+            Controllers::compute();
         }
 
         const Scheduler::Name MixerTaskName = "Mixer";
 
         void doMixerTask() {
-            Mixer::applyMix(PidController::throttleOutput, PidController::axisOutputs.pitch, PidController::axisOutputs.roll, PidController::axisOutputs.yaw);
+            Mixer::applyMix(Controllers::throttleOutput, Controllers::axisOutputs.pitch, Controllers::axisOutputs.roll, Controllers::axisOutputs.yaw);
         }
     }
 

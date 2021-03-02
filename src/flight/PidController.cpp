@@ -1,38 +1,46 @@
 #include "PidController.h"
 
-#include <PID_v1.h>
+PidController::PidController(double& input, double& setpoint, double& output) : maxOutput(NAN), periodMicroseconds(1), input(input), setpoint(setpoint), output(output), lastSetpoint(0), lastError(0), lastIntegral(0) {}
 
-namespace PidController {
-    Axis axisInputs;
-    Axis axisSetpoints;
-    Axis axisOutputs;
-    double throttleInput;
-    double throttleOutput;
+void PidController::compute(double Kp, double Ki, double Kd, double Kff) {
+    // Calculate error
+    double error = this->setpoint - this->input;
+    this->lastError = error;
 
-    namespace { // private
-        // TODO replace with our own PID controller
-        // TODO set PID controller sample time
-        PID pitchPid(&axisInputs.pitch, &axisSetpoints.pitch, &axisOutputs.pitch, 0, 0, 0, P_ON_E, DIRECT);
+    // Reset Sum
+    this->output = 0;
 
-        PID rollPid(&axisInputs.roll, &axisSetpoints.roll, &axisOutputs.roll, 0, 0, 0, P_ON_E, DIRECT);
-
-        PID yawPid(&axisInputs.yaw, &axisSetpoints.yaw, &axisOutputs.yaw, 0, 0, 0, P_ON_E, DIRECT);
-
-        // TODO FF controller
+    // Calculate Proportional
+    if (Kp != 0) {
+        this->output += Kp * error;
     }
 
-//    void setGains(Gains gains) {
-//        pitchPid.SetTunings(gains.pitch.P, gains.pitch.I, gains.pitch.D);
-//        rollPid.SetTunings(gains.roll.P, gains.roll.I, gains.roll.D);
-//        yawPid.SetTunings(gains.yaw.P, gains.yaw.I, gains.yaw.D);
-//    }
+    // Calculate Integral
+    if (Ki != 0) {
+        this->lastIntegral += error * this->periodMicroseconds;
+        this->output += this->lastIntegral;
+    }
 
-    void compute() {
-        // We don't do any throttle adjustments yet.
-        throttleOutput = throttleInput;
+    // Calculate Derivative
+    if (Kd != 0) {
+        double errorDelta = error - this->lastError;
+        double derivative = errorDelta / this->periodMicroseconds;
+        this->output += Kd * derivative;
+    }
 
-        pitchPid.Compute();
-        rollPid.Compute();
-        yawPid.Compute();
+    // Calculate Feed Forward
+    if (Kff != 0) {
+        double setpointDelta = this->setpoint - this->lastSetpoint;
+        double setpointDerivative = setpointDelta / this->periodMicroseconds;
+        this->output += Kff * setpointDerivative;
+        this->lastSetpoint = setpoint;
+    }
+
+    if (!isnan(this->maxOutput) && abs(this->output) > this->maxOutput) {
+        if (this->output >= 0) {
+            this->output = this->maxOutput;
+        } else {
+            this->output = -this->maxOutput;
+        }
     }
 }

@@ -2,43 +2,31 @@
 
 #include <Arduino.h>
 
-/**
- * The PID Controller comprises of the Axis controller which controls the craft's rate of rotation along each axis, and the throttle controller, which dynamically adjusts throttle based on what the Axis controller is doing.
- */
-namespace PidController {
-    struct Axis {
-        double pitch;
-        double roll;
-        double yaw;
-    };
+class PidController {
+public:
+    PidController(double &input, double &setpoint, double &output);
+
+    void compute(double Kp, double Ki, double Kd, double Kff);
 
     /**
-     * Axis controller inputs
+     * The output limit. The PID Output cannot be greater than +maxOutput or less than -maxOutput.
+     * If this is set to NAN, there is no limit.
+     * This must be a positive number.
      */
-    extern Axis axisInputs;
-    /**
-     * Axis controller setpoints
-     */
-    extern Axis axisSetpoints;
-    /**
-     * Axis controller outputs
-     */
-    extern Axis axisOutputs;
+    double maxOutput;
 
     /**
-     * Throttle controller input
+     * The time period of the PID loop in microseconds.
+     * Equal to 1 / frequency, where frequency is in MHz.
+     * Defaults to 1us, so must be set as this is not an appropriate value.
      */
-    extern double throttleInput;
-    /**
-     * Throttle controller output
-     */
-    extern double throttleOutput;
+    uint32_t periodMicroseconds;
 
-//    void setGains(Gains gains);
-
-    /**
-     * Runs PID controller computations.
-     * Uses the values in axisInputs, axisSetpoints and throttleInput to compute the controller results and stores them in axisOutputs and throttleOutput.
-     */
-    void compute();
-}
+private:
+    double &input;
+    double &setpoint;
+    double &output;
+    double lastSetpoint;
+    double lastError;
+    double lastIntegral;
+};

@@ -10,13 +10,13 @@ namespace RC {
         uint32_t lastFrameTimeMs = 0;
 
         bool shouldTryToGetFrame() {
-            if (driver == nullptr) return false;
+            // driver guaranteed not to be null because otherwise the task would never have been scheduled.
             return driver->shouldTryToGetFrame();
         }
 
-        const Scheduler::Name RCTaskName = "RC RX";
+        const Scheduler::Name RCTaskName = "RC Receiver";
         void tryGetFrame() {
-            if (driver == nullptr) return;
+            // driver guaranteed not to be null because otherwise the task would never have been scheduled.
             if (driver->getFrame(channels)) {
                 lastFrameTimeMs = millis();
             }

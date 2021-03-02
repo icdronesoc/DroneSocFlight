@@ -14,7 +14,7 @@ namespace Hardware {
      */
     class Accelerometer {
     public:
-        Accelerometer(uint32_t sampleRate) : sampleRate(sampleRate) {}
+        explicit Accelerometer(uint32_t sampleRate) : sampleRate(sampleRate) {}
 
         /**
          * @return Data for each axis in Gs
@@ -32,7 +32,7 @@ namespace Hardware {
      */
     class Gyroscope {
     public:
-        Gyroscope(uint32_t sampleRate) : sampleRate(sampleRate) {}
+        explicit Gyroscope(uint32_t sampleRate) : sampleRate(sampleRate) {}
 
         /**
          * @return Data for each axis in degrees per second
