@@ -2,13 +2,14 @@ syntax = "proto3";
 
 message HardwareConfig {
     IOConfig ioConfig = 1;
-    AccelerometerConfig accelerometerConfig = 2;
-    GyroscopeConfig gyroscopeConfig = 3;
-    repeated MotorConfig motors = 4;
-    repeated ServoConfig servos = 5;
-    MixerConfig mixerConfig = 6;
-    RCConfig rcConfig = 7;
-    uint32 pidLoopFrequencyDivider = 8;
+    DebugConfig debugConfig = 2;
+    AccelerometerConfig accelerometerConfig = 3;
+    GyroscopeConfig gyroscopeConfig = 4;
+    repeated MotorConfig motors = 5;
+    repeated ServoConfig servos = 6;
+    MixerConfig mixerConfig = 7;
+    RCConfig rcConfig = 8;
+    uint32 pidLoopFrequencyDivider = 9;
 }
 
 message SoftwareConfig {
@@ -134,5 +135,9 @@ message IBUSConfig {
 }
 
 message CrossfireConfig {
+    uint32 uartIndex = 1;
+}
+
+message DebugConfig {
     uint32 uartIndex = 1;
 }

@@ -50,6 +50,10 @@ typedef struct _CrossfireConfig {
     uint32_t uartIndex;
 } CrossfireConfig;
 
+typedef struct _DebugConfig {
+    uint32_t uartIndex;
+} DebugConfig;
+
 typedef struct _IBUSConfig {
     uint32_t uartIndex;
 } IBUSConfig;
@@ -155,6 +159,8 @@ typedef struct _IOConfig {
 typedef struct _HardwareConfig {
     bool has_ioConfig;
     IOConfig ioConfig;
+    bool has_debugConfig;
+    DebugConfig debugConfig;
     bool has_accelerometerConfig;
     AccelerometerConfig accelerometerConfig;
     bool has_gyroscopeConfig;
@@ -194,7 +200,7 @@ typedef struct _HardwareConfig {
 
 
 /* Initializer values for message structs */
-#define HardwareConfig_init_default              {false, IOConfig_init_default, false, AccelerometerConfig_init_default, false, GyroscopeConfig_init_default, 0, {MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default}, 0, {ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default}, false, MixerConfig_init_default, false, RCConfig_init_default, 0}
+#define HardwareConfig_init_default              {false, IOConfig_init_default, false, DebugConfig_init_default, false, AccelerometerConfig_init_default, false, GyroscopeConfig_init_default, 0, {MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default}, 0, {ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default}, false, MixerConfig_init_default, false, RCConfig_init_default, 0}
 #define SoftwareConfig_init_default              {0}
 #define IOConfig_init_default                    {0, {UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default}, 0, {UartConfig_init_default, UartConfig_init_default}, 0, {I2CConfig_init_default, I2CConfig_init_default, I2CConfig_init_default, I2CConfig_init_default}, 0, {SPIConfig_init_default, SPIConfig_init_default, SPIConfig_init_default, SPIConfig_init_default}}
 #define UartConfig_init_default                  {false, Pin_init_default, false, Pin_init_default}
@@ -212,7 +218,8 @@ typedef struct _HardwareConfig {
 #define RCConfig_init_default                    {0, {CrossfireConfig_init_default}}
 #define IBUSConfig_init_default                  {0}
 #define CrossfireConfig_init_default             {0}
-#define HardwareConfig_init_zero                 {false, IOConfig_init_zero, false, AccelerometerConfig_init_zero, false, GyroscopeConfig_init_zero, 0, {MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero}, 0, {ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero}, false, MixerConfig_init_zero, false, RCConfig_init_zero, 0}
+#define DebugConfig_init_default                 {0}
+#define HardwareConfig_init_zero                 {false, IOConfig_init_zero, false, DebugConfig_init_zero, false, AccelerometerConfig_init_zero, false, GyroscopeConfig_init_zero, 0, {MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero}, 0, {ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero}, false, MixerConfig_init_zero, false, RCConfig_init_zero, 0}
 #define SoftwareConfig_init_zero                 {0}
 #define IOConfig_init_zero                       {0, {UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero}, 0, {UartConfig_init_zero, UartConfig_init_zero}, 0, {I2CConfig_init_zero, I2CConfig_init_zero, I2CConfig_init_zero, I2CConfig_init_zero}, 0, {SPIConfig_init_zero, SPIConfig_init_zero, SPIConfig_init_zero, SPIConfig_init_zero}}
 #define UartConfig_init_zero                     {false, Pin_init_zero, false, Pin_init_zero}
@@ -230,9 +237,11 @@ typedef struct _HardwareConfig {
 #define RCConfig_init_zero                       {0, {CrossfireConfig_init_zero}}
 #define IBUSConfig_init_zero                     {0}
 #define CrossfireConfig_init_zero                {0}
+#define DebugConfig_init_zero                    {0}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define CrossfireConfig_uartIndex_tag            1
+#define DebugConfig_uartIndex_tag                1
 #define IBUSConfig_uartIndex_tag                 1
 #define MixerRule_targetType_tag                 1
 #define MixerRule_targetIndex_tag                2
@@ -267,27 +276,30 @@ typedef struct _HardwareConfig {
 #define IOConfig_i2cConfigs_tag                  3
 #define IOConfig_spiConfigs_tag                  4
 #define HardwareConfig_ioConfig_tag              1
-#define HardwareConfig_accelerometerConfig_tag   2
-#define HardwareConfig_gyroscopeConfig_tag       3
-#define HardwareConfig_motors_tag                4
-#define HardwareConfig_servos_tag                5
-#define HardwareConfig_mixerConfig_tag           6
-#define HardwareConfig_rcConfig_tag              7
-#define HardwareConfig_pidLoopFrequencyDivider_tag 8
+#define HardwareConfig_debugConfig_tag           2
+#define HardwareConfig_accelerometerConfig_tag   3
+#define HardwareConfig_gyroscopeConfig_tag       4
+#define HardwareConfig_motors_tag                5
+#define HardwareConfig_servos_tag                6
+#define HardwareConfig_mixerConfig_tag           7
+#define HardwareConfig_rcConfig_tag              8
+#define HardwareConfig_pidLoopFrequencyDivider_tag 9
 
 /* Struct field encoding specification for nanopb */
 #define HardwareConfig_FIELDLIST(X, a) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  ioConfig,          1) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  accelerometerConfig,   2) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  gyroscopeConfig,   3) \
-X(a, STATIC,   REPEATED, MESSAGE,  motors,            4) \
-X(a, STATIC,   REPEATED, MESSAGE,  servos,            5) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  mixerConfig,       6) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  rcConfig,          7) \
-X(a, STATIC,   SINGULAR, UINT32,   pidLoopFrequencyDivider,   8)
+X(a, STATIC,   OPTIONAL, MESSAGE,  debugConfig,       2) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  accelerometerConfig,   3) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  gyroscopeConfig,   4) \
+X(a, STATIC,   REPEATED, MESSAGE,  motors,            5) \
+X(a, STATIC,   REPEATED, MESSAGE,  servos,            6) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  mixerConfig,       7) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  rcConfig,          8) \
+X(a, STATIC,   SINGULAR, UINT32,   pidLoopFrequencyDivider,   9)
 #define HardwareConfig_CALLBACK NULL
 #define HardwareConfig_DEFAULT NULL
 #define HardwareConfig_ioConfig_MSGTYPE IOConfig
+#define HardwareConfig_debugConfig_MSGTYPE DebugConfig
 #define HardwareConfig_accelerometerConfig_MSGTYPE AccelerometerConfig
 #define HardwareConfig_gyroscopeConfig_MSGTYPE GyroscopeConfig
 #define HardwareConfig_motors_MSGTYPE MotorConfig
@@ -419,6 +431,11 @@ X(a, STATIC,   SINGULAR, UINT32,   uartIndex,         1)
 #define CrossfireConfig_CALLBACK NULL
 #define CrossfireConfig_DEFAULT NULL
 
+#define DebugConfig_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   uartIndex,         1)
+#define DebugConfig_CALLBACK NULL
+#define DebugConfig_DEFAULT NULL
+
 extern const pb_msgdesc_t HardwareConfig_msg;
 extern const pb_msgdesc_t SoftwareConfig_msg;
 extern const pb_msgdesc_t IOConfig_msg;
@@ -437,6 +454,7 @@ extern const pb_msgdesc_t MixerRule_msg;
 extern const pb_msgdesc_t RCConfig_msg;
 extern const pb_msgdesc_t IBUSConfig_msg;
 extern const pb_msgdesc_t CrossfireConfig_msg;
+extern const pb_msgdesc_t DebugConfig_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
 #define HardwareConfig_fields &HardwareConfig_msg
@@ -457,9 +475,10 @@ extern const pb_msgdesc_t CrossfireConfig_msg;
 #define RCConfig_fields &RCConfig_msg
 #define IBUSConfig_fields &IBUSConfig_msg
 #define CrossfireConfig_fields &CrossfireConfig_msg
+#define DebugConfig_fields &DebugConfig_msg
 
 /* Maximum encoded size of messages (where known) */
-#define HardwareConfig_size                      1286
+#define HardwareConfig_size                      1294
 #define SoftwareConfig_size                      0
 #define IOConfig_size                            364
 #define UartConfig_size                          16
@@ -477,6 +496,7 @@ extern const pb_msgdesc_t CrossfireConfig_msg;
 #define RCConfig_size                            8
 #define IBUSConfig_size                          6
 #define CrossfireConfig_size                     6
+#define DebugConfig_size                         6
 
 #ifdef __cplusplus
 } /* extern "C" */

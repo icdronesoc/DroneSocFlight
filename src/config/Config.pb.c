@@ -60,6 +60,9 @@ PB_BIND(IBUSConfig, IBUSConfig, AUTO)
 PB_BIND(CrossfireConfig, CrossfireConfig, AUTO)
 
 
+PB_BIND(DebugConfig, DebugConfig, AUTO)
+
+
 
 
 
