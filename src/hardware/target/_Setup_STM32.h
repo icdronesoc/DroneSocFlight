@@ -90,3 +90,60 @@ void setupMcuHardware(IOConfig ioConfig) {
     for (auto spi : SPIs) spi->begin();
     for (auto i2c : I2Cs) i2c->begin();
 }
+
+// Non volatile memory data layout is:
+// * size_t lengthBytes
+// * lengthBytes bytes of data
+// * 8 bit checksum
+constexpr size_t sizeOfSize = sizeof(size_t);
+union sizeAsBytes {
+    size_t size;
+    uint8_t bytes[sizeOfSize];
+};
+
+size_t loadData(byte *buffer, size_t maxSize) {
+    eeprom_buffer_fill();
+
+    union sizeAsBytes dataSize;
+    for (size_t i = 0; i < sizeOfSize; i++) dataSize.bytes[i] = eeprom_buffered_read_byte(i);
+    if (dataSize.size > maxSize) {
+        Debug::error("Error reading non-volatile data: Data size bigger than maximum buffer size.");
+        return 0;
+    }
+
+    uint8_t crc = 0;
+    for (size_t i = 0; i < dataSize.size; i++) {
+        buffer[i] = eeprom_buffered_read_byte(i + sizeOfSize);
+        crc = CRCUtils::crc8_dvb_s2(crc, buffer[i]);
+    }
+
+    uint8_t expectedCrc = eeprom_buffered_read_byte(sizeOfSize + dataSize.size);
+    if (crc != expectedCrc) {
+        Debug::error("Error reading non-volatile data: CRC invalid.");
+        return 0;
+    }
+
+    return dataSize.size;
+}
+
+bool storeData(byte *data, size_t length) {
+    if (length + sizeOfSize + 1 > FLASH_PAGE_SIZE) {
+        Debug::error("Error writing non-volatile data: data is too big.");
+        return false;
+    }
+
+    union sizeAsBytes dataSize;
+    dataSize.size = length;
+
+    for (size_t i = 0; i < sizeOfSize; i++) eeprom_buffered_write_byte(i, dataSize.bytes[i]);
+
+    uint8_t crc = 0;
+    for (size_t i = 0; i < length; i++) {
+        eeprom_buffered_write_byte(sizeOfSize + i, data[i]);
+        crc = CRCUtils::crc8_dvb_s2(crc, data[i]);
+    }
+    eeprom_buffered_write_byte(sizeOfSize + length, crc);
+
+    eeprom_buffer_flush();
+    return true;
+}

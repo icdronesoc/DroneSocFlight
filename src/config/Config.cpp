@@ -1,4 +1,5 @@
 #include "Config.h"
+#include "hardware/IO.h"
 
 namespace Config {
     HardwareConfig hardwareConfig = HardwareConfig_init_default;

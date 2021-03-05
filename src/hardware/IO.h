@@ -83,4 +83,21 @@ namespace IO {
      * Initialization is affected by hardware config.
      */
     extern etl::vector<TwoWire*, maxNumberOfI2Cs> I2Cs;
+
+    /**
+     * Loads data from non-volatile storage.
+     * @param buffer The buffer to store the data into.
+     * @param maxSize The maximum number of bytes to read (the size of the buffer)
+     * @return The number of bytes read, or 0 if an error occurred (eg. the buffer was not big enough)
+     */
+    size_t loadData(byte* buffer, size_t maxSize);
+
+    /**
+     * Stores data in non-volatile storage.
+     * Overwrites any existing data.
+     * @param data The data to write
+     * @param length The length of the data to write
+     * @return true if the store was successful, false if it was not (eg. the non-volatile storage is not big enough)
+     */
+    bool storeData(byte* data, size_t length);
 }

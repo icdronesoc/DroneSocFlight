@@ -6,7 +6,7 @@
 #ifdef PLATFORM_ESP32
 #include <ESP32Servo.h>
 #else
-#include <Servo.h>
+#include <Servo.h> // TODO STM32 Servo library uses ISR-based driving...
 #endif
 
 namespace MotorDrivers {

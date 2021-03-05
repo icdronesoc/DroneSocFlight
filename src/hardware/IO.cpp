@@ -5,8 +5,10 @@
 #if defined(PLATFORM_ESP32)
 #include <BluetoothSerial.h>
 #include <esp_task_wdt.h>
+#include <Preferences.h>
 #elif defined(PLATFORM_STM32)
 #include <IWatchdog.h>
+#include <utils/CRC.h>
 #endif
 
 namespace IO {
@@ -20,6 +22,8 @@ namespace IO {
     void resetWatchdogTimer();
     extern Pin pins[];
     void setupMcuHardware(IOConfig ioConfig);
+    size_t loadData(byte *buffer, size_t maxSize);
+    bool storeData(byte *data, size_t length);
 
     // Include target file
 #ifdef BUILD_TARGET

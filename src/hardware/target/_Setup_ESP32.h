@@ -2,11 +2,16 @@ constexpr pb_size_t ESP32_MAX_UARTS = 3;
 constexpr pb_size_t ESP32_MAX_I2Cs = 2;
 constexpr pb_size_t ESP32_MAX_SPIs = 2;
 
+Preferences preferences;
+
 void resetWatchdogTimer() {
     esp_task_wdt_reset();
 }
 
 void setupMcuHardware(IOConfig ioConfig) {
+    // Setup preferences
+    preferences.begin("config", false);
+
     // Setup WDT
     esp_task_wdt_init(WatchDogTimeout, true);
     esp_task_wdt_add(nullptr);
@@ -97,4 +102,12 @@ void setupMcuHardware(IOConfig ioConfig) {
         // Add to the array even if checks failed to preserve original indexing
         SPIs.push_back(spi);
     }
+}
+
+size_t loadData(byte *buffer, size_t maxSize) {
+    return preferences.getBytes("config", buffer, maxSize);
+}
+
+bool storeData(byte *data, size_t length) {
+    return preferences.putBytes("config", data, length) > 0;
 }

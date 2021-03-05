@@ -16,6 +16,7 @@ namespace FlightControlTasks {
             auto gyroscopeData = Hardware::gyroscope->getRotationData();
             // TODO angle mode?
             // TODO check axis are correct
+            // TODO downscale if PID is running at a lower speed
             Controllers::axisSetpoints.pitch = gyroscopeData.x;
             Controllers::axisSetpoints.roll = gyroscopeData.y;
             Controllers::axisSetpoints.yaw = gyroscopeData.z;
