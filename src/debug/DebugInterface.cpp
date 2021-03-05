@@ -47,10 +47,8 @@ namespace Debug {
             warningEnabled = Config::hardwareConfig.debugConfig.warningEnabled;
             errorEnabled = Config::hardwareConfig.debugConfig.errorEnabled;
 
-            auto uartIndex = Config::hardwareConfig.debugConfig.uartIndex;
-            if (uartIndex < IO::UARTs.size() && IO::UARTs[uartIndex] != nullptr) {
-                debugSerial = IO::UARTs[uartIndex];
-            }
+            auto uart = IO::takeUart(Config::hardwareConfig.debugConfig.uartIndex);
+            if (uart != nullptr) debugSerial = uart;
         }
     }
 

@@ -53,9 +53,15 @@ namespace IO {
      * All available UARTs except for the config UART.
      * Initialization is affected by hardware config.
      * TODO give UARTs names
-     * TODO have take() function that replaces UART with nullptr to remove the possibility of collisions
      */
     extern etl::vector<SerialPort*, maxNumberOfUARTs> UARTs;
+
+    /**
+     * Attempts to exclusively take a UART. Doing so will make the UART unavailable for use by other drivers.
+     * @param uartIndex The UART index
+     * @return The UART or nullptr if it does not exist or was taken.
+     */
+    extern SerialPort* takeUart(size_t uartIndex);
 
     /**
      * All available SPIs.

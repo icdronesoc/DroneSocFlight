@@ -39,8 +39,20 @@ namespace IO {
         return nullptr;
     }
 
+    etl::vector<bool, maxNumberOfUARTs> uartIsTaken;
+
+    SerialPort *takeUart(size_t uartIndex) {
+        if (uartIndex >= UARTs.size()) return nullptr;
+        auto uart = UARTs[uartIndex];
+        if (uart == nullptr) return nullptr;
+        if (uartIsTaken[uartIndex]) return nullptr;
+        uartIsTaken[uartIndex] = true;
+        return uart;
+    }
+
     void initialize() {
         setupMcuHardware(Config::hardwareConfig.ioConfig);
+        for (size_t i = 0; i < UARTs.size(); i++) uartIsTaken.push_back(false);
         Debug::info("IO Configured.");
     }
 }
