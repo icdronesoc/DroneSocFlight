@@ -53,6 +53,7 @@ namespace IO {
      * All available UARTs except for the config UART.
      * Initialization is affected by hardware config.
      * TODO give UARTs names
+     * TODO have take() function that replaces UART with nullptr to remove the possibility of collisions
      */
     extern etl::vector<SerialPort*, maxNumberOfUARTs> UARTs;
 

@@ -17,7 +17,11 @@ void setupMcuHardware(IOConfig ioConfig) {
             auto rxPin = findPin(ioConfig.uartConfigs[i].tx.pinName);
             if (txPin != nullptr && rxPin != nullptr) {
                 hardwareSerial = new HardwareSerial(rxPin->number, txPin->number);
+            } else {
+                Debug::error("Hardware Serial %s TX and/or RX pin does not exist.", i);
             }
+        } else {
+            Debug::error("Hardware Serial %s configuration invalid.", i);
         }
         // Add to the array even if checks failed to preserve original indexing
         auto serialPort = hardwareSerial == nullptr ? nullptr : new HardwareSerialPort(hardwareSerial);
@@ -31,7 +35,11 @@ void setupMcuHardware(IOConfig ioConfig) {
             auto rxPin = findPin(ioConfig.softwareUartConfigs[i].tx.pinName);
             if (txPin != nullptr && rxPin != nullptr) {
                 softwareSerial = new SoftwareSerial(rxPin->number, txPin->number);
+            } else {
+                Debug::error("Software Serial %s TX and/or RX pin does not exist.", i);
             }
+        } else {
+            Debug::error("Software Serial %s configuration invalid.", i);
         }
         // Add to the array even if checks failed to preserve original indexing
         auto serialPort = softwareSerial == nullptr ? nullptr : new SoftwareSerialPort(softwareSerial);
@@ -50,8 +58,15 @@ void setupMcuHardware(IOConfig ioConfig) {
                         i2c->setClock(100000);
                     case I2CConfig_Speed__400kHz:
                         i2c->setClock(400000);
+                    default:
+                        Debug::error("I2C %s speed invalid.", i);
+                        break;
                 }
+            } else {
+                Debug::error("I2C %s SDA and/or SCL pin does not exist.", i);
             }
+        } else {
+            Debug::error("I2C %s configuration invalid.", i);
         }
         // Add to the array even if checks failed to preserve original indexing
         I2Cs.push_back(i2c);
@@ -65,7 +80,11 @@ void setupMcuHardware(IOConfig ioConfig) {
             auto sckPin = findPin(ioConfig.spiConfigs[i].sck.pinName);
             if (mosiPin != nullptr && misoPin != nullptr && sckPin != nullptr) {
                 spi = new SPIClass(mosiPin->number, misoPin->number, sckPin->number);
+            } else {
+                Debug::error("SPI %s MOSI and/or MISO and/or SCK pin does not exist.", i);
             }
+        } else {
+            Debug::error("SPI %s configuration invalid.", i);
         }
         // Add to the array even if checks failed to preserve original indexing
         SPIs.push_back(spi);

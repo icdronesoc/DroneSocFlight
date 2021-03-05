@@ -3,6 +3,7 @@
 #include "hardware/IO.h"
 #include "scheduler/Scheduler.h"
 #include "rc/drivers/AllDrivers.h"
+#include "debug/DebugInterface.h"
 
 namespace RC {
     namespace { // private
@@ -27,21 +28,31 @@ namespace RC {
 
     void initialize() {
         // Choose driver
-        switch (Config::hardwareConfig.rcConfig.which_driverConfig) {
-            case RCConfig_crossfire_tag: {
-                auto uartIndex = Config::hardwareConfig.rcConfig.driverConfig.ibus.uartIndex;
-                if (uartIndex < IO::UARTs.size() && IO::UARTs[uartIndex] != nullptr) {
-                    driver = new RcDrivers::CrossfireDriver(*IO::UARTs[uartIndex]);
+        if (Config::hardwareConfig.has_rcConfig) {
+            switch (Config::hardwareConfig.rcConfig.which_driverConfig) {
+                case RCConfig_crossfire_tag: {
+                    auto uartIndex = Config::hardwareConfig.rcConfig.driverConfig.ibus.uartIndex;
+                    if (uartIndex < IO::UARTs.size() && IO::UARTs[uartIndex] != nullptr) {
+                        driver = new RcDrivers::CrossfireDriver(*IO::UARTs[uartIndex]);
+                    } else {
+                        Debug::error("RC Driver UART not valid.");
+                    }
+                    break;
                 }
-                break;
-            }
-            case RCConfig_ibus_tag: {
-                auto uartIndex = Config::hardwareConfig.rcConfig.driverConfig.ibus.uartIndex;
-                if (uartIndex < IO::UARTs.size() && IO::UARTs[uartIndex] != nullptr) {
-                    driver = new RcDrivers::IBUSDriver(*IO::UARTs[uartIndex]);
+                case RCConfig_ibus_tag: {
+                    auto uartIndex = Config::hardwareConfig.rcConfig.driverConfig.ibus.uartIndex;
+                    if (uartIndex < IO::UARTs.size() && IO::UARTs[uartIndex] != nullptr) {
+                        driver = new RcDrivers::IBUSDriver(*IO::UARTs[uartIndex]);
+                    } else {
+                        Debug::error("RC Driver UART not valid.");
+                    }
+                    break;
                 }
-                break;
+                default:
+                    Debug::error("RC Driver Config type invalid.");
             }
+        } else {
+            Debug::warning("No RC Driver configured.");
         }
 
         if (driver != nullptr) {
@@ -54,6 +65,8 @@ namespace RC {
             auto task = new Scheduler::Task(tryGetFrame, RCTaskName);
             auto runner = new Scheduler::AdHocTaskRunner(task, shouldTryToGetFrame);
             Scheduler::addTaskRunner(runner);
+
+            Debug::info("RC Driver configured.");
         }
     }
 

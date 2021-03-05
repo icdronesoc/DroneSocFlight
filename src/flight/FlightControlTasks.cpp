@@ -3,6 +3,7 @@
 #include "scheduler/Scheduler.h"
 #include "Controllers.h"
 #include "Mixer.h"
+#include "debug/DebugInterface.h"
 
 namespace FlightControlTasks {
     namespace { // private
@@ -43,7 +44,7 @@ namespace FlightControlTasks {
 
     void initialize() {
         if (Hardware::gyroscope == nullptr) {
-            // TODO produce error message
+            Debug::error("Cannot initialize Flight Control Tasks as no gyroscope is configured.");
             return;
         }
 
@@ -51,6 +52,7 @@ namespace FlightControlTasks {
             auto task = new Scheduler::Task(readAccelerometer, AccelerometerTaskName);
             auto schedule = new Scheduler::IndependentTaskSchedule(AccelerometerTaskName, task, Hardware::accelerometer->sampleRate);
             Scheduler::addTaskRunner(schedule);
+            Debug::info("Accelerometer reading task configured.");
         }
 
         auto gyroTask = new Scheduler::Task(readGyroscope, GyroscopeTaskName);
@@ -60,5 +62,6 @@ namespace FlightControlTasks {
         auto sequenceSchedule = new Scheduler::SequentialTaskSchedule<3>(FlightControlScheduleName, {gyroTask, pidTask, mixerTask}, {pidLoopFrequencyDivider, 1}, Hardware::gyroscope->sampleRate);
 
         Scheduler::addTaskRunner(sequenceSchedule);
+        Debug::info("Flight Control Tasks configured.");
     }
 }

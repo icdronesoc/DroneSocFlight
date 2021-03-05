@@ -52,6 +52,9 @@ typedef struct _CrossfireConfig {
 
 typedef struct _DebugConfig {
     uint32_t uartIndex;
+    bool infoEnabled;
+    bool warningEnabled;
+    bool errorEnabled;
 } DebugConfig;
 
 typedef struct _IBUSConfig {
@@ -218,7 +221,7 @@ typedef struct _HardwareConfig {
 #define RCConfig_init_default                    {0, {CrossfireConfig_init_default}}
 #define IBUSConfig_init_default                  {0}
 #define CrossfireConfig_init_default             {0}
-#define DebugConfig_init_default                 {0}
+#define DebugConfig_init_default                 {0, 0, 0, 0}
 #define HardwareConfig_init_zero                 {false, IOConfig_init_zero, false, DebugConfig_init_zero, false, AccelerometerConfig_init_zero, false, GyroscopeConfig_init_zero, 0, {MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero}, 0, {ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero}, false, MixerConfig_init_zero, false, RCConfig_init_zero, 0}
 #define SoftwareConfig_init_zero                 {0}
 #define IOConfig_init_zero                       {0, {UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero}, 0, {UartConfig_init_zero, UartConfig_init_zero}, 0, {I2CConfig_init_zero, I2CConfig_init_zero, I2CConfig_init_zero, I2CConfig_init_zero}, 0, {SPIConfig_init_zero, SPIConfig_init_zero, SPIConfig_init_zero, SPIConfig_init_zero}}
@@ -237,11 +240,14 @@ typedef struct _HardwareConfig {
 #define RCConfig_init_zero                       {0, {CrossfireConfig_init_zero}}
 #define IBUSConfig_init_zero                     {0}
 #define CrossfireConfig_init_zero                {0}
-#define DebugConfig_init_zero                    {0}
+#define DebugConfig_init_zero                    {0, 0, 0, 0}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define CrossfireConfig_uartIndex_tag            1
 #define DebugConfig_uartIndex_tag                1
+#define DebugConfig_infoEnabled_tag              2
+#define DebugConfig_warningEnabled_tag           3
+#define DebugConfig_errorEnabled_tag             4
 #define IBUSConfig_uartIndex_tag                 1
 #define MixerRule_targetType_tag                 1
 #define MixerRule_targetIndex_tag                2
@@ -432,7 +438,10 @@ X(a, STATIC,   SINGULAR, UINT32,   uartIndex,         1)
 #define CrossfireConfig_DEFAULT NULL
 
 #define DebugConfig_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   uartIndex,         1)
+X(a, STATIC,   SINGULAR, UINT32,   uartIndex,         1) \
+X(a, STATIC,   SINGULAR, BOOL,     infoEnabled,       2) \
+X(a, STATIC,   SINGULAR, BOOL,     warningEnabled,    3) \
+X(a, STATIC,   SINGULAR, BOOL,     errorEnabled,      4)
 #define DebugConfig_CALLBACK NULL
 #define DebugConfig_DEFAULT NULL
 
@@ -478,7 +487,7 @@ extern const pb_msgdesc_t DebugConfig_msg;
 #define DebugConfig_fields &DebugConfig_msg
 
 /* Maximum encoded size of messages (where known) */
-#define HardwareConfig_size                      1294
+#define HardwareConfig_size                      1300
 #define SoftwareConfig_size                      0
 #define IOConfig_size                            364
 #define UartConfig_size                          16
@@ -496,7 +505,7 @@ extern const pb_msgdesc_t DebugConfig_msg;
 #define RCConfig_size                            8
 #define IBUSConfig_size                          6
 #define CrossfireConfig_size                     6
-#define DebugConfig_size                         6
+#define DebugConfig_size                         12
 
 #ifdef __cplusplus
 } /* extern "C" */

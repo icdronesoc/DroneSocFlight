@@ -1,5 +1,6 @@
 #include "IO.h"
 #include <SoftwareSerial.h>
+#include "debug/DebugInterface.h"
 
 #if defined(PLATFORM_ESP32)
 #include <BluetoothSerial.h>
@@ -40,5 +41,6 @@ namespace IO {
 
     void initialize() {
         setupMcuHardware(Config::hardwareConfig.ioConfig);
+        Debug::info("IO Configured.");
     }
 }

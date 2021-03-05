@@ -1,6 +1,7 @@
 #include "Mixer.h"
 #include "etl/vector.h"
 #include "hardware/Hardware.h"
+#include "debug/DebugInterface.h"
 
 namespace Mixer {
     namespace { // private
@@ -37,12 +38,14 @@ namespace Mixer {
         servoOutputBufferSize = Hardware::servos.size();
         servoOutputBuffer = new double[servoOutputBufferSize];
 
-        // Validate mixer rules TODO produce error when validation fails
+        // Validate mixer rules
         for (pb_size_t i = 0; i < Config::hardwareConfig.mixerConfig.mixerRules_count; i++) {
             // Check weight
             if (Config::hardwareConfig.mixerConfig.mixerRules[i].weight < -1 ||
-                Config::hardwareConfig.mixerConfig.mixerRules[i].weight > 1)
+                Config::hardwareConfig.mixerConfig.mixerRules[i].weight > 1) {
+                Debug::error("Mixer rule %s weight out of range.", i);
                 continue;
+            }
 
             // Check source
             MixerSource source;
@@ -60,6 +63,7 @@ namespace Mixer {
                     source = MixerSource::YAW;
                     break;
                 default:
+                    Debug::error("Mixer rule %s source invalid.", i);
                     continue;
             }
 
@@ -68,14 +72,21 @@ namespace Mixer {
             TargetType targetType;
             switch (Config::hardwareConfig.mixerConfig.mixerRules[i].targetType) {
                 case MixerRule_TargetType_MOTOR:
-                    if (Hardware::motors.size() <= targetIndex || Hardware::motors[targetIndex] == nullptr) continue;
+                    if (Hardware::motors.size() <= targetIndex || Hardware::motors[targetIndex] == nullptr) {
+                        Debug::error("Mixer rule %s: cannot find motor %s.", i, targetIndex);
+                        continue;
+                    }
                     targetType = TargetType::MOTOR;
                     break;
                 case MixerRule_TargetType_SERVO:
-                    if (Hardware::servos.size() <= targetIndex || Hardware::servos[targetIndex] == nullptr) continue;
+                    if (Hardware::servos.size() <= targetIndex || Hardware::servos[targetIndex] == nullptr) {
+                        Debug::error("Mixer rule %s: cannot find servo %s.", i, targetIndex);
+                        continue;
+                    }
                     targetType = TargetType::SERVO;
                     break;
                 default:
+                    Debug::error("Mixer rule %s: target type invalid.", i);
                     continue;
             }
 
@@ -109,6 +120,8 @@ namespace Mixer {
                     selectedInput = yawPidOutput;
                     break;
                 default:
+                    // Should be impossible as mixer rules are validated in initialization
+                    Debug::error("Mixer rule source invalid.");
                     continue;
             }
 
@@ -121,6 +134,7 @@ namespace Mixer {
                 buffer = &servoOutputBuffer;
                 break;
             default:
+                Debug::error("Mixer rule target type invalid.");
                 continue;
             }
 

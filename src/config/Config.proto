@@ -140,4 +140,7 @@ message CrossfireConfig {
 
 message DebugConfig {
     uint32 uartIndex = 1;
+    bool infoEnabled = 2;
+    bool warningEnabled = 3;
+    bool errorEnabled = 4;
 }
