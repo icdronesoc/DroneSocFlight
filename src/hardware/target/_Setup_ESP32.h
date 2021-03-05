@@ -13,13 +13,13 @@ void setupMcuHardware(IOConfig ioConfig) {
 
     auto bluetoothSerial = new BluetoothSerial();
     bluetoothSerial->begin("DroneSoc FC");
-    UARTs.push_back(new StreamSerialPort(bluetoothSerial));
+    UARTs.push_back(UartDescriptor(new StreamSerialPort(bluetoothSerial), "Bluetooth"));
 
     for (pb_size_t i = 0; i < min(ESP32_MAX_UARTS, ioConfig.uartConfigs_count); i++) {
         HardwareSerialPort* hardwareSerial = nullptr;
         if (ioConfig.uartConfigs[i].has_tx && ioConfig.uartConfigs[i].has_rx) {
             auto txPin = findPin(ioConfig.uartConfigs[i].tx.pinName);
-            auto rxPin = findPin(ioConfig.uartConfigs[i].tx.pinName);
+            auto rxPin = findPin(ioConfig.uartConfigs[i].rx.pinName);
             if (txPin != nullptr && rxPin != nullptr) {
                 hardwareSerial = new HardwareSerialPort(new HardwareSerial(i), txPin->number, rxPin->number);
             } else {
@@ -29,14 +29,14 @@ void setupMcuHardware(IOConfig ioConfig) {
             Debug::error("Hardware Serial %s configuration invalid.", i);
         }
         // Add to the array even if checks failed to preserve original indexing
-        UARTs.push_back(hardwareSerial);
+        UARTs.push_back(UartDescriptor(hardwareSerial, ioConfig.uartConfigs[i].name));
     }
 
     for (pb_size_t i = 0; i < ioConfig.softwareUartConfigs_count; i++) {
         SoftwareSerialPort* softwareSerial = nullptr;
         if (ioConfig.softwareUartConfigs[i].has_tx && ioConfig.softwareUartConfigs[i].has_rx) {
             auto txPin = findPin(ioConfig.softwareUartConfigs[i].tx.pinName);
-            auto rxPin = findPin(ioConfig.softwareUartConfigs[i].tx.pinName);
+            auto rxPin = findPin(ioConfig.softwareUartConfigs[i].rx.pinName);
             if (txPin != nullptr && rxPin != nullptr) {
                 softwareSerial = new SoftwareSerialPort(new SoftwareSerial(rxPin->number, txPin->number));
             } else {
@@ -46,7 +46,7 @@ void setupMcuHardware(IOConfig ioConfig) {
             Debug::error("Software Serial %s configuration invalid.", i);
         }
         // Add to the array even if checks failed to preserve original indexing
-        UARTs.push_back(softwareSerial);
+        UARTs.push_back(UartDescriptor(softwareSerial, ioConfig.softwareUartConfigs[i].name));
     }
 
     for (pb_size_t i = 0; i < min(ESP32_MAX_I2Cs, ioConfig.i2cConfigs_count); i++) {

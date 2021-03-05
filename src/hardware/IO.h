@@ -4,6 +4,7 @@
 #include <SPI.h>
 #include <Wire.h>
 #include <etl/vector.h>
+#include <etl/string.h>
 #include "config/Config.h"
 #include "AbstractSerialPort.h"
 
@@ -23,7 +24,7 @@ namespace IO {
     void resetWatchdogTimer();
 
     constexpr size_t maxPinNameLength = sizeof(Pin::pinName) / sizeof(char);
-    constexpr size_t maxNumberOfUARTs = sizeof(IOConfig::uartConfigs) / sizeof(UartConfig) + sizeof(IOConfig::softwareUartConfigs) / sizeof(UartConfig); // TODO when config UART gets moved here, always add 1
+    constexpr size_t maxNumberOfUARTs = sizeof(IOConfig::uartConfigs) / sizeof(UartConfig) + sizeof(IOConfig::softwareUartConfigs) / sizeof(UartConfig) + 1;
     constexpr size_t maxNumberOfI2Cs = sizeof(IOConfig::i2cConfigs) / sizeof(I2CConfig);
     constexpr size_t maxNumberOfSPIs = sizeof(IOConfig::spiConfigs) / sizeof(SPIConfig);
 
@@ -49,12 +50,20 @@ namespace IO {
      */
     Pin* findPin(char* pinName);
 
+    struct UartDescriptor {
+        static constexpr size_t NameSize = sizeof(UartConfig::name) / sizeof(char);
+        using Name = etl::string<NameSize>;
+
+        UartDescriptor(SerialPort* uart, const Name& name) : uart(uart), name(name) {}
+        SerialPort* uart;
+        Name name;
+    };
+
     /**
      * All available UARTs except for the config UART.
      * Initialization is affected by hardware config.
-     * TODO give UARTs names
      */
-    extern etl::vector<SerialPort*, maxNumberOfUARTs> UARTs;
+    extern etl::vector<UartDescriptor, maxNumberOfUARTs> UARTs;
 
     /**
      * Attempts to exclusively take a UART. Doing so will make the UART unavailable for use by other drivers.

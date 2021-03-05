@@ -12,7 +12,7 @@
 namespace IO {
     constexpr uint32_t WatchDogTimeout = 1; // Seconds
 
-    etl::vector<SerialPort*, maxNumberOfUARTs> UARTs;
+    etl::vector<UartDescriptor, maxNumberOfUARTs> UARTs;
     etl::vector<SPIClass*, maxNumberOfSPIs> SPIs;
     etl::vector<TwoWire*, maxNumberOfI2Cs> I2Cs;
 
@@ -43,11 +43,11 @@ namespace IO {
 
     SerialPort *takeUart(size_t uartIndex) {
         if (uartIndex >= UARTs.size()) return nullptr;
-        auto uart = UARTs[uartIndex];
-        if (uart == nullptr) return nullptr;
+        auto& uart = UARTs[uartIndex];
+        if (uart.uart == nullptr) return nullptr;
         if (uartIsTaken[uartIndex]) return nullptr;
         uartIsTaken[uartIndex] = true;
-        return uart;
+        return uart.uart;
     }
 
     void initialize() {
