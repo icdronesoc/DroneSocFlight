@@ -57,7 +57,7 @@ PB_BIND(IBUSConfig, IBUSConfig, AUTO)
 PB_BIND(CrossfireConfig, CrossfireConfig, AUTO)
 
 
-PB_BIND(DebugConfig, DebugConfig, AUTO)
+PB_BIND(LogConfig, LogConfig, AUTO)
 
 
 PB_BIND(PidProfile, PidProfile, AUTO)

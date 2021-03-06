@@ -1,30 +1,29 @@
-#include "DebugInterface.h"
+#include "Log.h"
 #include "config/Config.h"
 #include "hardware/IO.h"
 #include "etl/to_string.h"
 
-// TODO rename to log
-// TODO add tags to know where message comes from
-namespace Debug {
+namespace Log {
     namespace { // private
         constexpr size_t MAX_LOG_MESSAGE_SIZE = 128; // not including prefix
 
-        IO::SerialPort* debugSerial = nullptr;
+        IO::SerialPort* logSerial = nullptr;
         etl::format_spec timestampFormat;
         bool infoEnabled = false;
         bool warningEnabled = false;
         bool errorEnabled = false;
 
-        // debugLevel must be 7 chars long.
-        void print(const char* debugLevel, const char* format, ...) {
-            if (debugSerial != nullptr) {
-                IO::SerialPort& output = *debugSerial;
+        // logLevel must be 7 chars long.
+        void print(const char* logLevel, const char* tag, const char* format, ...) {
+            if (logSerial != nullptr) {
+                IO::SerialPort& output = *logSerial;
 
-                // 24 chars + null terminator
-                etl::string<25> messagePrefix = "[";
+                etl::string<64> messagePrefix = "[";
                 etl::to_string(millis(), messagePrefix, true);
                 messagePrefix.append("] [");
-                messagePrefix.append(debugLevel);
+                messagePrefix.append(logLevel);
+                messagePrefix.append("] [");
+                messagePrefix.append(tag);
                 messagePrefix.append("]: ");
 
                 char buffer[MAX_LOG_MESSAGE_SIZE];
@@ -43,39 +42,39 @@ namespace Debug {
     void initialize() {
         timestampFormat.decimal().width(10).fill(' ');
 
-        if (Config::config.has_debugConfig) {
-            infoEnabled = Config::config.debugConfig.infoEnabled;
-            warningEnabled = Config::config.debugConfig.warningEnabled;
-            errorEnabled = Config::config.debugConfig.errorEnabled;
+        if (Config::config.has_logConfig) {
+            infoEnabled = Config::config.logConfig.infoEnabled;
+            warningEnabled = Config::config.logConfig.warningEnabled;
+            errorEnabled = Config::config.logConfig.errorEnabled;
 
-            auto uart = IO::takeUart(Config::config.debugConfig.uartIndex);
-            if (uart != nullptr) debugSerial = uart;
+            auto uart = IO::takeUart(Config::config.logConfig.uartIndex);
+            if (uart != nullptr) logSerial = uart;
         }
     }
 
-    void info(const char *format, ...) {
+    void info(const char* tag, const char *format, ...) {
         if (infoEnabled) {
             va_list va;
             va_start(va, format);
-            print("INFO   ", format, va);
+            print("INFO   ", tag, format, va);
             va_end(va);
         }
     }
 
-    void warning(const char *format, ...) {
+    void warning(const char* tag, const char *format, ...) {
         if (warningEnabled) {
             va_list va;
             va_start(va, format);
-            print("WARNING", format, va);
+            print("WARNING", tag, format, va);
             va_end(va);
         }
     }
 
-    void error(const char *format, ...) {
+    void error(const char* tag, const char *format, ...) {
         if (errorEnabled) {
             va_list va;
             va_start(va, format);
-            print("ERROR  ", format, va);
+            print("ERROR  ", tag, format, va);
             va_end(va);
         }
     }

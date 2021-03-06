@@ -1,10 +1,12 @@
 #include "Mixer.h"
 #include "etl/vector.h"
 #include "hardware/Hardware.h"
-#include "debug/DebugInterface.h"
+#include "log/Log.h"
 
 namespace Mixer {
     namespace { // private
+        const char* LogTag = "Mixer";
+
         enum class MixerSource {
             THROTTLE,
             PITCH,
@@ -44,7 +46,7 @@ namespace Mixer {
                 // Check weight
                 if (Config::config.mixerConfig.mixerRules[i].weight < -1 ||
                     Config::config.mixerConfig.mixerRules[i].weight > 1) {
-                    Debug::error("Mixer rule %s weight out of range.", i);
+                    Log::error(LogTag, "Mixer rule %s weight out of range.", i);
                     continue;
                 }
 
@@ -64,7 +66,7 @@ namespace Mixer {
                         source = MixerSource::YAW;
                         break;
                     default:
-                        Debug::error("Mixer rule %s source invalid.", i);
+                        Log::error(LogTag, "Mixer rule %s source invalid.", i);
                         continue;
                 }
 
@@ -74,20 +76,20 @@ namespace Mixer {
                 switch (Config::config.mixerConfig.mixerRules[i].targetType) {
                     case MixerRule_TargetType_MOTOR:
                         if (Hardware::motors.size() <= targetIndex || Hardware::motors[targetIndex] == nullptr) {
-                            Debug::error("Mixer rule %s: cannot find motor %s.", i, targetIndex);
+                            Log::error(LogTag, "Mixer rule %s: cannot find motor %s.", i, targetIndex);
                             continue;
                         }
                         targetType = TargetType::MOTOR;
                         break;
                     case MixerRule_TargetType_SERVO:
                         if (Hardware::servos.size() <= targetIndex || Hardware::servos[targetIndex] == nullptr) {
-                            Debug::error("Mixer rule %s: cannot find servo %s.", i, targetIndex);
+                            Log::error(LogTag, "Mixer rule %s: cannot find servo %s.", i, targetIndex);
                             continue;
                         }
                         targetType = TargetType::SERVO;
                         break;
                     default:
-                        Debug::error("Mixer rule %s: target type invalid.", i);
+                        Log::error(LogTag, "Mixer rule %s: target type invalid.", i);
                         continue;
                 }
 
@@ -100,7 +102,7 @@ namespace Mixer {
                 });
             }
         } else {
-            Debug::error("Mixer not configured.");
+            Log::error(LogTag, "Mixer not configured.");
         }
     }
 
@@ -125,7 +127,7 @@ namespace Mixer {
                     break;
                 default:
                     // Should be impossible as mixer rules are validated in initialization
-                    Debug::error("Mixer rule source invalid.");
+                    Log::error(LogTag, "Mixer rule source invalid.");
                     continue;
             }
 
@@ -138,7 +140,7 @@ namespace Mixer {
                 buffer = &servoOutputBuffer;
                 break;
             default:
-                Debug::error("Mixer rule target type invalid.");
+                Log::error(LogTag, "Mixer rule target type invalid.");
                 continue;
             }
 

@@ -3,10 +3,12 @@
 #include "hardware/IO.h"
 #include "scheduler/Scheduler.h"
 #include "rc/drivers/AllDrivers.h"
-#include "debug/DebugInterface.h"
+#include "log/Log.h"
 
 namespace RC {
     namespace { // private
+        const char* LogTag = "RC";
+
         Driver* driver = nullptr;
         uint32_t lastFrameTimeMs = 0;
 
@@ -35,7 +37,7 @@ namespace RC {
                     if (uart != nullptr) {
                         driver = new RcDrivers::CrossfireDriver(*uart);
                     } else {
-                        Debug::error("RC Driver UART not valid.");
+                        Log::error(LogTag, "RC Driver UART not valid.");
                     }
                     break;
                 }
@@ -44,15 +46,15 @@ namespace RC {
                     if (uart != nullptr) {
                         driver = new RcDrivers::IBUSDriver(*uart);
                     } else {
-                        Debug::error("RC Driver UART not valid.");
+                        Log::error(LogTag, "RC Driver UART not valid.");
                     }
                     break;
                 }
                 default:
-                    Debug::error("RC Driver Config type invalid.");
+                    Log::error(LogTag, "RC Driver Config type invalid.");
             }
         } else {
-            Debug::warning("No RC Driver configured.");
+            Log::warning(LogTag, "No RC Driver configured.");
         }
 
         if (driver != nullptr) {
@@ -66,7 +68,7 @@ namespace RC {
             auto runner = new Scheduler::AdHocTaskRunner(task, shouldTryToGetFrame);
             Scheduler::addTaskRunner(runner);
 
-            Debug::info("RC Driver configured.");
+            Log::info(LogTag, "RC Driver configured.");
         }
     }
 

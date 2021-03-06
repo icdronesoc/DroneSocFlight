@@ -2,7 +2,7 @@ syntax = "proto3";
 
 message Configuration {
     IOConfig ioConfig = 1;
-    DebugConfig debugConfig = 2;
+    LogConfig logConfig = 2;
     AccelerometerConfig accelerometerConfig = 3;
     GyroscopeConfig gyroscopeConfig = 4;
     repeated MotorConfig motors = 5;
@@ -137,7 +137,7 @@ message CrossfireConfig {
     uint32 uartIndex = 1;
 }
 
-message DebugConfig {
+message LogConfig {
     uint32 uartIndex = 1;
     bool infoEnabled = 2;
     bool warningEnabled = 3;

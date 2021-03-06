@@ -3,10 +3,12 @@
 #include "scheduler/Scheduler.h"
 #include "AxisControllers.h"
 #include "Mixer.h"
-#include "debug/DebugInterface.h"
+#include "log/Log.h"
 
 namespace FlightControlTasks {
     namespace { // private
+        const char* LogTag = "Flight Control Tasks";
+
         const Scheduler::Name FlightControlScheduleName = "Flight Control";
 
         const Scheduler::Name GyroscopeTaskName = "Gyroscope";
@@ -33,6 +35,7 @@ namespace FlightControlTasks {
         const Scheduler::Name PidTaskName = "PID Loop";
 
         void doPidTask() {
+            // TODO get setpoint
             AxisControllers::compute();
         }
 
@@ -45,7 +48,7 @@ namespace FlightControlTasks {
 
     void initialize() {
         if (Hardware::gyroscope == nullptr) {
-            Debug::error("Cannot initialize Flight Control Tasks as no gyroscope is configured.");
+            Log::error(LogTag, "Cannot initialize Flight Control Tasks as no gyroscope is configured.");
             return;
         }
 
@@ -53,7 +56,7 @@ namespace FlightControlTasks {
             auto task = new Scheduler::Task(readAccelerometer, AccelerometerTaskName);
             auto schedule = new Scheduler::IndependentTaskSchedule(AccelerometerTaskName, task, Hardware::accelerometer->sampleRate);
             Scheduler::addTaskRunner(schedule);
-            Debug::info("Accelerometer reading task configured.");
+            Log::info(LogTag, "Accelerometer reading task configured.");
         }
 
         auto gyroTask = new Scheduler::Task(readGyroscope, GyroscopeTaskName);
@@ -63,6 +66,6 @@ namespace FlightControlTasks {
         auto sequenceSchedule = new Scheduler::SequentialTaskSchedule<3>(FlightControlScheduleName, {gyroTask, pidTask, mixerTask}, {pidLoopFrequencyDivider, 1}, Hardware::gyroscope->sampleRate);
 
         Scheduler::addTaskRunner(sequenceSchedule);
-        Debug::info("Flight Control Tasks configured.");
+        Log::info(LogTag, "Flight Control Tasks configured.");
     }
 }

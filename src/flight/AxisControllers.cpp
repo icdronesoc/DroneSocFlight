@@ -1,6 +1,6 @@
 #include "AxisControllers.h"
 #include "config/Config.h"
-#include "debug/DebugInterface.h"
+#include "log/Log.h"
 #include "PidController.h"
 
 namespace AxisControllers {
@@ -11,6 +11,8 @@ namespace AxisControllers {
     double throttleOutput;
 
     namespace { // private
+        const char* LogTag = "Axis Controllers";
+
         // Gains are stored separately from the controller to allow for dynamic gain adjustment.
 
         PidGains pitchGains = PidGains(0, 0, 0, 0);
@@ -51,10 +53,10 @@ namespace AxisControllers {
                 yawGains.Kd = profile.yaw.Kd;
                 yawGains.Kff = profile.yaw.Kff;
             } else {
-                Debug::error("Selected PID profile does not contain gains for each axis.");
+                Log::error(LogTag, "Selected PID profile does not contain gains for each axis.");
             }
         } else {
-            Debug::error("Selected PID profile is out of range.");
+            Log::error(LogTag, "Selected PID profile is out of range.");
         }
     }
 }

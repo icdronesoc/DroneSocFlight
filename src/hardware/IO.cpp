@@ -1,6 +1,6 @@
 #include "IO.h"
 #include <SoftwareSerial.h>
-#include "debug/DebugInterface.h"
+#include "log/Log.h"
 
 #if defined(PLATFORM_ESP32)
 #include <BluetoothSerial.h>
@@ -12,6 +12,10 @@
 #endif
 
 namespace IO {
+    namespace { // private
+        const char* LogTag = "IO";
+    }
+
     constexpr uint32_t WatchDogTimeout = 1; // Seconds
 
     etl::vector<UartDescriptor, maxNumberOfUARTs> UARTs;
@@ -57,6 +61,6 @@ namespace IO {
     void initialize() {
         setupMcuHardware(Config::config.ioConfig);
         for (size_t i = 0; i < UARTs.size(); i++) uartIsTaken.push_back(false);
-        Debug::info("IO Configured.");
+        Log::info(LogTag, "IO Configured.");
     }
 }

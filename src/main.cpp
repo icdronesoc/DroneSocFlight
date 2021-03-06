@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 #include "hardware/IO.h"
-#include "debug/DebugInterface.h"
+#include "log/Log.h"
 #include "hardware/Hardware.h"
 #include "rc/RC.h"
 #include "scheduler/Scheduler.h"
@@ -9,17 +9,22 @@
 #include "flight/FlightControlTasks.h"
 #include "flight/Mixer.h"
 
+namespace { // private
+    const char* LogTag = "Main";
+}
+
 void setup() {
-    // Config must be loaded first, then IO, then Debug, then Hardware. After this it doesn't really matter.
+    // Config must be loaded first, then IO, then Log, then Hardware. After this it doesn't really matter.
     Config::loadConfig();
     IO::initialize();
-    Debug::initialize();
+    Log::initialize();
+    Log::info(LogTag, "Beginning initialization...");
     Hardware::initialize();
     RC::initialize();
     Mixer::initialize();
     AxisControllers::initialize();
     FlightControlTasks::initialize();
-    Debug::info("Configuration Complete!");
+    Log::info(LogTag, "Configuration Complete!");
 }
 
 void loop() {

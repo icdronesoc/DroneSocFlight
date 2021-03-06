@@ -18,10 +18,10 @@ void setupMcuHardware(IOConfig ioConfig) {
             if (txPin != nullptr && rxPin != nullptr) {
                 hardwareSerial = new HardwareSerialPort(new HardwareSerial(rxPin->number, txPin->number));
             } else {
-                Debug::error("Hardware Serial %s TX and/or RX pin does not exist.", i);
+                Log::error(LogTag, "Hardware Serial %s TX and/or RX pin does not exist.", i);
             }
         } else {
-            Debug::error("Hardware Serial %s configuration invalid.", i);
+            Log::error(LogTag, "Hardware Serial %s configuration invalid.", i);
         }
         // Add to the array even if checks failed to preserve original indexing
         UARTs.push_back(UartDescriptor(hardwareSerial, ioConfig.uartConfigs[i].name));
@@ -35,10 +35,10 @@ void setupMcuHardware(IOConfig ioConfig) {
             if (txPin != nullptr && rxPin != nullptr) {
                 softwareSerial = new SoftwareSerialPort(new SoftwareSerial(rxPin->number, txPin->number));
             } else {
-                Debug::error("Software Serial %s TX and/or RX pin does not exist.", i);
+                Log::error(LogTag, "Software Serial %s TX and/or RX pin does not exist.", i);
             }
         } else {
-            Debug::error("Software Serial %s configuration invalid.", i);
+            Log::error(LogTag, "Software Serial %s configuration invalid.", i);
         }
         // Add to the array even if checks failed to preserve original indexing
         UARTs.push_back(UartDescriptor(softwareSerial, ioConfig.softwareUartConfigs[i].name));
@@ -57,14 +57,14 @@ void setupMcuHardware(IOConfig ioConfig) {
                     case I2CConfig_Speed__400kHz:
                         i2c->setClock(400000);
                     default:
-                        Debug::error("I2C %s speed invalid.", i);
+                        Log::error(LogTag, "I2C %s speed invalid.", i);
                         break;
                 }
             } else {
-                Debug::error("I2C %s SDA and/or SCL pin does not exist.", i);
+                Log::error(LogTag, "I2C %s SDA and/or SCL pin does not exist.", i);
             }
         } else {
-            Debug::error("I2C %s configuration invalid.", i);
+            Log::error(LogTag, "I2C %s configuration invalid.", i);
         }
         // Add to the array even if checks failed to preserve original indexing
         I2Cs.push_back(i2c);
@@ -79,10 +79,10 @@ void setupMcuHardware(IOConfig ioConfig) {
             if (mosiPin != nullptr && misoPin != nullptr && sckPin != nullptr) {
                 spi = new SPIClass(mosiPin->number, misoPin->number, sckPin->number);
             } else {
-                Debug::error("SPI %s MOSI and/or MISO and/or SCK pin does not exist.", i);
+                Log::error(LogTag, "SPI %s MOSI and/or MISO and/or SCK pin does not exist.", i);
             }
         } else {
-            Debug::error("SPI %s configuration invalid.", i);
+            Log::error(LogTag, "SPI %s configuration invalid.", i);
         }
         // Add to the array even if checks failed to preserve original indexing
         SPIs.push_back(spi);
@@ -107,7 +107,7 @@ size_t loadData(byte *buffer, size_t maxSize) {
     union sizeAsBytes dataSize;
     for (size_t i = 0; i < sizeOfSize; i++) dataSize.bytes[i] = eeprom_buffered_read_byte(i);
     if (dataSize.size > maxSize) {
-        Debug::error("Error reading non-volatile data: Data size bigger than maximum buffer size.");
+        Log::error(LogTag, "Error reading non-volatile data: Data size bigger than maximum buffer size.");
         return 0;
     }
 
@@ -119,7 +119,7 @@ size_t loadData(byte *buffer, size_t maxSize) {
 
     uint8_t expectedCrc = eeprom_buffered_read_byte(sizeOfSize + dataSize.size);
     if (crc != expectedCrc) {
-        Debug::error("Error reading non-volatile data: CRC invalid.");
+        Log::error(LogTag, "Error reading non-volatile data: CRC invalid.");
         return 0;
     }
 
@@ -128,7 +128,7 @@ size_t loadData(byte *buffer, size_t maxSize) {
 
 bool storeData(byte *data, size_t length) {
     if (length + sizeOfSize + 1 > FLASH_PAGE_SIZE) {
-        Debug::error("Error writing non-volatile data: data is too big.");
+        Log::error(LogTag, "Error writing non-volatile data: data is too big.");
         return false;
     }
 
