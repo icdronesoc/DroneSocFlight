@@ -5,7 +5,7 @@
 /**
  * The PID Controller comprises of the Axis controller which controls the craft's rate of rotation along each axis, and the throttle controller, which dynamically adjusts throttle based on what the Axis controller is doing.
  */
-namespace Controllers {
+namespace AxisControllers {
     struct Axis {
         double pitch;
         double roll;
@@ -34,7 +34,10 @@ namespace Controllers {
      */
     extern double throttleOutput;
 
-//    void setGains(Gains gains);
+    /**
+     * Initializes the AxisControllers. Requires configuration to be valid.
+     */
+    void initialize();
 
     /**
      * Runs PID controller computations.

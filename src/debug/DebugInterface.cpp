@@ -3,6 +3,8 @@
 #include "hardware/IO.h"
 #include "etl/to_string.h"
 
+// TODO rename to log
+// TODO add tags to know where message comes from
 namespace Debug {
     namespace { // private
         constexpr size_t MAX_LOG_MESSAGE_SIZE = 128; // not including prefix

@@ -2,11 +2,16 @@
 
 #include <Arduino.h>
 
+struct PidGains {
+    PidGains(double Kp, double Ki, double Kd, double Kff) : Kp(Kp), Ki(Ki), Kd(Kd), Kff(Kff) {}
+    double Kp, Ki, Kd, Kff;
+};
+
 class PidController {
 public:
     PidController(double &input, double &setpoint, double &output);
 
-    void compute(double Kp, double Ki, double Kd, double Kff);
+    void compute(PidGains& gains);
 
     /**
      * The output limit. The PID Output cannot be greater than +maxOutput or less than -maxOutput.

@@ -5,6 +5,7 @@
 #include "hardware/Hardware.h"
 #include "rc/RC.h"
 #include "scheduler/Scheduler.h"
+#include "flight/AxisControllers.h"
 #include "flight/FlightControlTasks.h"
 #include "flight/Mixer.h"
 
@@ -16,6 +17,7 @@ void setup() {
     Hardware::initialize();
     RC::initialize();
     Mixer::initialize();
+    AxisControllers::initialize();
     FlightControlTasks::initialize();
     Debug::info("Configuration Complete!");
 }

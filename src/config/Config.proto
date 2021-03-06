@@ -10,6 +10,8 @@ message Configuration {
     MixerConfig mixerConfig = 7;
     RCConfig rcConfig = 8;
     uint32 pidLoopFrequencyDivider = 9;
+    repeated PidProfile pidProfiles = 10;
+    uint32 selectedPidProfile = 11;
 }
 
 // Bus config
@@ -140,4 +142,18 @@ message DebugConfig {
     bool infoEnabled = 2;
     bool warningEnabled = 3;
     bool errorEnabled = 4;
+}
+
+message PidProfile {
+    string name = 1;
+    PidControllerConfig pitch = 2;
+    PidControllerConfig roll = 3;
+    PidControllerConfig yaw = 4;
+
+    message PidControllerConfig {
+        double Kp = 1;
+        double Ki = 2;
+        double Kd = 3;
+        double Kff = 4;
+    }
 }

@@ -60,6 +60,12 @@ PB_BIND(CrossfireConfig, CrossfireConfig, AUTO)
 PB_BIND(DebugConfig, DebugConfig, AUTO)
 
 
+PB_BIND(PidProfile, PidProfile, AUTO)
+
+
+PB_BIND(PidProfile_PidControllerConfig, PidProfile_PidControllerConfig, AUTO)
+
+
 
 
 
