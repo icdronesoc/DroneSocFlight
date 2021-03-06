@@ -24,9 +24,9 @@ namespace Hardware {
      */
     extern Gyroscope* gyroscope;
 
-    constexpr size_t maxMotorCount = sizeof(HardwareConfig::motors) / sizeof(MotorConfig);
+    constexpr size_t maxMotorCount = sizeof(Configuration::motors) / sizeof(MotorConfig);
     extern etl::vector<Motor*, maxMotorCount> motors;
 
-    constexpr size_t maxServoCount = sizeof(HardwareConfig::servos) / sizeof(ServoConfig);
+    constexpr size_t maxServoCount = sizeof(Configuration::servos) / sizeof(ServoConfig);
     extern etl::vector<Servo*, maxServoCount> servos;
 }

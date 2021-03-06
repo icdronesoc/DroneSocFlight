@@ -10,11 +10,11 @@ namespace Hardware {
     etl::vector<Servo*, maxServoCount> servos;
 
     void initialize() {
-        if (Config::hardwareConfig.has_accelerometerConfig) {
-            switch(Config::hardwareConfig.accelerometerConfig.which_driverConfig) {
+        if (Config::config.has_accelerometerConfig) {
+            switch(Config::config.accelerometerConfig.which_driverConfig) {
                 case AccelerometerConfig_mpuI2c_tag: {
-                    auto index = Config::hardwareConfig.accelerometerConfig.driverConfig.mpuI2c.busIndex;
-                    auto address = Config::hardwareConfig.accelerometerConfig.driverConfig.mpuI2c.address;
+                    auto index = Config::config.accelerometerConfig.driverConfig.mpuI2c.busIndex;
+                    auto address = Config::config.accelerometerConfig.driverConfig.mpuI2c.address;
                     if (index < IO::I2Cs.size() && IO::I2Cs[index] != nullptr && address < 128) {
                         accelerometer = new IMUDrivers::MpuImu(*IO::I2Cs[index], address);
                     } else {
@@ -23,9 +23,9 @@ namespace Hardware {
                     break;
                 }
                 case AccelerometerConfig_mpuSpi_tag: {
-                    auto index = Config::hardwareConfig.accelerometerConfig.driverConfig.mpuSpi.busIndex;
-                    auto csPin = IO::findPin(Config::hardwareConfig.accelerometerConfig.driverConfig.mpuSpi.csPin.pinName);
-                    if (index < IO::SPIs.size() && IO::SPIs[index] != nullptr && Config::hardwareConfig.accelerometerConfig.driverConfig.mpuSpi.has_csPin && csPin != nullptr) {
+                    auto index = Config::config.accelerometerConfig.driverConfig.mpuSpi.busIndex;
+                    auto csPin = IO::findPin(Config::config.accelerometerConfig.driverConfig.mpuSpi.csPin.pinName);
+                    if (index < IO::SPIs.size() && IO::SPIs[index] != nullptr && Config::config.accelerometerConfig.driverConfig.mpuSpi.has_csPin && csPin != nullptr) {
                         accelerometer = new IMUDrivers::MpuImu(*IO::SPIs[index], csPin->number);
                     } else {
                         Debug::error("MPU SPI Accelerometer Configuration Invalid.");
@@ -41,11 +41,11 @@ namespace Hardware {
         }
 
         // TODO don't create a second instance of MpuImu
-        if (Config::hardwareConfig.has_gyroscopeConfig) {
-            switch(Config::hardwareConfig.gyroscopeConfig.which_driverConfig) {
+        if (Config::config.has_gyroscopeConfig) {
+            switch(Config::config.gyroscopeConfig.which_driverConfig) {
                 case GyroscopeConfig_mpuI2c_tag: {
-                    auto index = Config::hardwareConfig.gyroscopeConfig.driverConfig.mpuI2c.busIndex;
-                    auto address = Config::hardwareConfig.gyroscopeConfig.driverConfig.mpuI2c.address;
+                    auto index = Config::config.gyroscopeConfig.driverConfig.mpuI2c.busIndex;
+                    auto address = Config::config.gyroscopeConfig.driverConfig.mpuI2c.address;
                     if (index < IO::I2Cs.size() && IO::I2Cs[index] != nullptr && address < 128) {
                         gyroscope = new IMUDrivers::MpuImu(*IO::I2Cs[index], address);
                     } else {
@@ -54,9 +54,9 @@ namespace Hardware {
                     break;
                 }
                 case GyroscopeConfig_mpuSpi_tag: {
-                    auto index = Config::hardwareConfig.gyroscopeConfig.driverConfig.mpuSpi.busIndex;
-                    auto csPin = IO::findPin(Config::hardwareConfig.gyroscopeConfig.driverConfig.mpuSpi.csPin.pinName);
-                    if (index < IO::SPIs.size() && IO::SPIs[index] != nullptr && Config::hardwareConfig.gyroscopeConfig.driverConfig.mpuSpi.has_csPin && csPin != nullptr) {
+                    auto index = Config::config.gyroscopeConfig.driverConfig.mpuSpi.busIndex;
+                    auto csPin = IO::findPin(Config::config.gyroscopeConfig.driverConfig.mpuSpi.csPin.pinName);
+                    if (index < IO::SPIs.size() && IO::SPIs[index] != nullptr && Config::config.gyroscopeConfig.driverConfig.mpuSpi.has_csPin && csPin != nullptr) {
                         gyroscope = new IMUDrivers::MpuImu(*IO::SPIs[index], csPin->number);
                     } else {
                         Debug::error("MPU SPI Gyroscope Configuration Invalid.");
@@ -71,12 +71,12 @@ namespace Hardware {
             Debug::error("No Gyroscope Driver configured.");
         }
 
-        for (pb_size_t i = 0; i < Config::hardwareConfig.motors_count; i++) {
+        for (pb_size_t i = 0; i < Config::config.motors_count; i++) {
             Motor* motor = nullptr;
-            if (Config::hardwareConfig.motors[i].has_outputPin) {
-                auto pin = IO::findPin(Config::hardwareConfig.motors[i].outputPin.pinName);
+            if (Config::config.motors[i].has_outputPin) {
+                auto pin = IO::findPin(Config::config.motors[i].outputPin.pinName);
                 if (pin != nullptr) {
-                    switch (Config::hardwareConfig.motors[i].motorProtocol) {
+                    switch (Config::config.motors[i].motorProtocol) {
                         case MotorConfig_MotorProtocol_PWM:
                             motor = new MotorDrivers::PwmMotor(pin->number);
                             break;
@@ -99,13 +99,13 @@ namespace Hardware {
             motors.push_back(motor);
         }
 
-        for (pb_size_t i = 0; i < Config::hardwareConfig.servos_count; i++) {
+        for (pb_size_t i = 0; i < Config::config.servos_count; i++) {
             Servo* servo = nullptr;
-            if (Config::hardwareConfig.servos[i].has_outputPin) {
-                auto pin = IO::findPin(Config::hardwareConfig.servos[i].outputPin.pinName);
+            if (Config::config.servos[i].has_outputPin) {
+                auto pin = IO::findPin(Config::config.servos[i].outputPin.pinName);
                 if (pin != nullptr) {
                     uint32_t refreshRate = 50;
-                    switch(Config::hardwareConfig.servos[i].refreshRate) {
+                    switch(Config::config.servos[i].refreshRate) {
                         case ServoConfig_ServoRefreshRate__50Hz:
                             refreshRate = 50;
                             break;

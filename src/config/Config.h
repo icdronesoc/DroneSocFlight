@@ -5,16 +5,10 @@
 
 namespace Config {
     /**
-     * Hardware Config holds information about how the FC board and attached peripherals are configured.
-     * This is determined by the protobuf type.
+     * Config holds all software configuration.
+     * This is represented by the data structures generated from Config.proto.
      */
-    extern HardwareConfig hardwareConfig;
-
-    /**
-     * Software Config holds information about how the FC software is configured.
-     * This should be completely board-agnostic and portable between different boards.
-     */
-     extern SoftwareConfig softwareConfig;
+    extern Configuration config;
 
      /**
       * Loads hardware and software config from non-volatile storage (EEPROM or Flash).

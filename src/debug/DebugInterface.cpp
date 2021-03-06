@@ -1,7 +1,6 @@
 #include "DebugInterface.h"
 #include "config/Config.h"
 #include "hardware/IO.h"
-#include "etl/string.h"
 #include "etl/to_string.h"
 
 namespace Debug {
@@ -42,12 +41,12 @@ namespace Debug {
     void initialize() {
         timestampFormat.decimal().width(10).fill(' ');
 
-        if (Config::hardwareConfig.has_debugConfig) {
-            infoEnabled = Config::hardwareConfig.debugConfig.infoEnabled;
-            warningEnabled = Config::hardwareConfig.debugConfig.warningEnabled;
-            errorEnabled = Config::hardwareConfig.debugConfig.errorEnabled;
+        if (Config::config.has_debugConfig) {
+            infoEnabled = Config::config.debugConfig.infoEnabled;
+            warningEnabled = Config::config.debugConfig.warningEnabled;
+            errorEnabled = Config::config.debugConfig.errorEnabled;
 
-            auto uart = IO::takeUart(Config::hardwareConfig.debugConfig.uartIndex);
+            auto uart = IO::takeUart(Config::config.debugConfig.uartIndex);
             if (uart != nullptr) debugSerial = uart;
         }
     }

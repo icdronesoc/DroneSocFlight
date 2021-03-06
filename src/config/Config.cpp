@@ -8,8 +8,8 @@ namespace Config {
     namespace {
         constexpr size_t BufferSize = 8 * 1024; // 8kB buffer
     }
-    HardwareConfig hardwareConfig = HardwareConfig_init_default;
-    SoftwareConfig softwareConfig = SoftwareConfig_init_default;
+
+    Configuration config = Configuration_init_default;
 
     void loadConfig() {
         uint8_t buffer[BufferSize];
@@ -20,7 +20,7 @@ namespace Config {
             return;
         }
 
-        if (!pb_decode(&stream, HardwareConfig_fields, &hardwareConfig)) {
+        if (!pb_decode(&stream, Configuration_fields, &config)) {
             Debug::error("Error decoding hardware configuration: %s", stream.errmsg);
             return;
         }
@@ -30,7 +30,7 @@ namespace Config {
         uint8_t buffer[BufferSize];
         auto stream = pb_ostream_from_buffer(buffer, BufferSize);
 
-        if (!pb_encode(&stream, HardwareConfig_fields, &hardwareConfig)) {
+        if (!pb_encode(&stream, Configuration_fields, &config)) {
             Debug::error("Error encoding hardware configuration: %s", stream.errmsg);
             return;
         }

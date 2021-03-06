@@ -39,64 +39,68 @@ namespace Mixer {
         servoOutputBuffer = new double[servoOutputBufferSize];
 
         // Validate mixer rules
-        for (pb_size_t i = 0; i < Config::hardwareConfig.mixerConfig.mixerRules_count; i++) {
-            // Check weight
-            if (Config::hardwareConfig.mixerConfig.mixerRules[i].weight < -1 ||
-                Config::hardwareConfig.mixerConfig.mixerRules[i].weight > 1) {
-                Debug::error("Mixer rule %s weight out of range.", i);
-                continue;
-            }
-
-            // Check source
-            MixerSource source;
-            switch (Config::hardwareConfig.mixerConfig.mixerRules[i].source) {
-                case MixerRule_Source_THROTTLE:
-                    source = MixerSource::THROTTLE;
-                    break;
-                case MixerRule_Source_PITCH:
-                    source = MixerSource::PITCH;
-                    break;
-                case MixerRule_Source_ROLL:
-                    source = MixerSource::ROLL;
-                    break;
-                case MixerRule_Source_YAW:
-                    source = MixerSource::YAW;
-                    break;
-                default:
-                    Debug::error("Mixer rule %s source invalid.", i);
+        if (Config::config.has_mixerConfig) {
+            for (pb_size_t i = 0; i < Config::config.mixerConfig.mixerRules_count; i++) {
+                // Check weight
+                if (Config::config.mixerConfig.mixerRules[i].weight < -1 ||
+                    Config::config.mixerConfig.mixerRules[i].weight > 1) {
+                    Debug::error("Mixer rule %s weight out of range.", i);
                     continue;
-            }
+                }
 
-            // Check target
-            auto targetIndex = Config::hardwareConfig.mixerConfig.mixerRules[i].targetIndex;
-            TargetType targetType;
-            switch (Config::hardwareConfig.mixerConfig.mixerRules[i].targetType) {
-                case MixerRule_TargetType_MOTOR:
-                    if (Hardware::motors.size() <= targetIndex || Hardware::motors[targetIndex] == nullptr) {
-                        Debug::error("Mixer rule %s: cannot find motor %s.", i, targetIndex);
+                // Check source
+                MixerSource source;
+                switch (Config::config.mixerConfig.mixerRules[i].source) {
+                    case MixerRule_Source_THROTTLE:
+                        source = MixerSource::THROTTLE;
+                        break;
+                    case MixerRule_Source_PITCH:
+                        source = MixerSource::PITCH;
+                        break;
+                    case MixerRule_Source_ROLL:
+                        source = MixerSource::ROLL;
+                        break;
+                    case MixerRule_Source_YAW:
+                        source = MixerSource::YAW;
+                        break;
+                    default:
+                        Debug::error("Mixer rule %s source invalid.", i);
                         continue;
-                    }
-                    targetType = TargetType::MOTOR;
-                    break;
-                case MixerRule_TargetType_SERVO:
-                    if (Hardware::servos.size() <= targetIndex || Hardware::servos[targetIndex] == nullptr) {
-                        Debug::error("Mixer rule %s: cannot find servo %s.", i, targetIndex);
-                        continue;
-                    }
-                    targetType = TargetType::SERVO;
-                    break;
-                default:
-                    Debug::error("Mixer rule %s: target type invalid.", i);
-                    continue;
-            }
+                }
 
-            // Add validated rule
-            mixerRules.push_back(ValidatedMixerRule{
-                    .targetType = targetType,
-                    .targetIndex = targetIndex,
-                    .source = source,
-                    .weight = Config::hardwareConfig.mixerConfig.mixerRules[i].weight
-            });
+                // Check target
+                auto targetIndex = Config::config.mixerConfig.mixerRules[i].targetIndex;
+                TargetType targetType;
+                switch (Config::config.mixerConfig.mixerRules[i].targetType) {
+                    case MixerRule_TargetType_MOTOR:
+                        if (Hardware::motors.size() <= targetIndex || Hardware::motors[targetIndex] == nullptr) {
+                            Debug::error("Mixer rule %s: cannot find motor %s.", i, targetIndex);
+                            continue;
+                        }
+                        targetType = TargetType::MOTOR;
+                        break;
+                    case MixerRule_TargetType_SERVO:
+                        if (Hardware::servos.size() <= targetIndex || Hardware::servos[targetIndex] == nullptr) {
+                            Debug::error("Mixer rule %s: cannot find servo %s.", i, targetIndex);
+                            continue;
+                        }
+                        targetType = TargetType::SERVO;
+                        break;
+                    default:
+                        Debug::error("Mixer rule %s: target type invalid.", i);
+                        continue;
+                }
+
+                // Add validated rule
+                mixerRules.push_back(ValidatedMixerRule{
+                        .targetType = targetType,
+                        .targetIndex = targetIndex,
+                        .source = source,
+                        .weight = Config::config.mixerConfig.mixerRules[i].weight
+                });
+            }
+        } else {
+            Debug::error("Mixer not configured.");
         }
     }
 

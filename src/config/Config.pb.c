@@ -6,10 +6,7 @@
 #error Regenerate this file with the current version of nanopb generator.
 #endif
 
-PB_BIND(HardwareConfig, HardwareConfig, 2)
-
-
-PB_BIND(SoftwareConfig, SoftwareConfig, AUTO)
+PB_BIND(Configuration, Configuration, 2)
 
 
 PB_BIND(IOConfig, IOConfig, 2)

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-message HardwareConfig {
+message Configuration {
     IOConfig ioConfig = 1;
     DebugConfig debugConfig = 2;
     AccelerometerConfig accelerometerConfig = 3;
@@ -10,10 +10,6 @@ message HardwareConfig {
     MixerConfig mixerConfig = 7;
     RCConfig rcConfig = 8;
     uint32 pidLoopFrequencyDivider = 9;
-}
-
-message SoftwareConfig {
-
 }
 
 // Bus config

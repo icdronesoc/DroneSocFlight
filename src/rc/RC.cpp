@@ -28,10 +28,10 @@ namespace RC {
 
     void initialize() {
         // Choose driver
-        if (Config::hardwareConfig.has_rcConfig) {
-            switch (Config::hardwareConfig.rcConfig.which_driverConfig) {
+        if (Config::config.has_rcConfig) {
+            switch (Config::config.rcConfig.which_driverConfig) {
                 case RCConfig_crossfire_tag: {
-                    auto uart = IO::takeUart(Config::hardwareConfig.rcConfig.driverConfig.ibus.uartIndex);
+                    auto uart = IO::takeUart(Config::config.rcConfig.driverConfig.ibus.uartIndex);
                     if (uart != nullptr) {
                         driver = new RcDrivers::CrossfireDriver(*uart);
                     } else {
@@ -40,7 +40,7 @@ namespace RC {
                     break;
                 }
                 case RCConfig_ibus_tag: {
-                    auto uart = IO::takeUart(Config::hardwareConfig.rcConfig.driverConfig.ibus.uartIndex);
+                    auto uart = IO::takeUart(Config::config.rcConfig.driverConfig.ibus.uartIndex);
                     if (uart != nullptr) {
                         driver = new RcDrivers::IBUSDriver(*uart);
                     } else {

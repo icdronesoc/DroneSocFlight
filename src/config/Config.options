@@ -1,5 +1,5 @@
-HardwareConfig.motors max_count:8
-HardwareConfig.servos max_count:8
+Configuration.motors max_count:8
+Configuration.servos max_count:8
 IOConfig.uartConfigs max_count:8
 IOConfig.softwareUartConfigs max_count:2
 IOConfig.i2cConfigs max_count:4 # TODO this could probably go down to 2 or 3
