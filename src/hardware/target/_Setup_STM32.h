@@ -18,10 +18,10 @@ void setupMcuHardware(IOConfig ioConfig) {
             if (txPin != nullptr && rxPin != nullptr) {
                 hardwareSerial = new HardwareSerialPort(new HardwareSerial(rxPin->number, txPin->number));
             } else {
-                Log::error(LogTag, "Hardware Serial %s TX and/or RX pin does not exist.", i);
+                Log::error(LogTag, "Hardware Serial %d TX and/or RX pin does not exist.", i);
             }
         } else {
-            Log::error(LogTag, "Hardware Serial %s configuration invalid.", i);
+            Log::error(LogTag, "Hardware Serial %d configuration invalid.", i);
         }
         // Add to the array even if checks failed to preserve original indexing
         UARTs.push_back(UartDescriptor(hardwareSerial, ioConfig.uartConfigs[i].name));
@@ -35,10 +35,10 @@ void setupMcuHardware(IOConfig ioConfig) {
             if (txPin != nullptr && rxPin != nullptr) {
                 softwareSerial = new SoftwareSerialPort(new SoftwareSerial(rxPin->number, txPin->number));
             } else {
-                Log::error(LogTag, "Software Serial %s TX and/or RX pin does not exist.", i);
+                Log::error(LogTag, "Software Serial %d TX and/or RX pin does not exist.", i);
             }
         } else {
-            Log::error(LogTag, "Software Serial %s configuration invalid.", i);
+            Log::error(LogTag, "Software Serial %d configuration invalid.", i);
         }
         // Add to the array even if checks failed to preserve original indexing
         UARTs.push_back(UartDescriptor(softwareSerial, ioConfig.softwareUartConfigs[i].name));
@@ -57,14 +57,14 @@ void setupMcuHardware(IOConfig ioConfig) {
                     case I2CConfig_Speed__400kHz:
                         i2c->setClock(400000);
                     default:
-                        Log::error(LogTag, "I2C %s speed invalid.", i);
+                        Log::error(LogTag, "I2C %d speed invalid.", i);
                         break;
                 }
             } else {
-                Log::error(LogTag, "I2C %s SDA and/or SCL pin does not exist.", i);
+                Log::error(LogTag, "I2C %d SDA and/or SCL pin does not exist.", i);
             }
         } else {
-            Log::error(LogTag, "I2C %s configuration invalid.", i);
+            Log::error(LogTag, "I2C %d configuration invalid.", i);
         }
         // Add to the array even if checks failed to preserve original indexing
         I2Cs.push_back(i2c);
@@ -79,10 +79,10 @@ void setupMcuHardware(IOConfig ioConfig) {
             if (mosiPin != nullptr && misoPin != nullptr && sckPin != nullptr) {
                 spi = new SPIClass(mosiPin->number, misoPin->number, sckPin->number);
             } else {
-                Log::error(LogTag, "SPI %s MOSI and/or MISO and/or SCK pin does not exist.", i);
+                Log::error(LogTag, "SPI %d MOSI and/or MISO and/or SCK pin does not exist.", i);
             }
         } else {
-            Log::error(LogTag, "SPI %s configuration invalid.", i);
+            Log::error(LogTag, "SPI %d configuration invalid.", i);
         }
         // Add to the array even if checks failed to preserve original indexing
         SPIs.push_back(spi);

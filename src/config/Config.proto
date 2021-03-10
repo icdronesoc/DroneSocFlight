@@ -86,9 +86,9 @@ message MotorConfig {
 
 message ServoConfig {
     Pin outputPin = 1;
-    ServoRefreshRate refreshRate = 2; // TODO only supported on ESP32
+    ServoFrequency pwmFrequency = 2;
 
-    enum ServoRefreshRate {
+    enum ServoFrequency {
         _50Hz = 0;
         _330Hz = 1;
     }

@@ -24,10 +24,10 @@ typedef enum _MotorConfig_MotorProtocol {
     MotorConfig_MotorProtocol_DShot = 1
 } MotorConfig_MotorProtocol;
 
-typedef enum _ServoConfig_ServoRefreshRate {
-    ServoConfig_ServoRefreshRate__50Hz = 0,
-    ServoConfig_ServoRefreshRate__330Hz = 1
-} ServoConfig_ServoRefreshRate;
+typedef enum _ServoConfig_ServoFrequency {
+    ServoConfig_ServoFrequency__50Hz = 0,
+    ServoConfig_ServoFrequency__330Hz = 1
+} ServoConfig_ServoFrequency;
 
 typedef enum _MixerRule_TargetType {
     MixerRule_TargetType_MOTOR = 0,
@@ -135,7 +135,7 @@ typedef struct _SPIConfig {
 typedef struct _ServoConfig {
     bool has_outputPin;
     Pin outputPin;
-    ServoConfig_ServoRefreshRate refreshRate;
+    ServoConfig_ServoFrequency pwmFrequency;
 } ServoConfig;
 
 typedef struct _UartConfig {
@@ -206,9 +206,9 @@ typedef struct _Configuration {
 #define _MotorConfig_MotorProtocol_MAX MotorConfig_MotorProtocol_DShot
 #define _MotorConfig_MotorProtocol_ARRAYSIZE ((MotorConfig_MotorProtocol)(MotorConfig_MotorProtocol_DShot+1))
 
-#define _ServoConfig_ServoRefreshRate_MIN ServoConfig_ServoRefreshRate__50Hz
-#define _ServoConfig_ServoRefreshRate_MAX ServoConfig_ServoRefreshRate__330Hz
-#define _ServoConfig_ServoRefreshRate_ARRAYSIZE ((ServoConfig_ServoRefreshRate)(ServoConfig_ServoRefreshRate__330Hz+1))
+#define _ServoConfig_ServoFrequency_MIN ServoConfig_ServoFrequency__50Hz
+#define _ServoConfig_ServoFrequency_MAX ServoConfig_ServoFrequency__330Hz
+#define _ServoConfig_ServoFrequency_ARRAYSIZE ((ServoConfig_ServoFrequency)(ServoConfig_ServoFrequency__330Hz+1))
 
 #define _MixerRule_TargetType_MIN MixerRule_TargetType_MOTOR
 #define _MixerRule_TargetType_MAX MixerRule_TargetType_SERVO
@@ -230,7 +230,7 @@ typedef struct _Configuration {
 #define MpuSpiConfig_init_default                {0, false, Pin_init_default}
 #define MpuI2cConfig_init_default                {0, 0}
 #define MotorConfig_init_default                 {false, Pin_init_default, _MotorConfig_MotorProtocol_MIN}
-#define ServoConfig_init_default                 {false, Pin_init_default, _ServoConfig_ServoRefreshRate_MIN}
+#define ServoConfig_init_default                 {false, Pin_init_default, _ServoConfig_ServoFrequency_MIN}
 #define Pin_init_default                         {""}
 #define MixerConfig_init_default                 {0, {MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default}}
 #define MixerRule_init_default                   {_MixerRule_TargetType_MIN, 0, _MixerRule_Source_MIN, 0}
@@ -250,7 +250,7 @@ typedef struct _Configuration {
 #define MpuSpiConfig_init_zero                   {0, false, Pin_init_zero}
 #define MpuI2cConfig_init_zero                   {0, 0}
 #define MotorConfig_init_zero                    {false, Pin_init_zero, _MotorConfig_MotorProtocol_MIN}
-#define ServoConfig_init_zero                    {false, Pin_init_zero, _ServoConfig_ServoRefreshRate_MIN}
+#define ServoConfig_init_zero                    {false, Pin_init_zero, _ServoConfig_ServoFrequency_MIN}
 #define Pin_init_zero                            {""}
 #define MixerConfig_init_zero                    {0, {MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero}}
 #define MixerRule_init_zero                      {_MixerRule_TargetType_MIN, 0, _MixerRule_Source_MIN, 0}
@@ -297,7 +297,7 @@ typedef struct _Configuration {
 #define SPIConfig_miso_tag                       2
 #define SPIConfig_sck_tag                        3
 #define ServoConfig_outputPin_tag                1
-#define ServoConfig_refreshRate_tag              2
+#define ServoConfig_pwmFrequency_tag             2
 #define UartConfig_name_tag                      1
 #define UartConfig_tx_tag                        2
 #define UartConfig_rx_tag                        3
@@ -424,7 +424,7 @@ X(a, STATIC,   SINGULAR, UENUM,    motorProtocol,     2)
 
 #define ServoConfig_FIELDLIST(X, a) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  outputPin,         1) \
-X(a, STATIC,   SINGULAR, UENUM,    refreshRate,       2)
+X(a, STATIC,   SINGULAR, UENUM,    pwmFrequency,      2)
 #define ServoConfig_CALLBACK NULL
 #define ServoConfig_DEFAULT NULL
 #define ServoConfig_outputPin_MSGTYPE Pin

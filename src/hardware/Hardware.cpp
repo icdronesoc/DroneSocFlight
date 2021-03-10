@@ -1,5 +1,6 @@
 #include "Hardware.h"
 #include "IO.h"
+#include "Timer.h"
 #include "hardware/drivers/AllDrivers.h"
 #include "log/Log.h"
 
@@ -81,21 +82,29 @@ namespace Hardware {
                 auto pin = IO::findPin(Config::config.motors[i].outputPin.pinName);
                 if (pin != nullptr) {
                     switch (Config::config.motors[i].motorProtocol) {
-                        case MotorConfig_MotorProtocol_PWM:
-                            motor = new MotorDrivers::PwmMotor(pin->number);
+                        case MotorConfig_MotorProtocol_PWM: {
+                            auto pwmTimer = Timer::getPWMTimerForOutputPin(pin->number,
+                                                                           50); // TODO configurable frequency
+                            if (pwmTimer != nullptr) {
+                                motor = new MotorDrivers::PwmMotor(*pwmTimer);
+                            } else {
+                                Log::error(LogTag, "Motor %d: Cannot allocate PWM Timer.", i);
+                            }
                             break;
-                        case MotorConfig_MotorProtocol_DShot:
+                        }
+                        case MotorConfig_MotorProtocol_DShot: {
                             motor = new MotorDrivers::DShotMotor();
                             break;
+                        }
                         default:
-                            Log::error(LogTag, "Motor %s motor protocol invalid.", i);
+                            Log::error(LogTag, "Motor %d motor protocol invalid.", i);
                             break;
                     }
                 } else {
-                    Log::error(LogTag, "Motor %s pin does not exist.", i);
+                    Log::error(LogTag, "Motor %d pin does not exist.", i);
                 }
             } else {
-                Log::error(LogTag, "Motor %s has no pin configured.", i);
+                Log::error(LogTag, "Motor %d has no pin configured.", i);
             }
             // Even if the motor driver was not initialized, we want to fill the hole so that indexing is constant.
             // eg. If the mixer expects a motor to be index 4, we don't want it to move to index 3 because a previous
@@ -108,24 +117,29 @@ namespace Hardware {
             if (Config::config.servos[i].has_outputPin) {
                 auto pin = IO::findPin(Config::config.servos[i].outputPin.pinName);
                 if (pin != nullptr) {
-                    uint32_t refreshRate = 50;
-                    switch(Config::config.servos[i].refreshRate) {
-                        case ServoConfig_ServoRefreshRate__50Hz:
-                            refreshRate = 50;
+                    uint32_t frequency = 50;
+                    switch(Config::config.servos[i].pwmFrequency) {
+                        case ServoConfig_ServoFrequency__50Hz:
+                            frequency = 50;
                             break;
-                        case ServoConfig_ServoRefreshRate__330Hz:
-                            refreshRate = 330;
+                        case ServoConfig_ServoFrequency__330Hz:
+                            frequency = 330;
                             break;
                         default:
-                            Log::error(LogTag, "Servo %s refresh rate invalid.", i);
+                            Log::error(LogTag, "Servo %d refresh rate invalid.", i);
                             break;
                     }
-                    servo = new ServoDrivers::PwmServo(pin->number, refreshRate);
+                    auto timer = Timer::getPWMTimerForOutputPin(pin->number, frequency);
+                    if (timer != nullptr) {
+                        servo = new ServoDrivers::PwmServo(*timer);
+                    } else {
+                        Log::error(LogTag, "Servo %d: Cannot allocate PWM Timer.", i);
+                    }
                 } else {
-                    Log::error(LogTag, "Servo %s pin does not exist.", i);
+                    Log::error(LogTag, "Servo %d pin does not exist.", i);
                 }
             } else {
-                Log::error(LogTag, "Servo %s has no pin configured.", i);
+                Log::error(LogTag, "Servo %d has no pin configured.", i);
             }
             // Even if the servo driver was not initialized, we want to fill the hole so that indexing is constant.
             // eg. If the mixer expects a servo to be index 4, we don't want it to move to index 3 because a previous
