@@ -28,6 +28,14 @@ namespace Config {
             config.logConfig.warningEnabled = true;
             config.logConfig.errorEnabled = true;
 #endif
+#ifdef PLATFORM_STM32
+            config.has_logConfig = true;
+            config.logConfig.has_uart = true;
+            strcpy(config.logConfig.uart.name, "USB VCP");
+            config.logConfig.infoEnabled = true;
+            config.logConfig.warningEnabled = true;
+            config.logConfig.errorEnabled = true;
+#endif
             return config;
         }
     }

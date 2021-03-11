@@ -25,7 +25,7 @@ namespace IO {
     // What we expect the target file to define
     void resetWatchdogTimer();
     extern Pin pins[];
-    void setupMcuHardware(IOConfig ioConfig);
+    void setupMcuHardware();
     size_t loadData(byte *buffer, size_t maxSize);
     bool storeData(byte *data, size_t length);
 
@@ -67,7 +67,7 @@ namespace IO {
 
     void initialize() {
         Log::info(LogTag, "Initializing IO");
-        setupMcuHardware(Config::config.ioConfig);
+        setupMcuHardware();
         Log::info(LogTag, "IO initialization complete.");
     }
 }

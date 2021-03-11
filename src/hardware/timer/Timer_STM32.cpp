@@ -74,7 +74,7 @@ namespace Timer {
         public:
             STM32PWMTimer(HardwareTimer& hardwareTimer, uint32_t pinChannel) : hardwareTimer(hardwareTimer), pinChannel(pinChannel) {}
 
-            void setDutyCycle(uint32_t pulseWidth) override {
+            void setPulseWidth(uint32_t pulseWidth) override {
                 this->hardwareTimer.setCaptureCompare(this->pinChannel, pulseWidth, MICROSEC_COMPARE_FORMAT);
             }
 
