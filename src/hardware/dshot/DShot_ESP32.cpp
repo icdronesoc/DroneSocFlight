@@ -6,7 +6,7 @@
 
 namespace DShot {
     namespace {
-        const auto LogTag = "DShot";
+        const auto LogTag = "DShot Driver";
 
         constexpr size_t DShotBitCount = 16;
         constexpr float RmtTickRate = 12.5; // nanoseconds per tick, this is the fastest the ESP32 RMT can go
@@ -15,9 +15,9 @@ namespace DShot {
         constexpr float DShot1200_T0H = 312.5; // nanoseconds
         constexpr float DShot1200_T1H = 625; // nanoseconds
 
-        class ESP32DShotOutput : public DShotOutput {
+        class ESP32Driver : public Driver {
         public:
-            ESP32DShotOutput(rmt_obj_t* rmt, uint32_t T0H, uint32_t T1H, uint32_t T0L, uint32_t T1L) : rmt(rmt) {}
+            ESP32Driver(rmt_obj_t* rmt, uint32_t T0H, uint32_t T1H, uint32_t T0L, uint32_t T1L) : rmt(rmt), T0H(T0H), T1H(T1H), T0L(T0L), T1L(T1L) {}
 
             void sendPacket(uint16_t packet) override {
                 rmt_data_t pulses[DShotBitCount];
@@ -45,7 +45,7 @@ namespace DShot {
         };
     }
 
-    DShotOutput* createDShotOutput(uint32_t pin, DShotSpeed speed) {
+    Driver* createDriver(uint32_t pin, Speed speed) {
         auto rmt = rmtInit(pin, true, RMT_MEM_128);
         if (rmt == nullptr) {
             Log::error(LogTag, "Error initializing RMT. Most likely cause is that all channels are in use.");
@@ -59,16 +59,16 @@ namespace DShot {
 
         float multiplier = 1;
         switch (speed) {
-            case DShotSpeed::DShot1200:
+            case Speed::DShot1200:
                 multiplier = 1;
                 break;
-            case DShotSpeed::DShot600:
+            case Speed::DShot600:
                 multiplier = 2;
                 break;
-            case DShotSpeed::DShot300:
+            case Speed::DShot300:
                 multiplier = 4;
                 break;
-            case DShotSpeed::DShot150:
+            case Speed::DShot150:
                 multiplier = 8;
                 break;
         }
@@ -79,7 +79,7 @@ namespace DShot {
         uint32_t T0L = (DShot1200_BitPeriod - DShot1200_T0H) * multiplier / realTickRate;
         uint32_t T1L = (DShot1200_BitPeriod - DShot1200_T1H) * multiplier / realTickRate;
 
-        return new ESP32DShotOutput(rmt, T0H, T1H, T0L, T1L);
+        return new ESP32Driver(rmt, T0H, T1H, T0L, T1L);
     }
 }
 

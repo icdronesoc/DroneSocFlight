@@ -1,6 +1,7 @@
 #include "Hardware.h"
 #include "IO.h"
-#include "Timer.h"
+#include "hardware/timer/Timer.h"
+#include "hardware/dshot/DShot.h"
 #include "hardware/drivers/AllDrivers.h"
 #include "log/Log.h"
 
@@ -83,8 +84,7 @@ namespace Hardware {
                 if (pin != nullptr) {
                     switch (Config::config.motors[i].motorProtocol) {
                         case MotorConfig_MotorProtocol_PWM: {
-                            auto pwmTimer = Timer::createPWMTimer(pin->number,
-                                                                           50); // TODO configurable frequency
+                            auto pwmTimer = Timer::createPWMTimer(pin->number, 50); // TODO configurable frequency
                             if (pwmTimer != nullptr) {
                                 motor = new MotorDrivers::PwmMotor(*pwmTimer);
                             } else {
@@ -93,7 +93,12 @@ namespace Hardware {
                             break;
                         }
                         case MotorConfig_MotorProtocol_DShot: {
-                            motor = new MotorDrivers::DShotMotor();
+                            auto dshotOutput = DShot::createOutput(pin->number, DShot::Speed::DShot600, false); // TODO configurable speed / isBidirectional
+                            if (dshotOutput != nullptr) {
+                                motor = new MotorDrivers::DShotMotor(*dshotOutput);
+                            } else {
+                                Log::error(LogTag, "Motor %d: Cannot setup DShot output.", i);
+                            }
                             break;
                         }
                         default:
