@@ -8,15 +8,15 @@ namespace Config {
     namespace {
         const auto LogTag = "Config";
         constexpr size_t BufferSize = 8 * 1024; // 8kB buffer
+        uint8_t configBuffer[BufferSize];
     }
 
     Configuration config = Configuration_init_default;
 
     void loadConfig() {
-        uint8_t buffer[BufferSize];
-        auto stream = pb_istream_from_buffer(buffer, BufferSize);
+        auto stream = pb_istream_from_buffer(configBuffer, BufferSize);
 
-        if (IO::loadData(buffer, BufferSize) == 0) {
+        if (IO::loadData(configBuffer, BufferSize) == 0) {
             Log::error(LogTag, "Error loading hardware configuration.");
             return;
         }
@@ -28,15 +28,14 @@ namespace Config {
     }
 
     void saveConfig() {
-        uint8_t buffer[BufferSize];
-        auto stream = pb_ostream_from_buffer(buffer, BufferSize);
+        auto stream = pb_ostream_from_buffer(configBuffer, BufferSize);
 
         if (!pb_encode(&stream, Configuration_fields, &config)) {
             Log::error(LogTag, "Error encoding hardware configuration: %s", stream.errmsg);
             return;
         }
 
-        if (!IO::storeData(buffer, stream.bytes_written)) {
+        if (!IO::storeData(configBuffer, stream.bytes_written)) {
             Log::error(LogTag, "Error storing hardware configuration.");
         }
     }
