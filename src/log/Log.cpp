@@ -22,7 +22,11 @@ namespace Log {
             errorEnabled = Config::config.logConfig.errorEnabled;
 
             auto uart = IO::takeUart(Config::config.logConfig.uartIndex);
-            if (uart != nullptr) logSerial = uart;
+            if (uart != nullptr) {
+                info("Log", "Take serial OK");
+                logSerial = uart;
+                logSerial->begin(Config::config.logConfig.baudRate);
+            }
         }
     }
 

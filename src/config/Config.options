@@ -3,8 +3,8 @@ Configuration.servos max_count:8
 Configuration.pidProfiles max_count:3
 IOConfig.uartConfigs max_count:8
 IOConfig.softwareUartConfigs max_count:2
-IOConfig.i2cConfigs max_count:4 # TODO this could probably go down to 2 or 3
-IOConfig.spiConfigs max_count:4 # TODO this could probably go down to 2 or 3
-Pin.pinName max_size:5 # 4 Characters and \0
+IOConfig.i2cConfigs max_count:3
+IOConfig.spiConfigs max_count:3
+Pin.pinName max_size:9 # 8 Characters and \0
 MixerConfig.mixerRules max_count:32
 UartConfig.name max_size: 17 # 16 Characters and \0

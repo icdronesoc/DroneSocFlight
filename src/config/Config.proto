@@ -139,9 +139,10 @@ message CrossfireConfig {
 
 message LogConfig {
     uint32 uartIndex = 1;
-    bool infoEnabled = 2;
-    bool warningEnabled = 3;
-    bool errorEnabled = 4;
+    uint32 baudRate = 2;
+    bool infoEnabled = 3;
+    bool warningEnabled = 4;
+    bool errorEnabled = 5;
 }
 
 message PidProfile {

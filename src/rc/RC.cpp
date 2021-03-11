@@ -68,7 +68,7 @@ namespace RC {
             auto runner = new Scheduler::AdHocTaskRunner(task, shouldTryToGetFrame);
             Scheduler::addTaskRunner(runner);
 
-            Log::info(LogTag, "RC Driver configured.");
+            Log::info(LogTag, "RC Driver configuration complete.");
         }
     }
 

@@ -152,6 +152,6 @@ namespace Hardware {
             servos.push_back(servo);
         }
 
-        Log::info(LogTag, "Hardware configured.");
+        Log::info(LogTag, "Hardware configuration complete.");
     }
 }

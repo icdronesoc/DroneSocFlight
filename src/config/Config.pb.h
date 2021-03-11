@@ -52,6 +52,7 @@ typedef struct _IBUSConfig {
 
 typedef struct _LogConfig {
     uint32_t uartIndex;
+    uint32_t baudRate;
     bool infoEnabled;
     bool warningEnabled;
     bool errorEnabled;
@@ -77,7 +78,7 @@ typedef struct _PidProfile_PidControllerConfig {
 } PidProfile_PidControllerConfig;
 
 typedef struct _Pin {
-    char pinName[5];
+    char pinName[9];
 } Pin;
 
 typedef struct _I2CConfig {
@@ -168,9 +169,9 @@ typedef struct _IOConfig {
     pb_size_t softwareUartConfigs_count;
     UartConfig softwareUartConfigs[2];
     pb_size_t i2cConfigs_count;
-    I2CConfig i2cConfigs[4];
+    I2CConfig i2cConfigs[3];
     pb_size_t spiConfigs_count;
-    SPIConfig spiConfigs[4];
+    SPIConfig spiConfigs[3];
 } IOConfig;
 
 typedef struct _Configuration {
@@ -221,7 +222,7 @@ typedef struct _Configuration {
 
 /* Initializer values for message structs */
 #define Configuration_init_default               {false, IOConfig_init_default, false, LogConfig_init_default, false, AccelerometerConfig_init_default, false, GyroscopeConfig_init_default, 0, {MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default}, 0, {ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default}, false, MixerConfig_init_default, false, RCConfig_init_default, 0, 0, {PidProfile_init_default, PidProfile_init_default, PidProfile_init_default}, 0}
-#define IOConfig_init_default                    {0, {UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default}, 0, {UartConfig_init_default, UartConfig_init_default}, 0, {I2CConfig_init_default, I2CConfig_init_default, I2CConfig_init_default, I2CConfig_init_default}, 0, {SPIConfig_init_default, SPIConfig_init_default, SPIConfig_init_default, SPIConfig_init_default}}
+#define IOConfig_init_default                    {0, {UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default, UartConfig_init_default}, 0, {UartConfig_init_default, UartConfig_init_default}, 0, {I2CConfig_init_default, I2CConfig_init_default, I2CConfig_init_default}, 0, {SPIConfig_init_default, SPIConfig_init_default, SPIConfig_init_default}}
 #define UartConfig_init_default                  {"", false, Pin_init_default, false, Pin_init_default}
 #define I2CConfig_init_default                   {false, Pin_init_default, false, Pin_init_default, _I2CConfig_Speed_MIN}
 #define SPIConfig_init_default                   {false, Pin_init_default, false, Pin_init_default, false, Pin_init_default}
@@ -237,11 +238,11 @@ typedef struct _Configuration {
 #define RCConfig_init_default                    {0, {CrossfireConfig_init_default}}
 #define IBUSConfig_init_default                  {0}
 #define CrossfireConfig_init_default             {0}
-#define LogConfig_init_default                   {0, 0, 0, 0}
+#define LogConfig_init_default                   {0, 0, 0, 0, 0}
 #define PidProfile_init_default                  {{{NULL}, NULL}, false, PidProfile_PidControllerConfig_init_default, false, PidProfile_PidControllerConfig_init_default, false, PidProfile_PidControllerConfig_init_default}
 #define PidProfile_PidControllerConfig_init_default {0, 0, 0, 0}
 #define Configuration_init_zero                  {false, IOConfig_init_zero, false, LogConfig_init_zero, false, AccelerometerConfig_init_zero, false, GyroscopeConfig_init_zero, 0, {MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero}, 0, {ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero}, false, MixerConfig_init_zero, false, RCConfig_init_zero, 0, 0, {PidProfile_init_zero, PidProfile_init_zero, PidProfile_init_zero}, 0}
-#define IOConfig_init_zero                       {0, {UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero}, 0, {UartConfig_init_zero, UartConfig_init_zero}, 0, {I2CConfig_init_zero, I2CConfig_init_zero, I2CConfig_init_zero, I2CConfig_init_zero}, 0, {SPIConfig_init_zero, SPIConfig_init_zero, SPIConfig_init_zero, SPIConfig_init_zero}}
+#define IOConfig_init_zero                       {0, {UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero}, 0, {UartConfig_init_zero, UartConfig_init_zero}, 0, {I2CConfig_init_zero, I2CConfig_init_zero, I2CConfig_init_zero}, 0, {SPIConfig_init_zero, SPIConfig_init_zero, SPIConfig_init_zero}}
 #define UartConfig_init_zero                     {"", false, Pin_init_zero, false, Pin_init_zero}
 #define I2CConfig_init_zero                      {false, Pin_init_zero, false, Pin_init_zero, _I2CConfig_Speed_MIN}
 #define SPIConfig_init_zero                      {false, Pin_init_zero, false, Pin_init_zero, false, Pin_init_zero}
@@ -257,7 +258,7 @@ typedef struct _Configuration {
 #define RCConfig_init_zero                       {0, {CrossfireConfig_init_zero}}
 #define IBUSConfig_init_zero                     {0}
 #define CrossfireConfig_init_zero                {0}
-#define LogConfig_init_zero                      {0, 0, 0, 0}
+#define LogConfig_init_zero                      {0, 0, 0, 0, 0}
 #define PidProfile_init_zero                     {{{NULL}, NULL}, false, PidProfile_PidControllerConfig_init_zero, false, PidProfile_PidControllerConfig_init_zero, false, PidProfile_PidControllerConfig_init_zero}
 #define PidProfile_PidControllerConfig_init_zero {0, 0, 0, 0}
 
@@ -265,9 +266,10 @@ typedef struct _Configuration {
 #define CrossfireConfig_uartIndex_tag            1
 #define IBUSConfig_uartIndex_tag                 1
 #define LogConfig_uartIndex_tag                  1
-#define LogConfig_infoEnabled_tag                2
-#define LogConfig_warningEnabled_tag             3
-#define LogConfig_errorEnabled_tag               4
+#define LogConfig_baudRate_tag                   2
+#define LogConfig_infoEnabled_tag                3
+#define LogConfig_warningEnabled_tag             4
+#define LogConfig_errorEnabled_tag               5
 #define MixerRule_targetType_tag                 1
 #define MixerRule_targetIndex_tag                2
 #define MixerRule_source_tag                     3
@@ -468,9 +470,10 @@ X(a, STATIC,   SINGULAR, UINT32,   uartIndex,         1)
 
 #define LogConfig_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   uartIndex,         1) \
-X(a, STATIC,   SINGULAR, BOOL,     infoEnabled,       2) \
-X(a, STATIC,   SINGULAR, BOOL,     warningEnabled,    3) \
-X(a, STATIC,   SINGULAR, BOOL,     errorEnabled,      4)
+X(a, STATIC,   SINGULAR, UINT32,   baudRate,          2) \
+X(a, STATIC,   SINGULAR, BOOL,     infoEnabled,       3) \
+X(a, STATIC,   SINGULAR, BOOL,     warningEnabled,    4) \
+X(a, STATIC,   SINGULAR, BOOL,     errorEnabled,      5)
 #define LogConfig_CALLBACK NULL
 #define LogConfig_DEFAULT NULL
 
@@ -538,23 +541,23 @@ extern const pb_msgdesc_t PidProfile_PidControllerConfig_msg;
 
 /* Maximum encoded size of messages (where known) */
 /* Configuration_size depends on runtime parameters */
-#define IOConfig_size                            544
-#define UartConfig_size                          34
-#define I2CConfig_size                           18
-#define SPIConfig_size                           24
-#define AccelerometerConfig_size                 16
-#define GyroscopeConfig_size                     16
-#define MpuSpiConfig_size                        14
+#define IOConfig_size                            638
+#define UartConfig_size                          42
+#define I2CConfig_size                           26
+#define SPIConfig_size                           36
+#define AccelerometerConfig_size                 20
+#define GyroscopeConfig_size                     20
+#define MpuSpiConfig_size                        18
 #define MpuI2cConfig_size                        12
-#define MotorConfig_size                         10
-#define ServoConfig_size                         10
-#define Pin_size                                 6
+#define MotorConfig_size                         14
+#define ServoConfig_size                         14
+#define Pin_size                                 10
 #define MixerConfig_size                         672
 #define MixerRule_size                           19
 #define RCConfig_size                            8
 #define IBUSConfig_size                          6
 #define CrossfireConfig_size                     6
-#define LogConfig_size                           12
+#define LogConfig_size                           18
 /* PidProfile_size depends on runtime parameters */
 #define PidProfile_PidControllerConfig_size      36
 

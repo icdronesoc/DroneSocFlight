@@ -2,6 +2,7 @@
 
 Pin pins[] = {
         // https://resource.heltec.cn/download/Wireless_Stick/Wireless_Stick.pdf
+        // GPIOs:
         {"0",  0},
         {"1",  1},
         {"2",  2},
@@ -30,4 +31,8 @@ Pin pins[] = {
         {"37", 37},
         {"38", 38},
         {"39", 39},
+
+        // Internal Pins
+        {"USB_RX", 9},
+        {"USB_TX", 9},
 };

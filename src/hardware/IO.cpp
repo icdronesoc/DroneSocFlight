@@ -61,6 +61,6 @@ namespace IO {
     void initialize() {
         setupMcuHardware(Config::config.ioConfig);
         for (size_t i = 0; i < UARTs.size(); i++) uartIsTaken.push_back(false);
-        Log::info(LogTag, "IO Configured.");
+        Log::info(LogTag, "IO configuration complete.");
     }
 }

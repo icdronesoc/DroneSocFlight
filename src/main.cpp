@@ -15,14 +15,21 @@ namespace { // private
 
 void setup() {
     // Config must be loaded first, then IO, then Log, then Hardware. After this it doesn't really matter.
+    Log::info(LogTag, "Loading Config");
     Config::loadConfig();
+    Log::info(LogTag, "Initializing IO");
     IO::initialize();
+    Log::info(LogTag, "Initializing Log");
     Log::initialize();
-    Log::info(LogTag, "Beginning initialization...");
+    Log::info(LogTag, "Initializing Hardware");
     Hardware::initialize();
+    Log::info(LogTag, "Initializing RC");
     RC::initialize();
+    Log::info(LogTag, "Initializing Mixer");
     Mixer::initialize();
+    Log::info(LogTag, "Initializing Axis Controllers");
     AxisControllers::initialize();
+    Log::info(LogTag, "Initializing Flight Control Tasks");
     FlightControlTasks::initialize();
     Log::info(LogTag, "Configuration Complete!");
 }
