@@ -98,6 +98,10 @@ message Pin {
     string pinName = 1;
 }
 
+message UartDescriptor {
+    string name = 1;
+}
+
 message MixerConfig { // TODO mins/maxs
     repeated MixerRule mixerRules = 1;
 }
@@ -130,15 +134,15 @@ message RCConfig {
 }
 
 message IBUSConfig {
-    uint32 uartIndex = 1;
+    UartDescriptor uart = 1;
 }
 
 message CrossfireConfig {
-    uint32 uartIndex = 1;
+    UartDescriptor uart = 1;
 }
 
 message LogConfig {
-    uint32 uartIndex = 1;
+    UartDescriptor uart = 1;
     uint32 baudRate = 2;
     bool infoEnabled = 3;
     bool warningEnabled = 4;

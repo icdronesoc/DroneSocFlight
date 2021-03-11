@@ -42,6 +42,9 @@ PB_BIND(ServoConfig, ServoConfig, AUTO)
 PB_BIND(Pin, Pin, AUTO)
 
 
+PB_BIND(UartDescriptor, UartDescriptor, AUTO)
+
+
 PB_BIND(MixerConfig, MixerConfig, 2)
 
 

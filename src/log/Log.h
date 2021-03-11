@@ -36,7 +36,7 @@ namespace Log {
     template <typename ... Args>
     void info(const char* tag, const char *format, const Args&... args) {
         if (infoEnabled) {
-            print("INFO   ", tag, format, args...);
+            print("INFO", tag, format, args...);
         }
     }
 
@@ -50,7 +50,7 @@ namespace Log {
     template <typename ... Args>
     void error(const char* tag, const char *format, const Args&... args) {
         if (errorEnabled) {
-            print("ERROR  ", tag, format, args...);
+            print("ERROR", tag, format, args...);
         }
     }
 }

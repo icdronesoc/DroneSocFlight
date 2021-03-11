@@ -16,6 +16,7 @@ namespace Hardware {
     etl::vector<Servo*, maxServoCount> servos;
 
     void initialize() {
+        Log::info(LogTag, "Initializing Hardware");
         if (Config::config.has_accelerometerConfig) {
             switch(Config::config.accelerometerConfig.which_driverConfig) {
                 case AccelerometerConfig_mpuI2c_tag: {
@@ -152,6 +153,6 @@ namespace Hardware {
             servos.push_back(servo);
         }
 
-        Log::info(LogTag, "Hardware configuration complete.");
+        Log::info(LogTag, "Hardware initialization complete.");
     }
 }

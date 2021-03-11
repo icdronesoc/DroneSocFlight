@@ -42,22 +42,6 @@ typedef enum _MixerRule_Source {
 } MixerRule_Source;
 
 /* Struct definitions */
-typedef struct _CrossfireConfig {
-    uint32_t uartIndex;
-} CrossfireConfig;
-
-typedef struct _IBUSConfig {
-    uint32_t uartIndex;
-} IBUSConfig;
-
-typedef struct _LogConfig {
-    uint32_t uartIndex;
-    uint32_t baudRate;
-    bool infoEnabled;
-    bool warningEnabled;
-    bool errorEnabled;
-} LogConfig;
-
 typedef struct _MixerRule {
     MixerRule_TargetType targetType;
     uint32_t targetIndex;
@@ -81,6 +65,15 @@ typedef struct _Pin {
     char pinName[9];
 } Pin;
 
+typedef struct _UartDescriptor {
+    char name[17];
+} UartDescriptor;
+
+typedef struct _CrossfireConfig {
+    bool has_uart;
+    UartDescriptor uart;
+} CrossfireConfig;
+
 typedef struct _I2CConfig {
     bool has_sda;
     Pin sda;
@@ -88,6 +81,20 @@ typedef struct _I2CConfig {
     Pin scl;
     I2CConfig_Speed speed;
 } I2CConfig;
+
+typedef struct _IBUSConfig {
+    bool has_uart;
+    UartDescriptor uart;
+} IBUSConfig;
+
+typedef struct _LogConfig {
+    bool has_uart;
+    UartDescriptor uart;
+    uint32_t baudRate;
+    bool infoEnabled;
+    bool warningEnabled;
+    bool errorEnabled;
+} LogConfig;
 
 typedef struct _MixerConfig {
     pb_size_t mixerRules_count;
@@ -115,14 +122,6 @@ typedef struct _PidProfile {
     bool has_yaw;
     PidProfile_PidControllerConfig yaw;
 } PidProfile;
-
-typedef struct _RCConfig {
-    pb_size_t which_driverConfig;
-    union {
-        CrossfireConfig crossfire;
-        IBUSConfig ibus;
-    } driverConfig;
-} RCConfig;
 
 typedef struct _SPIConfig {
     bool has_mosi;
@@ -173,6 +172,14 @@ typedef struct _IOConfig {
     pb_size_t spiConfigs_count;
     SPIConfig spiConfigs[3];
 } IOConfig;
+
+typedef struct _RCConfig {
+    pb_size_t which_driverConfig;
+    union {
+        CrossfireConfig crossfire;
+        IBUSConfig ibus;
+    } driverConfig;
+} RCConfig;
 
 typedef struct _Configuration {
     bool has_ioConfig;
@@ -233,12 +240,13 @@ typedef struct _Configuration {
 #define MotorConfig_init_default                 {false, Pin_init_default, _MotorConfig_MotorProtocol_MIN}
 #define ServoConfig_init_default                 {false, Pin_init_default, _ServoConfig_ServoFrequency_MIN}
 #define Pin_init_default                         {""}
+#define UartDescriptor_init_default              {""}
 #define MixerConfig_init_default                 {0, {MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default, MixerRule_init_default}}
 #define MixerRule_init_default                   {_MixerRule_TargetType_MIN, 0, _MixerRule_Source_MIN, 0}
 #define RCConfig_init_default                    {0, {CrossfireConfig_init_default}}
-#define IBUSConfig_init_default                  {0}
-#define CrossfireConfig_init_default             {0}
-#define LogConfig_init_default                   {0, 0, 0, 0, 0}
+#define IBUSConfig_init_default                  {false, UartDescriptor_init_default}
+#define CrossfireConfig_init_default             {false, UartDescriptor_init_default}
+#define LogConfig_init_default                   {false, UartDescriptor_init_default, 0, 0, 0, 0}
 #define PidProfile_init_default                  {{{NULL}, NULL}, false, PidProfile_PidControllerConfig_init_default, false, PidProfile_PidControllerConfig_init_default, false, PidProfile_PidControllerConfig_init_default}
 #define PidProfile_PidControllerConfig_init_default {0, 0, 0, 0}
 #define Configuration_init_zero                  {false, IOConfig_init_zero, false, LogConfig_init_zero, false, AccelerometerConfig_init_zero, false, GyroscopeConfig_init_zero, 0, {MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero}, 0, {ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero}, false, MixerConfig_init_zero, false, RCConfig_init_zero, 0, 0, {PidProfile_init_zero, PidProfile_init_zero, PidProfile_init_zero}, 0}
@@ -253,23 +261,17 @@ typedef struct _Configuration {
 #define MotorConfig_init_zero                    {false, Pin_init_zero, _MotorConfig_MotorProtocol_MIN}
 #define ServoConfig_init_zero                    {false, Pin_init_zero, _ServoConfig_ServoFrequency_MIN}
 #define Pin_init_zero                            {""}
+#define UartDescriptor_init_zero                 {""}
 #define MixerConfig_init_zero                    {0, {MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero, MixerRule_init_zero}}
 #define MixerRule_init_zero                      {_MixerRule_TargetType_MIN, 0, _MixerRule_Source_MIN, 0}
 #define RCConfig_init_zero                       {0, {CrossfireConfig_init_zero}}
-#define IBUSConfig_init_zero                     {0}
-#define CrossfireConfig_init_zero                {0}
-#define LogConfig_init_zero                      {0, 0, 0, 0, 0}
+#define IBUSConfig_init_zero                     {false, UartDescriptor_init_zero}
+#define CrossfireConfig_init_zero                {false, UartDescriptor_init_zero}
+#define LogConfig_init_zero                      {false, UartDescriptor_init_zero, 0, 0, 0, 0}
 #define PidProfile_init_zero                     {{{NULL}, NULL}, false, PidProfile_PidControllerConfig_init_zero, false, PidProfile_PidControllerConfig_init_zero, false, PidProfile_PidControllerConfig_init_zero}
 #define PidProfile_PidControllerConfig_init_zero {0, 0, 0, 0}
 
 /* Field tags (for use in manual encoding/decoding) */
-#define CrossfireConfig_uartIndex_tag            1
-#define IBUSConfig_uartIndex_tag                 1
-#define LogConfig_uartIndex_tag                  1
-#define LogConfig_baudRate_tag                   2
-#define LogConfig_infoEnabled_tag                3
-#define LogConfig_warningEnabled_tag             4
-#define LogConfig_errorEnabled_tag               5
 #define MixerRule_targetType_tag                 1
 #define MixerRule_targetIndex_tag                2
 #define MixerRule_source_tag                     3
@@ -281,9 +283,17 @@ typedef struct _Configuration {
 #define PidProfile_PidControllerConfig_Kd_tag    3
 #define PidProfile_PidControllerConfig_Kff_tag   4
 #define Pin_pinName_tag                          1
+#define UartDescriptor_name_tag                  1
+#define CrossfireConfig_uart_tag                 1
 #define I2CConfig_sda_tag                        1
 #define I2CConfig_scl_tag                        2
 #define I2CConfig_speed_tag                      3
+#define IBUSConfig_uart_tag                      1
+#define LogConfig_uart_tag                       1
+#define LogConfig_baudRate_tag                   2
+#define LogConfig_infoEnabled_tag                3
+#define LogConfig_warningEnabled_tag             4
+#define LogConfig_errorEnabled_tag               5
 #define MixerConfig_mixerRules_tag               1
 #define MotorConfig_outputPin_tag                1
 #define MotorConfig_motorProtocol_tag            2
@@ -293,8 +303,6 @@ typedef struct _Configuration {
 #define PidProfile_pitch_tag                     2
 #define PidProfile_roll_tag                      3
 #define PidProfile_yaw_tag                       4
-#define RCConfig_crossfire_tag                   1
-#define RCConfig_ibus_tag                        2
 #define SPIConfig_mosi_tag                       1
 #define SPIConfig_miso_tag                       2
 #define SPIConfig_sck_tag                        3
@@ -311,6 +319,8 @@ typedef struct _Configuration {
 #define IOConfig_softwareUartConfigs_tag         2
 #define IOConfig_i2cConfigs_tag                  3
 #define IOConfig_spiConfigs_tag                  4
+#define RCConfig_crossfire_tag                   1
+#define RCConfig_ibus_tag                        2
 #define Configuration_ioConfig_tag               1
 #define Configuration_logConfig_tag              2
 #define Configuration_accelerometerConfig_tag    3
@@ -436,6 +446,11 @@ X(a, STATIC,   SINGULAR, STRING,   pinName,           1)
 #define Pin_CALLBACK NULL
 #define Pin_DEFAULT NULL
 
+#define UartDescriptor_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, STRING,   name,              1)
+#define UartDescriptor_CALLBACK NULL
+#define UartDescriptor_DEFAULT NULL
+
 #define MixerConfig_FIELDLIST(X, a) \
 X(a, STATIC,   REPEATED, MESSAGE,  mixerRules,        1)
 #define MixerConfig_CALLBACK NULL
@@ -459,23 +474,26 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (driverConfig,ibus,driverConfig.ibus),   2)
 #define RCConfig_driverConfig_ibus_MSGTYPE IBUSConfig
 
 #define IBUSConfig_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   uartIndex,         1)
+X(a, STATIC,   OPTIONAL, MESSAGE,  uart,              1)
 #define IBUSConfig_CALLBACK NULL
 #define IBUSConfig_DEFAULT NULL
+#define IBUSConfig_uart_MSGTYPE UartDescriptor
 
 #define CrossfireConfig_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   uartIndex,         1)
+X(a, STATIC,   OPTIONAL, MESSAGE,  uart,              1)
 #define CrossfireConfig_CALLBACK NULL
 #define CrossfireConfig_DEFAULT NULL
+#define CrossfireConfig_uart_MSGTYPE UartDescriptor
 
 #define LogConfig_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   uartIndex,         1) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  uart,              1) \
 X(a, STATIC,   SINGULAR, UINT32,   baudRate,          2) \
 X(a, STATIC,   SINGULAR, BOOL,     infoEnabled,       3) \
 X(a, STATIC,   SINGULAR, BOOL,     warningEnabled,    4) \
 X(a, STATIC,   SINGULAR, BOOL,     errorEnabled,      5)
 #define LogConfig_CALLBACK NULL
 #define LogConfig_DEFAULT NULL
+#define LogConfig_uart_MSGTYPE UartDescriptor
 
 #define PidProfile_FIELDLIST(X, a) \
 X(a, CALLBACK, SINGULAR, STRING,   name,              1) \
@@ -508,6 +526,7 @@ extern const pb_msgdesc_t MpuI2cConfig_msg;
 extern const pb_msgdesc_t MotorConfig_msg;
 extern const pb_msgdesc_t ServoConfig_msg;
 extern const pb_msgdesc_t Pin_msg;
+extern const pb_msgdesc_t UartDescriptor_msg;
 extern const pb_msgdesc_t MixerConfig_msg;
 extern const pb_msgdesc_t MixerRule_msg;
 extern const pb_msgdesc_t RCConfig_msg;
@@ -530,6 +549,7 @@ extern const pb_msgdesc_t PidProfile_PidControllerConfig_msg;
 #define MotorConfig_fields &MotorConfig_msg
 #define ServoConfig_fields &ServoConfig_msg
 #define Pin_fields &Pin_msg
+#define UartDescriptor_fields &UartDescriptor_msg
 #define MixerConfig_fields &MixerConfig_msg
 #define MixerRule_fields &MixerRule_msg
 #define RCConfig_fields &RCConfig_msg
@@ -552,12 +572,13 @@ extern const pb_msgdesc_t PidProfile_PidControllerConfig_msg;
 #define MotorConfig_size                         14
 #define ServoConfig_size                         14
 #define Pin_size                                 10
+#define UartDescriptor_size                      18
 #define MixerConfig_size                         672
 #define MixerRule_size                           19
-#define RCConfig_size                            8
-#define IBUSConfig_size                          6
-#define CrossfireConfig_size                     6
-#define LogConfig_size                           18
+#define RCConfig_size                            22
+#define IBUSConfig_size                          20
+#define CrossfireConfig_size                     20
+#define LogConfig_size                           32
 /* PidProfile_size depends on runtime parameters */
 #define PidProfile_PidControllerConfig_size      36
 

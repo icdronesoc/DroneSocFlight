@@ -47,6 +47,8 @@ namespace FlightControlTasks {
     }
 
     void initialize() {
+        Log::info(LogTag, "Initializing Flight Control Tasks");
+
         if (Hardware::gyroscope == nullptr) {
             Log::error(LogTag, "Cannot initialize Flight Control Tasks as no gyroscope is configured.");
             return;
@@ -56,7 +58,7 @@ namespace FlightControlTasks {
             auto task = new Scheduler::Task(readAccelerometer, AccelerometerTaskName);
             auto schedule = new Scheduler::IndependentTaskSchedule(AccelerometerTaskName, task, Hardware::accelerometer->sampleRate);
             Scheduler::addTaskRunner(schedule);
-            Log::info(LogTag, "Accelerometer reading task configuration complete.");
+            Log::info(LogTag, "Accelerometer reading task initialization complete.");
         }
 
         auto gyroTask = new Scheduler::Task(readGyroscope, GyroscopeTaskName);
@@ -66,6 +68,7 @@ namespace FlightControlTasks {
         auto sequenceSchedule = new Scheduler::SequentialTaskSchedule<3>(FlightControlScheduleName, {gyroTask, pidTask, mixerTask}, {pidLoopFrequencyDivider, 1}, Hardware::gyroscope->sampleRate);
 
         Scheduler::addTaskRunner(sequenceSchedule);
-        Log::info(LogTag, "Flight Control Tasks configuration complete.");
+
+        Log::info(LogTag, "Flight Control Tasks initialization complete.");
     }
 }

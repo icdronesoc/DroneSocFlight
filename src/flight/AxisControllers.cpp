@@ -36,6 +36,7 @@ namespace AxisControllers {
     }
 
     void initialize() {
+        Log::info(LogTag, "Initializing Axis Controllers");
         if (Config::config.pidProfiles_count > 0) {
             if (Config::config.selectedPidProfile < Config::config.pidProfiles_count) {
                 auto &profile = Config::config.pidProfiles[Config::config.selectedPidProfile];
@@ -62,5 +63,6 @@ namespace AxisControllers {
         } else {
             Log::error(LogTag, "No PID profile configured.");
         }
+        Log::info(LogTag, "Axis Controllers initialization complete.");
     }
 }

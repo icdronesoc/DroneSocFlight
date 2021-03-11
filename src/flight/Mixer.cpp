@@ -35,6 +35,7 @@ namespace Mixer {
     }
 
     void initialize() {
+        Log::info(LogTag, "Initializing Mixer");
         motorOutputBufferSize = Hardware::motors.size();
         motorOutputBuffer = new double[motorOutputBufferSize];
         servoOutputBufferSize = Hardware::servos.size();
@@ -102,8 +103,10 @@ namespace Mixer {
                 });
             }
         } else {
-            Log::error(LogTag, "Mixer not configured.");
+            Log::error(LogTag, "No mixer configuration found.");
         }
+
+        Log::info(LogTag, "Mixer initialization complete.");
     }
 
     void applyMix(double throttle, double pitchPidOutput, double rollPidOutput, double yawPidOutput) {

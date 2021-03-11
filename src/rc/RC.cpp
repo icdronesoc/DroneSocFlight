@@ -9,7 +9,7 @@ namespace RC {
     namespace { // private
         const auto LogTag = "RC";
 
-        Driver* driver = nullptr;
+        Driver *driver = nullptr;
         uint32_t lastFrameTimeMs = 0;
 
         bool shouldTryToGetFrame() {
@@ -18,6 +18,7 @@ namespace RC {
         }
 
         const Scheduler::Name RCTaskName = "RC Receiver";
+
         void tryGetFrame() {
             // driver guaranteed not to be null because otherwise the task would never have been scheduled.
             if (driver->getFrame(channels)) {
@@ -29,24 +30,33 @@ namespace RC {
     Channels channels;
 
     void initialize() {
+        Log::info(LogTag, "Initializing RC Driver");
         // Choose driver
         if (Config::config.has_rcConfig) {
             switch (Config::config.rcConfig.which_driverConfig) {
                 case RCConfig_crossfire_tag: {
-                    auto uart = IO::takeUart(Config::config.rcConfig.driverConfig.ibus.uartIndex);
-                    if (uart != nullptr) {
-                        driver = new RcDrivers::CrossfireDriver(*uart);
+                    if (Config::config.rcConfig.driverConfig.crossfire.has_uart) {
+                        auto uart = IO::takeUart(Config::config.rcConfig.driverConfig.crossfire.uart.name);
+                        if (uart != nullptr) {
+                            driver = new RcDrivers::CrossfireDriver(*uart);
+                        } else {
+                            Log::error(LogTag, "RC Driver UART not valid.");
+                        }
                     } else {
-                        Log::error(LogTag, "RC Driver UART not valid.");
+                        Log::error(LogTag, "RC Driver UART not configured.");
                     }
                     break;
                 }
                 case RCConfig_ibus_tag: {
-                    auto uart = IO::takeUart(Config::config.rcConfig.driverConfig.ibus.uartIndex);
-                    if (uart != nullptr) {
-                        driver = new RcDrivers::IBUSDriver(*uart);
+                    if (Config::config.rcConfig.driverConfig.ibus.has_uart) {
+                        auto uart = IO::takeUart(Config::config.rcConfig.driverConfig.ibus.uart.name);
+                        if (uart != nullptr) {
+                            driver = new RcDrivers::IBUSDriver(*uart);
+                        } else {
+                            Log::error(LogTag, "RC Driver UART not valid.");
+                        }
                     } else {
-                        Log::error(LogTag, "RC Driver UART not valid.");
+                        Log::error(LogTag, "RC Driver UART not configured.");
                     }
                     break;
                 }
@@ -68,7 +78,7 @@ namespace RC {
             auto runner = new Scheduler::AdHocTaskRunner(task, shouldTryToGetFrame);
             Scheduler::addTaskRunner(runner);
 
-            Log::info(LogTag, "RC Driver configuration complete.");
+            Log::info(LogTag, "RC Driver initialization complete.");
         }
     }
 

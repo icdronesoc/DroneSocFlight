@@ -18,7 +18,7 @@ namespace IO {
 
     constexpr uint32_t WatchDogTimeout = 1; // Seconds
 
-    etl::vector<UartDescriptor, maxNumberOfUARTs> UARTs;
+    etl::map<UartName, SerialPort*, maxNumberOfUARTs> UARTs;
     etl::vector<SPIClass*, maxNumberOfSPIs> SPIs;
     etl::vector<TwoWire*, maxNumberOfI2Cs> I2Cs;
 
@@ -47,20 +47,27 @@ namespace IO {
         return nullptr;
     }
 
-    etl::vector<bool, maxNumberOfUARTs> uartIsTaken;
+    etl::vector<UartName, maxNumberOfUARTs> takenUARTs;
 
-    SerialPort *takeUart(size_t uartIndex) {
-        if (uartIndex >= UARTs.size()) return nullptr;
-        auto& uart = UARTs[uartIndex];
-        if (uart.uart == nullptr) return nullptr;
-        if (uartIsTaken[uartIndex]) return nullptr;
-        uartIsTaken[uartIndex] = true;
-        return uart.uart;
+    SerialPort* takeUart(UartName uartName) {
+        auto find = UARTs.find(uartName);
+        if (find != UARTs.end()) {
+            for (auto & takenUart : takenUARTs) {
+                // Check if this UART is in the taken UARTs list
+                if (takenUart == uartName) return nullptr;
+            }
+            // UART was not found in the taken UARTs list! Let's add it.
+            takenUARTs.push_back(uartName);
+            return find->second;
+        } else {
+            // UART does not exist.
+            return nullptr;
+        }
     }
 
     void initialize() {
+        Log::info(LogTag, "Initializing IO");
         setupMcuHardware(Config::config.ioConfig);
-        for (size_t i = 0; i < UARTs.size(); i++) uartIsTaken.push_back(false);
-        Log::info(LogTag, "IO configuration complete.");
+        Log::info(LogTag, "IO initialization complete.");
     }
 }

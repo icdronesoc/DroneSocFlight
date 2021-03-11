@@ -8,7 +8,7 @@ void setupMcuHardware(IOConfig ioConfig) {
 
     auto usbSerial = &SerialUSB;
     usbSerial->begin();
-    UARTs.push_back(UartDescriptor(new StreamSerialPort(usbSerial), "USB VCP"));
+    UARTs["USB VCP"] = new StreamSerialPort(usbSerial);
 
     for (pb_size_t i = 0; i < ioConfig.uartConfigs_count; i++) {
         HardwareSerialPort* hardwareSerial = nullptr;
@@ -23,8 +23,7 @@ void setupMcuHardware(IOConfig ioConfig) {
         } else {
             Log::error(LogTag, "Hardware Serial %d configuration invalid.", i);
         }
-        // Add to the array even if checks failed to preserve original indexing
-        UARTs.push_back(UartDescriptor(hardwareSerial, ioConfig.uartConfigs[i].name));
+        if (hardwareSerial != nullptr) UARTs[ioConfig.uartConfigs[i].name] = hardwareSerial;
     }
 
     for (pb_size_t i = 0; i < ioConfig.softwareUartConfigs_count; i++) {
@@ -40,8 +39,7 @@ void setupMcuHardware(IOConfig ioConfig) {
         } else {
             Log::error(LogTag, "Software Serial %d configuration invalid.", i);
         }
-        // Add to the array even if checks failed to preserve original indexing
-        UARTs.push_back(UartDescriptor(softwareSerial, ioConfig.softwareUartConfigs[i].name));
+        if (softwareSerial != nullptr) UARTs[ioConfig.softwareUartConfigs[i].name] = softwareSerial;
     }
 
     for (pb_size_t i = 0; i < ioConfig.i2cConfigs_count; i++) {

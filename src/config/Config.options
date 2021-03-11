@@ -8,3 +8,4 @@ IOConfig.spiConfigs max_count:3
 Pin.pinName max_size:9 # 8 Characters and \0
 MixerConfig.mixerRules max_count:32
 UartConfig.name max_size: 17 # 16 Characters and \0
+UartDescriptor.name max_size: 17 # 16 Characters and \0

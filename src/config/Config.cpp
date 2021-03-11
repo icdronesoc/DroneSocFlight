@@ -21,7 +21,8 @@ namespace Config {
             strcpy(config.ioConfig.uartConfigs[0].rx.pinName, "USB_RX");
             strcpy(config.ioConfig.uartConfigs[0].tx.pinName, "USB_TX");
             config.has_logConfig = true;
-            config.logConfig.uartIndex = 0;
+            config.logConfig.has_uart = true;
+            strcpy(config.logConfig.uart.name, "USB");
             config.logConfig.baudRate = 115200;
             config.logConfig.infoEnabled = true;
             config.logConfig.warningEnabled = true;
@@ -34,6 +35,8 @@ namespace Config {
     Configuration config = Configuration_init_default;
 
     void loadConfig() {
+        Log::info(LogTag, "Loading config");
+
         auto stream = pb_istream_from_buffer(configBuffer, BufferSize);
 
         if (IO::loadData(configBuffer, BufferSize) == 0) {
@@ -47,6 +50,8 @@ namespace Config {
             config = defaultConfig();
             return;
         }
+
+        Log::info(LogTag, "Config successfully loaded!");
     }
 
     void saveConfig() {

@@ -4,6 +4,7 @@
 #include <SPI.h>
 #include <Wire.h>
 #include <etl/vector.h>
+#include <etl/map.h>
 #include <etl/string.h>
 #include "config/Config.h"
 #include "AbstractSerialPort.h"
@@ -50,27 +51,21 @@ namespace IO {
      */
     Pin* findPin(char* pinName);
 
-    struct UartDescriptor {
-        static constexpr size_t NameSize = sizeof(UartConfig::name) / sizeof(char);
-        using Name = etl::string<NameSize>;
-
-        UartDescriptor(SerialPort* uart, const Name& name) : uart(uart), name(name) {}
-        SerialPort* uart;
-        Name name;
-    };
+    static constexpr size_t UartNameSize = sizeof(UartConfig::name) / sizeof(char);
+    using UartName = etl::string<UartNameSize>;
 
     /**
      * All available UARTs except for the config UART.
      * Initialization is affected by hardware config.
      */
-    extern etl::vector<UartDescriptor, maxNumberOfUARTs> UARTs;
+    extern etl::map<UartName, SerialPort*, maxNumberOfUARTs> UARTs;
 
     /**
      * Attempts to exclusively take a UART. Doing so will make the UART unavailable for use by other drivers.
      * @param uartIndex The UART index
      * @return The UART or nullptr if it does not exist or was taken.
      */
-    extern SerialPort* takeUart(size_t uartIndex);
+    extern SerialPort* takeUart(UartName uartName);
 
     /**
      * All available SPIs.
