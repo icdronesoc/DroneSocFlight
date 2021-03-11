@@ -11,7 +11,7 @@ namespace AxisControllers {
     double throttleOutput;
 
     namespace { // private
-        const char* LogTag = "Axis Controllers";
+        const auto LogTag = "Axis Controllers";
 
         // Gains are stored separately from the controller to allow for dynamic gain adjustment.
 

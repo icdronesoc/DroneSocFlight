@@ -6,4 +6,8 @@ namespace Maths {
         if(divisor == 0) return NAN;
         return (x - in_min) * (out_max - out_min) / divisor + out_min;
     }
+
+    uint8_t nextHighestPowerOf2(uint32_t input) {
+        return ceil(log(input)/log(2));
+    }
 }

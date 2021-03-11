@@ -7,7 +7,7 @@
 
 namespace Timer {
     namespace { // private
-        const char* LogTag = "Timer";
+        const auto LogTag = "Timer";
         constexpr size_t MaxTimerCount = 16;
 
         enum class TimerPurpose {
@@ -74,8 +74,8 @@ namespace Timer {
         public:
             STM32PWMTimer(HardwareTimer& hardwareTimer, uint32_t pinChannel) : hardwareTimer(hardwareTimer), pinChannel(pinChannel) {}
 
-            void setDutyCycle(uint32_t dutyCycle) override {
-                this->hardwareTimer.setCaptureCompare(this->pinChannel, dutyCycle, MICROSEC_COMPARE_FORMAT);
+            void setDutyCycle(uint32_t pulseWidth) override {
+                this->hardwareTimer.setCaptureCompare(this->pinChannel, pulseWidth, MICROSEC_COMPARE_FORMAT);
             }
 
         private:
@@ -98,7 +98,7 @@ namespace Timer {
         }
 
         if (checkForPwmFrequencyCollision(timerDescriptor, frequency)) {
-            Log::error(LogTag, "Error setting hardware timer frequency: This timer's frequency has already been set to something else, and the older frequency would be overwritten.");
+            Log::error(LogTag, "Error setting PWM frequency: This timer's frequency has already been set to something else, and the older frequency would be overwritten.");
             return nullptr;
         }
 

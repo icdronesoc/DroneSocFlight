@@ -6,7 +6,7 @@
 
 namespace Hardware {
     namespace { // private
-        const char* LogTag = "Hardware";
+        const auto LogTag = "Hardware";
     }
 
     Accelerometer* accelerometer = nullptr;

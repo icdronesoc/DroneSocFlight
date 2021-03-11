@@ -7,7 +7,7 @@
 
 namespace RC {
     namespace { // private
-        const char* LogTag = "RC";
+        const auto LogTag = "RC";
 
         Driver* driver = nullptr;
         uint32_t lastFrameTimeMs = 0;

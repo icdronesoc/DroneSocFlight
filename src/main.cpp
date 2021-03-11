@@ -10,7 +10,7 @@
 #include "flight/Mixer.h"
 
 namespace { // private
-    const char* LogTag = "Main";
+    const auto LogTag = "Main";
 }
 
 void setup() {

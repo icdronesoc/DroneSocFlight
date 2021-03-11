@@ -13,7 +13,7 @@
 
 namespace IO {
     namespace { // private
-        const char* LogTag = "IO";
+        const auto LogTag = "IO";
     }
 
     constexpr uint32_t WatchDogTimeout = 1; // Seconds

@@ -6,7 +6,7 @@
 
 namespace Config {
     namespace {
-        const char* LogTag = "Config";
+        const auto LogTag = "Config";
         constexpr size_t BufferSize = 8 * 1024; // 8kB buffer
     }
 

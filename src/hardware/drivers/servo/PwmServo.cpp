@@ -3,10 +3,10 @@
 
 namespace ServoDrivers {
     PwmServo::PwmServo(Timer::PWMTimer& pwmTimer) : pwmTimer(pwmTimer) {
-        this->pwmTimer.setDutyCycle(1500);
+        this->pwmTimer.setPulseWidth(1500);
     }
 
     void PwmServo::setOutput(double output) {
-        this->pwmTimer.setDutyCycle(Maths::map(output, -1, 1, 1000, 2000));
+        this->pwmTimer.setPulseWidth(Maths::map(output, -1, 1, 1000, 2000));
     }
 }

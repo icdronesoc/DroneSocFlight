@@ -5,7 +5,7 @@
 
 namespace Mixer {
     namespace { // private
-        const char* LogTag = "Mixer";
+        const auto LogTag = "Mixer";
 
         enum class MixerSource {
             THROTTLE,

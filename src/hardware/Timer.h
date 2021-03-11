@@ -11,9 +11,9 @@ namespace Timer {
     public:
         /**
          * Sets the duty cycle of the PWM
-         * @param dutyCycle The duty cycle, in microseconds
+         * @param pulseWidth The duty cycle, in microseconds
          */
-        virtual void setDutyCycle(uint32_t dutyCycle) = 0;
+        virtual void setPulseWidth(uint32_t pulseWidth) = 0;
     };
 
     /**
