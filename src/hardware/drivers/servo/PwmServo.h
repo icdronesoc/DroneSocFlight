@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 #include "hardware/AbstractHardware.h"
-#include "hardware/Timer.h"
+#include "hardware/timer/Timer.h"
 
 namespace ServoDrivers {
     class PwmServo : public Hardware::Servo {

@@ -20,10 +20,11 @@ namespace Timer {
         uint8_t allocatePWMChannel() {
             if (numberOfAllocatedPWMChannels < MaxPWMCount) {
                 auto allocatedChannel = numberOfAllocatedPWMChannels;
+                if (allocatedChannel == 8) Log::warning(LogTag, "All high-speed PWM channels have been allocated.");
                 numberOfAllocatedPWMChannels++;
                 return allocatedChannel;
             } else {
-                Log::error(LogTag, "Cannot allocate PWM Channel: All are allocated.");
+                Log::error(LogTag, "Cannot allocate PWM Channel: All channels are allocated.");
                 return MaxPWMCount;
             }
         }
@@ -59,7 +60,7 @@ namespace Timer {
         };
     }
 
-    PWMTimer* getPWMTimerForOutputPin(uint32_t pin, uint32_t frequency) {
+    PWMTimer* createPWMTimer(uint32_t pin, uint32_t frequency) {
         auto pwmChannel = allocatePWMChannel();
         if (pwmChannel >= MaxPWMCount) return nullptr;
 

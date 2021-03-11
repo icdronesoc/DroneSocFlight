@@ -83,7 +83,7 @@ namespace Hardware {
                 if (pin != nullptr) {
                     switch (Config::config.motors[i].motorProtocol) {
                         case MotorConfig_MotorProtocol_PWM: {
-                            auto pwmTimer = Timer::getPWMTimerForOutputPin(pin->number,
+                            auto pwmTimer = Timer::createPWMTimer(pin->number,
                                                                            50); // TODO configurable frequency
                             if (pwmTimer != nullptr) {
                                 motor = new MotorDrivers::PwmMotor(*pwmTimer);
@@ -129,7 +129,7 @@ namespace Hardware {
                             Log::error(LogTag, "Servo %d refresh rate invalid.", i);
                             break;
                     }
-                    auto timer = Timer::getPWMTimerForOutputPin(pin->number, frequency);
+                    auto timer = Timer::createPWMTimer(pin->number, frequency);
                     if (timer != nullptr) {
                         servo = new ServoDrivers::PwmServo(*timer);
                     } else {

@@ -84,7 +84,7 @@ namespace Timer {
         };
     }
 
-    PWMTimer* getPWMTimerForOutputPin(uint32_t pin, uint32_t frequency) {
+    PWMTimer* createPWMTimer(uint32_t pin, uint32_t frequency) {
         auto timerDescriptor = reinterpret_cast<TIM_TypeDef*>(pinmap_peripheral(digitalPinToPinName(pin), PinMap_PWM));
         if (timerDescriptor == nullptr) {
             Log::error(LogTag, "No timer instance exists for pin %d", pin);

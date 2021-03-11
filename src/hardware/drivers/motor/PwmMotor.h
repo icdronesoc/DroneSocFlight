@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 #include "hardware/AbstractHardware.h"
-#include "hardware/Timer.h"
+#include "hardware/timer/Timer.h"
 
 namespace MotorDrivers {
     class PwmMotor : public Hardware::Motor {
