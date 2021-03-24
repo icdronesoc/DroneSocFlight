@@ -16,7 +16,14 @@ void PidController::compute(PidGains& gains) {
     }
 
     // Calculate Integral
-    if (gains.Ki != 0) {
+    if (gains.Ki == 0) {
+        // Integrator disabled - zero it.
+        this->lastIntegral = 0;
+    } else {
+        // If the error is or crossed zero, reset the integral to prevent the I-term from contributing to bouncebacks.
+        // TODO This might be undesirable for yaw (or for all axis?)
+        if (error * this->lastError <= 0) this->lastIntegral = 0;
+        // TODO disable the integrator if the PID sum is saturated
         this->lastIntegral += error * this->periodMicroseconds;
         this->output += this->lastIntegral;
     }
