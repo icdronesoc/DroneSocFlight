@@ -2,7 +2,7 @@
 #include "utils/Maths.h"
 
 namespace MotorDrivers {
-    PwmMotor::PwmMotor(Timer::PWMTimer& pwmTimer) : pwmTimer(pwmTimer) {
+    PwmMotor::PwmMotor(PWM::Output& pwmTimer) : pwmTimer(pwmTimer) {
         this->pwmTimer.setPulseWidth(1000);
     }
 

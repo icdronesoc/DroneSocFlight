@@ -48,10 +48,10 @@ namespace Log {
             etl::to_string(millis(), messagePrefix, timestampFormat, true);
             messagePrefix.append("] [");
             messagePrefix.append(logLevel);
-            for (int i = 0; i < longestLogLevelLengthSeen - logLevelLength; i++) messagePrefix.append(" ");
+            for (size_t i = 0; i < longestLogLevelLengthSeen - logLevelLength; i++) messagePrefix.append(" ");
             messagePrefix.append("] [");
             messagePrefix.append(tag);
-            for (int i = 0; i < longestTagLengthSeen - tagLength; i++) messagePrefix.append(" ");
+            for (size_t i = 0; i < longestTagLengthSeen - tagLength; i++) messagePrefix.append(" ");
             messagePrefix.append("]: ");
 
             output->write(messagePrefix.c_str(), messagePrefix.size());

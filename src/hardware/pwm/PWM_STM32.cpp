@@ -1,11 +1,11 @@
 #ifdef PLATFORM_STM32
 
-#include "Timer.h"
+#include "PWM.h"
 #include "log/Log.h"
 #include "HardwareTimer.h"
 #include "etl/map.h"
 
-namespace Timer {
+namespace PWM {
     namespace { // private
         const auto LogTag = "Timer";
         constexpr size_t MaxTimerCount = 16;
@@ -20,6 +20,7 @@ namespace Timer {
             TimerPurpose purpose;
         };
 
+        // TODO move to another module
         etl::map<TIM_TypeDef*, TimerInfo*, MaxTimerCount> timers;
         etl::map<TIM_TypeDef*, uint32_t, MaxTimerCount> pwmFrequencies;
 
@@ -70,9 +71,9 @@ namespace Timer {
             }
         }
 
-        class STM32PWMTimer : public PWMTimer {
+        class STM32Output : public Output {
         public:
-            STM32PWMTimer(HardwareTimer& hardwareTimer, uint32_t pinChannel) : hardwareTimer(hardwareTimer), pinChannel(pinChannel) {}
+            STM32Output(HardwareTimer& hardwareTimer, uint32_t pinChannel) : hardwareTimer(hardwareTimer), pinChannel(pinChannel) {}
 
             void setPulseWidth(uint32_t pulseWidth) override {
                 this->hardwareTimer.setCaptureCompare(this->pinChannel, pulseWidth, MICROSEC_COMPARE_FORMAT);
@@ -84,7 +85,7 @@ namespace Timer {
         };
     }
 
-    PWMTimer* createPWMTimer(uint32_t pin, uint32_t frequency) {
+    Output* createOutput(uint32_t pin, uint32_t frequency) {
         auto timerDescriptor = reinterpret_cast<TIM_TypeDef*>(pinmap_peripheral(digitalPinToPinName(pin), PinMap_PWM));
         if (timerDescriptor == nullptr) {
             Log::error(LogTag, "No timer instance exists for pin %d", pin);
@@ -106,7 +107,7 @@ namespace Timer {
 
         timerInfo->timer->setPWM(pinChannel, pin, frequency, 0);
 
-        return new STM32PWMTimer(*timerInfo->timer, pinChannel);
+        return new STM32Output(*timerInfo->timer, pinChannel);
     }
 }
 

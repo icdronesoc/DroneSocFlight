@@ -21,9 +21,7 @@ namespace RcDrivers {
         bool channelsUpdated = false;
         while (this->uart->available() > 0) {
             uint32_t now = millis();
-            if (now - this->lastByteTime >= PROTOCOL_TIMEGAP) {
-                this->state = State::GetLength;
-            }
+            if (now - this->lastByteTime >= PROTOCOL_TIMEGAP) this->state = State::GetLength;
             this->lastByteTime = now;
 
             uint8_t newByte = this->uart->read();

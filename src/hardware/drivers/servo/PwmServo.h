@@ -2,14 +2,14 @@
 
 #include <Arduino.h>
 #include "hardware/AbstractHardware.h"
-#include "hardware/timer/Timer.h"
+#include "hardware/pwm/PWM.h"
 
 namespace ServoDrivers {
     class PwmServo : public Hardware::Servo {
     public:
-        explicit PwmServo(Timer::PWMTimer& pwmTimer);
+        explicit PwmServo(PWM::Output& pwmTimer);
         void setOutput(double output) override;
     private:
-        Timer::PWMTimer& pwmTimer;
+        PWM::Output& pwmTimer;
     };
 }

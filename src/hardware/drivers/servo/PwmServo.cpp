@@ -2,7 +2,7 @@
 #include "utils/Maths.h"
 
 namespace ServoDrivers {
-    PwmServo::PwmServo(Timer::PWMTimer& pwmTimer) : pwmTimer(pwmTimer) {
+    PwmServo::PwmServo(PWM::Output& pwmTimer) : pwmTimer(pwmTimer) {
         this->pwmTimer.setPulseWidth(1500);
     }
 

@@ -1,12 +1,12 @@
 #ifdef PLATFORM_ESP32
 
-#include "Timer.h"
+#include "PWM.h"
 #include "log/Log.h"
 #include "esp32-hal-ledc.h"
 #include "etl/vector.h"
 #include "utils/Maths.h"
 
-namespace Timer {
+namespace PWM {
     namespace { // private
         const auto LogTag = "Timer";
         constexpr size_t MaxPWMCount = 16;
@@ -46,9 +46,9 @@ namespace Timer {
             }
         }
 
-        class ESP32PWMTimer : public PWMTimer {
+        class ESP32Output : public Output {
         public:
-            ESP32PWMTimer(uint8_t pwmChannel, double tickRate) : pwmChannel(pwmChannel),  tickRate(tickRate) {}
+            ESP32Output(uint8_t pwmChannel, double tickRate) : pwmChannel(pwmChannel),  tickRate(tickRate) {}
 
             void setPulseWidth(uint32_t pulseWidth) override {
                 ledcWrite(pwmChannel, pulseWidth / this->tickRate);
@@ -60,7 +60,7 @@ namespace Timer {
         };
     }
 
-    PWMTimer* createPWMTimer(uint32_t pin, uint32_t frequency) {
+    Output* createOutput(uint32_t pin, uint32_t frequency) {
         auto pwmChannel = allocatePWMChannel();
         if (pwmChannel >= MaxPWMCount) return nullptr;
 
@@ -79,7 +79,7 @@ namespace Timer {
         ledcSetup(pwmChannel, frequency, resolutionBits);
         ledcAttachPin(pin, pwmChannel);
 
-        return new ESP32PWMTimer(pwmChannel, tickRate);
+        return new ESP32Output(pwmChannel, tickRate);
     }
 }
 

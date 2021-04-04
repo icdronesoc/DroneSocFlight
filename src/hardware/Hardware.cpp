@@ -1,6 +1,6 @@
 #include "Hardware.h"
 #include "IO.h"
-#include "hardware/timer/Timer.h"
+#include "hardware/pwm/PWM.h"
 #include "hardware/dshot/DShot.h"
 #include "hardware/drivers/AllDrivers.h"
 #include "log/Log.h"
@@ -85,7 +85,7 @@ namespace Hardware {
                 if (pin != nullptr) {
                     switch (Config::config.motors[i].motorProtocol) {
                         case MotorConfig_MotorProtocol_PWM: {
-                            auto pwmTimer = Timer::createPWMTimer(pin->number, 50); // TODO configurable frequency
+                            auto pwmTimer = PWM::createOutput(pin->number, 50); // TODO configurable frequency
                             if (pwmTimer != nullptr) {
                                 motor = new MotorDrivers::PwmMotor(*pwmTimer);
                             } else {
@@ -135,7 +135,7 @@ namespace Hardware {
                             Log::error(LogTag, "Servo %d refresh rate invalid.", i);
                             break;
                     }
-                    auto timer = Timer::createPWMTimer(pin->number, frequency);
+                    auto timer = PWM::createOutput(pin->number, frequency);
                     if (timer != nullptr) {
                         servo = new ServoDrivers::PwmServo(*timer);
                     } else {
