@@ -9,7 +9,6 @@ namespace RcDrivers {
     public:
         explicit CrossfireDriver(IO::SerialPort& uart);
         bool getFrame(RC::Channels& channels) override;
-
         bool shouldTryToGetFrame() override;
 
     private:
@@ -22,16 +21,16 @@ namespace RcDrivers {
          * Index 3...FrameLength+3 = Payload
          * Index FrameLength+4 = CRC
          */
-        uint8_t frameBuffer[MaxFrameLength];
-        size_t frameBufferIndex;
+        uint8_t frameBuffer[MaxFrameLength] {};
+        size_t frameBufferIndex = 0;
         /**
          * The time at which the first byte of the current frame was received, in microseconds.
          */
-        uint32_t frameStartTime;
+        uint32_t frameStartTime = 0;
 
         // TODO send as we go, buffer is unnecessary
-        uint8_t telemetryFrameBuffer[MaxFrameLength];
-        size_t telemetryFrameLength;
+        uint8_t telemetryFrameBuffer[MaxFrameLength] {};
+        size_t telemetryFrameLength = 0;
 
         /**
          * @param newData New data read from the UART

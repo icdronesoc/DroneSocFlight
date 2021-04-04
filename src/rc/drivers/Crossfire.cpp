@@ -112,7 +112,6 @@ namespace RcDrivers {
         };
     }
 
-    // TODO Crossfire Telemetry
     CrossfireDriver::CrossfireDriver(IO::SerialPort& uart) : RC::Driver(ChannelCount), uart(uart) {
         this->uart.begin(Baud);
     }
