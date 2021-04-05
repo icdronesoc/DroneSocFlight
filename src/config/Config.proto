@@ -130,6 +130,7 @@ message RCConfig {
     oneof driverConfig {
         CrossfireConfig crossfire = 1;
         IBUSConfig ibus = 2;
+        CC2500Config cc2500 = 3;
     }
 }
 
@@ -160,5 +161,22 @@ message PidProfile {
         double Ki = 2;
         double Kd = 3;
         double Kff = 4;
+    }
+}
+
+message CC2500Config {
+    Protocol protocol = 1;
+    uint32 spiBusIndex = 2;
+    Pin csPin = 3;
+    Pin interruptPin = 4;
+    Pin bindPin = 5;
+    Pin ledPin = 6;
+    Pin transmitEnablePin = 7;
+    Pin lnaEnablePin = 8;
+    Pin antennaSelectionPin = 9;
+
+    enum Protocol {
+        FrSky = 0;
+        Redpine = 1;
     }
 }

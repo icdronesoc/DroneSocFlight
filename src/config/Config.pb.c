@@ -69,6 +69,10 @@ PB_BIND(PidProfile, PidProfile, AUTO)
 PB_BIND(PidProfile_PidControllerConfig, PidProfile_PidControllerConfig, AUTO)
 
 
+PB_BIND(CC2500Config, CC2500Config, AUTO)
+
+
+
 
 
 

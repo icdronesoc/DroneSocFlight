@@ -41,6 +41,14 @@ typedef enum _MixerRule_Source {
     MixerRule_Source_YAW = 3
 } MixerRule_Source;
 
+typedef enum _CC2500Config_Protocol {
+    CC2500Config_Protocol_FrSkyD8 = 0,
+    CC2500Config_Protocol_FrskyD16 = 1,
+    CC2500Config_Protocol_FrskyD16_LBT = 2,
+    CC2500Config_Protocol_FrSkyL = 3,
+    CC2500Config_Protocol_Redpine = 4
+} CC2500Config_Protocol;
+
 /* Struct definitions */
 typedef struct _MixerRule {
     MixerRule_TargetType targetType;
@@ -68,6 +76,25 @@ typedef struct _Pin {
 typedef struct _UartDescriptor {
     char name[17];
 } UartDescriptor;
+
+typedef struct _CC2500Config {
+    CC2500Config_Protocol protocol;
+    uint32_t spiBusIndex;
+    bool has_csPin;
+    Pin csPin;
+    bool has_interruptPin;
+    Pin interruptPin;
+    bool has_bindPin;
+    Pin bindPin;
+    bool has_ledPin;
+    Pin ledPin;
+    bool has_transmitEnablePin;
+    Pin transmitEnablePin;
+    bool has_lnaEnablePin;
+    Pin lnaEnablePin;
+    bool has_antennaSelectionPin;
+    Pin antennaSelectionPin;
+} CC2500Config;
 
 typedef struct _CrossfireConfig {
     bool has_uart;
@@ -178,6 +205,7 @@ typedef struct _RCConfig {
     union {
         CrossfireConfig crossfire;
         IBUSConfig ibus;
+        CC2500Config cc2500;
     } driverConfig;
 } RCConfig;
 
@@ -226,6 +254,10 @@ typedef struct _Configuration {
 #define _MixerRule_Source_MAX MixerRule_Source_YAW
 #define _MixerRule_Source_ARRAYSIZE ((MixerRule_Source)(MixerRule_Source_YAW+1))
 
+#define _CC2500Config_Protocol_MIN CC2500Config_Protocol_FrSkyD8
+#define _CC2500Config_Protocol_MAX CC2500Config_Protocol_Redpine
+#define _CC2500Config_Protocol_ARRAYSIZE ((CC2500Config_Protocol)(CC2500Config_Protocol_Redpine+1))
+
 
 /* Initializer values for message structs */
 #define Configuration_init_default               {false, IOConfig_init_default, false, LogConfig_init_default, false, AccelerometerConfig_init_default, false, GyroscopeConfig_init_default, 0, {MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default, MotorConfig_init_default}, 0, {ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default, ServoConfig_init_default}, false, MixerConfig_init_default, false, RCConfig_init_default, 0, 0, {PidProfile_init_default, PidProfile_init_default, PidProfile_init_default}, 0}
@@ -249,6 +281,7 @@ typedef struct _Configuration {
 #define LogConfig_init_default                   {false, UartDescriptor_init_default, 0, 0, 0, 0}
 #define PidProfile_init_default                  {{{NULL}, NULL}, false, PidProfile_PidControllerConfig_init_default, false, PidProfile_PidControllerConfig_init_default, false, PidProfile_PidControllerConfig_init_default}
 #define PidProfile_PidControllerConfig_init_default {0, 0, 0, 0}
+#define CC2500Config_init_default                {_CC2500Config_Protocol_MIN, 0, false, Pin_init_default, false, Pin_init_default, false, Pin_init_default, false, Pin_init_default, false, Pin_init_default, false, Pin_init_default, false, Pin_init_default}
 #define Configuration_init_zero                  {false, IOConfig_init_zero, false, LogConfig_init_zero, false, AccelerometerConfig_init_zero, false, GyroscopeConfig_init_zero, 0, {MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero, MotorConfig_init_zero}, 0, {ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero, ServoConfig_init_zero}, false, MixerConfig_init_zero, false, RCConfig_init_zero, 0, 0, {PidProfile_init_zero, PidProfile_init_zero, PidProfile_init_zero}, 0}
 #define IOConfig_init_zero                       {0, {UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero, UartConfig_init_zero}, 0, {UartConfig_init_zero, UartConfig_init_zero}, 0, {I2CConfig_init_zero, I2CConfig_init_zero, I2CConfig_init_zero}, 0, {SPIConfig_init_zero, SPIConfig_init_zero, SPIConfig_init_zero}}
 #define UartConfig_init_zero                     {"", false, Pin_init_zero, false, Pin_init_zero}
@@ -270,6 +303,7 @@ typedef struct _Configuration {
 #define LogConfig_init_zero                      {false, UartDescriptor_init_zero, 0, 0, 0, 0}
 #define PidProfile_init_zero                     {{{NULL}, NULL}, false, PidProfile_PidControllerConfig_init_zero, false, PidProfile_PidControllerConfig_init_zero, false, PidProfile_PidControllerConfig_init_zero}
 #define PidProfile_PidControllerConfig_init_zero {0, 0, 0, 0}
+#define CC2500Config_init_zero                   {_CC2500Config_Protocol_MIN, 0, false, Pin_init_zero, false, Pin_init_zero, false, Pin_init_zero, false, Pin_init_zero, false, Pin_init_zero, false, Pin_init_zero, false, Pin_init_zero}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define MixerRule_targetType_tag                 1
@@ -284,6 +318,15 @@ typedef struct _Configuration {
 #define PidProfile_PidControllerConfig_Kff_tag   4
 #define Pin_pinName_tag                          1
 #define UartDescriptor_name_tag                  1
+#define CC2500Config_protocol_tag                1
+#define CC2500Config_spiBusIndex_tag             2
+#define CC2500Config_csPin_tag                   3
+#define CC2500Config_interruptPin_tag            4
+#define CC2500Config_bindPin_tag                 5
+#define CC2500Config_ledPin_tag                  6
+#define CC2500Config_transmitEnablePin_tag       7
+#define CC2500Config_lnaEnablePin_tag            8
+#define CC2500Config_antennaSelectionPin_tag     9
 #define CrossfireConfig_uart_tag                 1
 #define I2CConfig_sda_tag                        1
 #define I2CConfig_scl_tag                        2
@@ -321,6 +364,7 @@ typedef struct _Configuration {
 #define IOConfig_spiConfigs_tag                  4
 #define RCConfig_crossfire_tag                   1
 #define RCConfig_ibus_tag                        2
+#define RCConfig_cc2500_tag                      3
 #define Configuration_ioConfig_tag               1
 #define Configuration_logConfig_tag              2
 #define Configuration_accelerometerConfig_tag    3
@@ -467,11 +511,13 @@ X(a, STATIC,   SINGULAR, DOUBLE,   weight,            4)
 
 #define RCConfig_FIELDLIST(X, a) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (driverConfig,crossfire,driverConfig.crossfire),   1) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (driverConfig,ibus,driverConfig.ibus),   2)
+X(a, STATIC,   ONEOF,    MESSAGE,  (driverConfig,ibus,driverConfig.ibus),   2) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (driverConfig,cc2500,driverConfig.cc2500),   3)
 #define RCConfig_CALLBACK NULL
 #define RCConfig_DEFAULT NULL
 #define RCConfig_driverConfig_crossfire_MSGTYPE CrossfireConfig
 #define RCConfig_driverConfig_ibus_MSGTYPE IBUSConfig
+#define RCConfig_driverConfig_cc2500_MSGTYPE CC2500Config
 
 #define IBUSConfig_FIELDLIST(X, a) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  uart,              1)
@@ -514,6 +560,26 @@ X(a, STATIC,   SINGULAR, DOUBLE,   Kff,               4)
 #define PidProfile_PidControllerConfig_CALLBACK NULL
 #define PidProfile_PidControllerConfig_DEFAULT NULL
 
+#define CC2500Config_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UENUM,    protocol,          1) \
+X(a, STATIC,   SINGULAR, UINT32,   spiBusIndex,       2) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  csPin,             3) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  interruptPin,      4) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  bindPin,           5) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  ledPin,            6) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  transmitEnablePin,   7) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  lnaEnablePin,      8) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  antennaSelectionPin,   9)
+#define CC2500Config_CALLBACK NULL
+#define CC2500Config_DEFAULT NULL
+#define CC2500Config_csPin_MSGTYPE Pin
+#define CC2500Config_interruptPin_MSGTYPE Pin
+#define CC2500Config_bindPin_MSGTYPE Pin
+#define CC2500Config_ledPin_MSGTYPE Pin
+#define CC2500Config_transmitEnablePin_MSGTYPE Pin
+#define CC2500Config_lnaEnablePin_MSGTYPE Pin
+#define CC2500Config_antennaSelectionPin_MSGTYPE Pin
+
 extern const pb_msgdesc_t Configuration_msg;
 extern const pb_msgdesc_t IOConfig_msg;
 extern const pb_msgdesc_t UartConfig_msg;
@@ -535,6 +601,7 @@ extern const pb_msgdesc_t CrossfireConfig_msg;
 extern const pb_msgdesc_t LogConfig_msg;
 extern const pb_msgdesc_t PidProfile_msg;
 extern const pb_msgdesc_t PidProfile_PidControllerConfig_msg;
+extern const pb_msgdesc_t CC2500Config_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
 #define Configuration_fields &Configuration_msg
@@ -558,6 +625,7 @@ extern const pb_msgdesc_t PidProfile_PidControllerConfig_msg;
 #define LogConfig_fields &LogConfig_msg
 #define PidProfile_fields &PidProfile_msg
 #define PidProfile_PidControllerConfig_fields &PidProfile_PidControllerConfig_msg
+#define CC2500Config_fields &CC2500Config_msg
 
 /* Maximum encoded size of messages (where known) */
 /* Configuration_size depends on runtime parameters */
@@ -575,12 +643,13 @@ extern const pb_msgdesc_t PidProfile_PidControllerConfig_msg;
 #define UartDescriptor_size                      18
 #define MixerConfig_size                         672
 #define MixerRule_size                           19
-#define RCConfig_size                            22
+#define RCConfig_size                            94
 #define IBUSConfig_size                          20
 #define CrossfireConfig_size                     20
 #define LogConfig_size                           32
 /* PidProfile_size depends on runtime parameters */
 #define PidProfile_PidControllerConfig_size      36
+#define CC2500Config_size                        92
 
 #ifdef __cplusplus
 } /* extern "C" */
