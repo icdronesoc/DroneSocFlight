@@ -4,7 +4,7 @@ namespace Maths {
     double map(double x, double in_min, double in_max, double out_min, double out_max) {
         double divisor = (in_max - in_min);
         if(divisor == 0) return NAN;
-        return (x - in_min) * (out_max - out_min) / divisor + out_min;
+        return (x - in_min) * (out_max - out_min) / divisor + out_min; // TODO constrain
     }
 
     uint8_t nextHighestPowerOf2(uint32_t input) {

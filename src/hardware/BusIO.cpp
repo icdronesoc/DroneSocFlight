@@ -28,9 +28,7 @@ namespace BusIO {
         this->spi->beginTransaction(this->settings);
         digitalWrite(this->csPin, LOW);
         this->spi->transfer(SPIReadBitMask | address); // Set read bit
-        for (size_t i = 0; i < length; i++) {
-            buffer[i] = this->spi->transfer(0);
-        }
+        for (size_t i = 0; i < length; i++) buffer[i] = this->spi->transfer(0);
         digitalWrite(this->csPin, HIGH);
         this->spi->endTransaction();
     }
@@ -40,6 +38,23 @@ namespace BusIO {
         digitalWrite(this->csPin, LOW);
         this->spi->transfer(address & ~SPIReadBitMask); // Clear read bit
         this->spi->transfer(data);
+        digitalWrite(this->csPin, HIGH);
+        this->spi->endTransaction();
+    }
+
+    void SPIDevice::burstWrite(uint8_t address, uint8_t* buffer, size_t length) {
+        this->spi->beginTransaction(this->settings);
+        digitalWrite(this->csPin, LOW);
+        this->spi->transfer(address & ~SPIReadBitMask); // Clear read bit
+        for (size_t i = 0; i < length; i++) buffer[i] = this->spi->transfer(buffer[i]);
+        digitalWrite(this->csPin, HIGH);
+        this->spi->endTransaction();
+    }
+
+    void SPIDevice::strobeRegister(uint8_t address) {
+        this->spi->beginTransaction(this->settings);
+        digitalWrite(this->csPin, LOW);
+        this->spi->transfer(address);
         digitalWrite(this->csPin, HIGH);
         this->spi->endTransaction();
     }
@@ -70,6 +85,20 @@ namespace BusIO {
         this->i2c->beginTransmission(this->deviceAddress);
         this->i2c->write(address);
         this->i2c->write(data);
+        this->i2c->endTransmission();
+    }
+
+    void I2CDevice::burstWrite(uint8_t address, uint8_t *buffer, size_t length) {
+        this->i2c->beginTransmission(this->deviceAddress);
+        this->i2c->write(address);
+        for (size_t i = 0; i < length; i++) buffer[i] = this->i2c->write(buffer[i]);
+        this->i2c->endTransmission();
+        this->i2c->requestFrom(address, length);
+    }
+
+    void I2CDevice::strobeRegister(uint8_t address) {
+        this->i2c->beginTransmission(this->deviceAddress);
+        this->i2c->write(address);
         this->i2c->endTransmission();
     }
 }
