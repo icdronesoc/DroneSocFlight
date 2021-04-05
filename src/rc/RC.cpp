@@ -19,11 +19,15 @@ namespace RC {
 
         const Scheduler::Name RCTaskName = "RC Receiver";
 
+        ChannelsMicroseconds channelsMicroseconds;
+
         void tryGetFrame() {
             // driver guaranteed not to be null because otherwise the task would never have been scheduled.
-            if (driver->getFrame(channels)) {
+            if (driver->getFrame(channelsMicroseconds)) {
                 lastFrameTimeMs = millis();
             }
+
+            // TODO translate from microseconds to -1 to 1 and store in channels
         }
     }
 

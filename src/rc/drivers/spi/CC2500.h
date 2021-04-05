@@ -95,6 +95,7 @@ namespace CC2500 {
     }
 
     class CC2500 {
+    public:
         CC2500(SPIClass &spi, uint32_t csPin);
 
         void readFifo(uint8_t *buffer, size_t length);

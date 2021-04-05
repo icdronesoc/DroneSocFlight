@@ -8,7 +8,7 @@ namespace RcDrivers {
     class CrossfireDriver : public RC::Driver {
     public:
         explicit CrossfireDriver(IO::SerialPort& uart);
-        bool getFrame(RC::Channels& channels) override;
+        bool getFrame(RC::ChannelsMicroseconds& channels) override;
         bool shouldTryToGetFrame() override;
 
     private:
@@ -37,7 +37,7 @@ namespace RcDrivers {
          * @param channels The RC channel data that should be updated if a frame is received
          * @return Whether a frame was received
          */
-        bool handleData(uint8_t newData, RC::Channels &channels);
+        bool handleData(uint8_t newData, RC::ChannelsMicroseconds& channels);
         uint8_t calculateCRC();
         void initializeTelemetryFrame();
         /**

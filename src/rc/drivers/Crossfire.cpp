@@ -116,7 +116,7 @@ namespace RcDrivers {
         this->uart.begin(Baud);
     }
 
-    bool CrossfireDriver::getFrame(RC::Channels &channels) {
+    bool CrossfireDriver::getFrame(RC::ChannelsMicroseconds& channels) {
         bool frameReceived = false;
         while (this->uart->available()) {
             // Carry on processing any serial data even if we've already received a frame
@@ -129,7 +129,7 @@ namespace RcDrivers {
         return this->uart->available() > 0;
     }
 
-    bool CrossfireDriver::handleData(uint8_t newData, RC::Channels &channels) {
+    bool CrossfireDriver::handleData(uint8_t newData, RC::ChannelsMicroseconds& channels) {
         bool rcFrameReceived = false;
         const uint32_t currentTime = micros();
 
@@ -147,7 +147,7 @@ namespace RcDrivers {
                     switch (this->frameBuffer[2]) { // Frame Type
                         case FrameTypes::RCChannels: {
                             if (this->frameBuffer[0] == Addresses::FlightController && this->frameBuffer[1] == PayloadSizes::RCChannels) {
-                                // We got an RC frame!
+                                // We got an RC frame! TODO translate crossfire values to microseconds
                                 const auto rcChannels = reinterpret_cast<PackedRCChannels*>(this->frameBuffer + HeaderLength);
                                 channels[0] = rcChannels->channel0;
                                 channels[1] = rcChannels->channel1;

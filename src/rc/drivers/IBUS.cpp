@@ -17,7 +17,7 @@ namespace RcDrivers {
         this->uart.begin(115200);
     }
 
-    bool IBUSDriver::getFrame(RC::Channels& channels) {
+    bool IBUSDriver::getFrame(RC::ChannelsMicroseconds& channels) {
         bool channelsUpdated = false;
         while (this->uart->available() > 0) {
             uint32_t now = millis();
