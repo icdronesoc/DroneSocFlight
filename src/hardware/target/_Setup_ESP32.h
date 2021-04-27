@@ -5,7 +5,7 @@ constexpr pb_size_t ESP32_MAX_SPIs = 2;
 Preferences preferences;
 
 void resetWatchdogTimer() {
-    esp_task_wdt_reset();
+//    esp_task_wdt_reset();
 }
 
 void setupMcuHardware() {
@@ -13,8 +13,8 @@ void setupMcuHardware() {
     preferences.begin("config", false);
 
     // Setup WDT
-    esp_task_wdt_init(WatchDogTimeout, true);
-    esp_task_wdt_add(nullptr);
+//    esp_task_wdt_init(WatchDogTimeout, true);
+//    esp_task_wdt_add(nullptr);
 
     if (false) { // TODO re-enable
         auto bluetoothSerial = new BluetoothSerial();

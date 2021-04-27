@@ -25,13 +25,18 @@ namespace DShot {
         constexpr size_t DShotBitCount = 16;
         constexpr float RmtTickRate = 12.5; // nanoseconds per tick, this is the fastest the ESP32 RMT can go
 
-        constexpr float DShot1200_BitPeriod = 1675; // nanoseconds
+        constexpr float DShot1200_BitPeriod = 833; // nanoseconds
         constexpr float DShot1200_T0H = 312.5; // nanoseconds
         constexpr float DShot1200_T1H = 625; // nanoseconds
 
+        constexpr uint32_t T0H_TickCount = DShot1200_T0H / RmtTickRate;
+        constexpr uint32_t T1H_TickCount = DShot1200_T1H / RmtTickRate;
+        constexpr uint32_t T0L_TickCount = (DShot1200_BitPeriod - DShot1200_T0H) / RmtTickRate;
+        constexpr uint32_t T1L_TickCount = (DShot1200_BitPeriod - DShot1200_T1H) / RmtTickRate;
+
         class ESP32Driver : public Driver {
         public:
-            ESP32Driver(rmt_config_t txConfig, rmt_config_t rxConfig, uint32_t T0H, uint32_t T1H, uint32_t T0L, uint32_t T1L) : txConfig(txConfig), rxConfig(rxConfig), T0H(T0H), T1H(T1H), T0L(T0L), T1L(T1L) {}
+            ESP32Driver(rmt_config_t txConfig, rmt_config_t rxConfig) : txConfig(txConfig), rxConfig(rxConfig) {}
 
             void sendPacket(uint16_t packet) override {
                 if (!this->setupForTx()) return;
@@ -42,11 +47,11 @@ namespace DShot {
                     pulse.level0 = 1;
                     pulse.level1 = 0;
                     if (packet & 0x8000) {
-                        pulse.duration0 = this->T1H;
-                        pulse.duration1 = this->T1L;
+                        pulse.duration0 = T1H_TickCount;
+                        pulse.duration1 = T1L_TickCount;
                     } else {
-                        pulse.duration0 = this->T0H;
-                        pulse.duration1 = this->T0L;
+                        pulse.duration0 = T0H_TickCount;
+                        pulse.duration1 = T0L_TickCount;
                     }
                     packet <<= 1;
                 }
@@ -63,7 +68,6 @@ namespace DShot {
         private:
             rmt_config_t txConfig, rxConfig;
             bool driverInstalled = false;
-            uint32_t T0H, T1H, T0L, T1L;
 
             bool setupForTx() {
                 if (driverInstalled) {
@@ -109,10 +113,27 @@ namespace DShot {
         auto allocatedChannel = allocateRmtChannel();
         if (allocatedChannel >= MaxRmtChannels) return nullptr;
 
+        uint8_t rmtClockDivider;
+        switch (speed) {
+            case Speed::DShot1200:
+                rmtClockDivider = 1; // To get 12.5ns per tick
+                break;
+            case Speed::DShot600:
+                rmtClockDivider = 2; // To get 25ns per tick
+                break;
+            case Speed::DShot300:
+                rmtClockDivider = 4; // To get 50ns per tick
+                break;
+            default:
+            case Speed::DShot150:
+                rmtClockDivider = 8; // To get 100ns per tick
+                break;
+        }
+
         rmt_config_t txConfig = {
                 .rmt_mode = RMT_MODE_TX,
                 .channel = static_cast<rmt_channel_t>(allocatedChannel),
-                .clk_div = 1, // To get 12.5ns per tick
+                .clk_div = rmtClockDivider,
                 .gpio_num = static_cast<gpio_num_t>(pin),
                 .mem_block_num = 1,
         };
@@ -126,29 +147,7 @@ namespace DShot {
         txConfig.tx_config.idle_output_en = true;
         txConfig.tx_config.idle_level = RMT_IDLE_LEVEL_LOW;
 
-        float multiplier = 1;
-        switch (speed) { // TODO instead of using a multiplier, just modify the rmt clock divider
-            case Speed::DShot1200:
-                multiplier = 1;
-                break;
-            case Speed::DShot600:
-                multiplier = 2;
-                break;
-            case Speed::DShot300:
-                multiplier = 4;
-                break;
-            case Speed::DShot150:
-                multiplier = 8;
-                break;
-        }
-
-        // Calculate number of timer ticks for each duration
-        uint32_t T0H = DShot1200_T0H * multiplier / RmtTickRate;
-        uint32_t T1H = DShot1200_T1H * multiplier / RmtTickRate;
-        uint32_t T0L = (DShot1200_BitPeriod - DShot1200_T0H) * multiplier / RmtTickRate;
-        uint32_t T1L = (DShot1200_BitPeriod - DShot1200_T1H) * multiplier / RmtTickRate;
-
-        return new ESP32Driver(txConfig, rxConfig, T0H, T1H, T0L, T1L);
+        return new ESP32Driver(txConfig, rxConfig);
     }
 }
 

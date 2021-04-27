@@ -13,6 +13,9 @@ namespace { // private
     const auto LogTag = "Main";
 }
 
+#include "hardware/drivers/motor/DShotMotor.h"
+Hardware::Motor* motor = nullptr;
+
 void setup() {
     // Config must be loaded first, then IO, then Log, then Hardware. After this it doesn't really matter.
     Config::loadConfig();
@@ -24,9 +27,16 @@ void setup() {
     AxisControllers::initialize();
     FlightControlTasks::initialize();
     Log::info(LogTag, "Startup Complete!");
+
+    motor = new MotorDrivers::DShotMotor(*DShot::createOutput(LED_BUILTIN, DShot::Speed::DShot300, false));
 }
+
+int i = 0;
 
 void loop() {
     IO::resetWatchdogTimer();
-    Scheduler::loop();
+//    Scheduler::loop();
+    Log::info(LogTag, "Writing DShot packet...");
+    motor->setOutput((i++) % 2048);
+    delay(1);
 }
