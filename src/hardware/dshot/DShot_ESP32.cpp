@@ -34,9 +34,47 @@ namespace DShot {
         constexpr uint32_t T0L_TickCount = (DShot1200_BitPeriod - DShot1200_T0H) / RmtTickRate;
         constexpr uint32_t T1L_TickCount = (DShot1200_BitPeriod - DShot1200_T1H) / RmtTickRate;
 
-        class ESP32Driver : public Driver {
+        class StandardDriver : public Driver {
         public:
-            ESP32Driver(rmt_config_t txConfig, rmt_config_t rxConfig) : txConfig(txConfig), rxConfig(rxConfig) {}
+            StandardDriver(rmt_config_t rmtConfig) : rmtConfig(rmtConfig) {
+                if (rmt_config(&this->rmtConfig) != ESP_OK) {
+                    Log::error(LogTag, "RMT TX Configuration error");
+                    return;
+                }
+                if (rmt_driver_install(this->rmtConfig.channel, 0, 0) != ESP_OK) {
+                    Log::error(LogTag, "RMT Driver Configuration error");
+                    return;
+                }
+            }
+
+            void sendPacket(uint16_t packet) override {
+                rmt_item32_t pulses[DShotBitCount];
+                // Iterate through bits, most-significant first.
+                for (auto & pulse : pulses) {
+                    pulse.level0 = 1;
+                    pulse.level1 = 0;
+                    if (packet & 0x8000) {
+                        pulse.duration0 = T1H_TickCount;
+                        pulse.duration1 = T1L_TickCount;
+                    } else {
+                        pulse.duration0 = T0H_TickCount;
+                        pulse.duration1 = T0L_TickCount;
+                    }
+                    packet <<= 1;
+                }
+
+                if (rmt_write_items(rmtConfig.channel, pulses, DShotBitCount, false) != ESP_OK) {
+                    Log::error(LogTag, "RMT write error");
+                }
+            }
+
+        private:
+            rmt_config_t rmtConfig;
+        };
+
+        class BidirectionalTelemetryDriver : public Driver {
+        public:
+            BidirectionalTelemetryDriver(rmt_config_t txConfig, rmt_config_t rxConfig) : txConfig(txConfig), rxConfig(rxConfig) {}
 
             void sendPacket(uint16_t packet) override {
                 if (!this->setupForTx()) return;
@@ -109,7 +147,7 @@ namespace DShot {
         };
     }
 
-    Driver* createDriver(uint32_t pin, Speed speed) {
+    Driver* createDriver(uint32_t pin, Speed speed, bool bidirectionalTelemetry) {
         auto allocatedChannel = allocateRmtChannel();
         if (allocatedChannel >= MaxRmtChannels) return nullptr;
 
@@ -136,18 +174,25 @@ namespace DShot {
                 .clk_div = rmtClockDivider,
                 .gpio_num = static_cast<gpio_num_t>(pin),
                 .mem_block_num = 1,
+                .tx_config = {
+                        .loop_en = false,
+                        .carrier_freq_hz = 0,
+                        .carrier_duty_percent = 0,
+                        .carrier_level = RMT_CARRIER_LEVEL_LOW,
+                        .carrier_en = false,
+                        .idle_level = RMT_IDLE_LEVEL_LOW,
+                        .idle_output_en = true,
+                }
         };
 
-        auto rxConfig = txConfig;
-        rxConfig.rmt_mode = RMT_MODE_RX;
-
-        memset(&rxConfig.rx_config, 0, sizeof(rmt_rx_config_t));
-
-        memset(&txConfig.tx_config, 0, sizeof(rmt_tx_config_t));
-        txConfig.tx_config.idle_output_en = true;
-        txConfig.tx_config.idle_level = RMT_IDLE_LEVEL_LOW;
-
-        return new ESP32Driver(txConfig, rxConfig);
+        if (bidirectionalTelemetry) {
+            auto rxConfig = txConfig;
+            rxConfig.rmt_mode = RMT_MODE_RX;
+            memset(&rxConfig.rx_config, 0, sizeof(rmt_rx_config_t));
+            return new BidirectionalTelemetryDriver(txConfig, rxConfig);
+        } else {
+            return new StandardDriver(txConfig);
+        }
     }
 }
 

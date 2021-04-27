@@ -77,9 +77,10 @@ namespace DShot {
      * This will setup the pin for DShot output.
      * @param pin The pin to output DShot on
      * @param speed The DShot speed for the output
-     * @return The DShot Output Driver, or nullptr if allocating or setting up the output failed.
+     * @param bidirectionalTelemetry Whether to enable bidirectional telemetry
+     * @return The DShot Output Driver, or nullptr if setting up the driver failed.
      */
-    Driver* createDriver(uint32_t pin, Speed speed);
+    Driver* createDriver(uint32_t pin, Speed speed, bool bidirectionalTelemetry);
 
     /**
      * Creates a DShot Output for a specified pin.
