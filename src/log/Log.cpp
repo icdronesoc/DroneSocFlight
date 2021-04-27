@@ -8,9 +8,6 @@ namespace Log {
         const auto LogTag = "Log";
         IO::SerialPort* logSerial = nullptr;
         etl::format_spec timestampFormat;
-
-        size_t longestTagLengthSeen = 0;
-        size_t longestLogLevelLengthSeen = 0;
     }
 
     bool infoEnabled = true;
@@ -38,20 +35,12 @@ namespace Log {
         if (logSerial != nullptr) {
             IO::SerialPort& output = *logSerial;
 
-            auto logLevelLength = strlen(logLevel);
-            if (logLevelLength > longestLogLevelLengthSeen) longestLogLevelLengthSeen = logLevelLength;
-
-            auto tagLength = strlen(tag);
-            if (tagLength > longestTagLengthSeen) longestTagLengthSeen = tagLength;
-
             etl::string<64> messagePrefix = "[";
             etl::to_string(millis(), messagePrefix, timestampFormat, true);
             messagePrefix.append("] [");
             messagePrefix.append(logLevel);
-            for (size_t i = 0; i < longestLogLevelLengthSeen - logLevelLength; i++) messagePrefix.append(" ");
             messagePrefix.append("] [");
             messagePrefix.append(tag);
-            for (size_t i = 0; i < longestTagLengthSeen - tagLength; i++) messagePrefix.append(" ");
             messagePrefix.append("]: ");
 
             output->write(messagePrefix.c_str(), messagePrefix.size());

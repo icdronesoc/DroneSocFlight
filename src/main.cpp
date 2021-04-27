@@ -14,7 +14,8 @@ namespace { // private
 }
 
 #include "hardware/drivers/motor/DShotMotor.h"
-Hardware::Motor* motor = nullptr;
+Hardware::Motor* motor1 = nullptr;
+Hardware::Motor* motor2 = nullptr;
 
 void setup() {
     // Config must be loaded first, then IO, then Log, then Hardware. After this it doesn't really matter.
@@ -28,7 +29,10 @@ void setup() {
     FlightControlTasks::initialize();
     Log::info(LogTag, "Startup Complete!");
 
-    motor = new MotorDrivers::DShotMotor(*DShot::createOutput(LED_BUILTIN, DShot::Speed::DShot300, false));
+    motor1 = new MotorDrivers::DShotMotor(*DShot::createOutput(25, DShot::Speed::DShot300, false, true));
+//    motor2 = new MotorDrivers::DShotMotor(*DShot::createOutput(26, DShot::Speed::DShot300, false, true));
+    pinMode(26, OUTPUT);
+    digitalWrite(26, LOW);
 }
 
 int i = 0;
@@ -37,6 +41,8 @@ void loop() {
     IO::resetWatchdogTimer();
 //    Scheduler::loop();
     Log::info(LogTag, "Writing DShot packet...");
-    motor->setOutput((i++) % 2048);
+    auto value = (i++) % 2048;
+    if (motor1 != nullptr) motor1->setOutput(value);
+    if (motor2 != nullptr) motor2->setOutput(value);
     delay(1);
 }

@@ -23,6 +23,7 @@ namespace DShot {
         }
 
         constexpr size_t DShotBitCount = 16;
+        constexpr size_t DShotTelemetryBitCount = 20; // GCR encoding increases the bit count by 1.25x
         constexpr float RmtTickRate = 12.5; // nanoseconds per tick, this is the fastest the ESP32 RMT can go
 
         constexpr float DShot1200_BitPeriod = 833; // nanoseconds
@@ -36,7 +37,7 @@ namespace DShot {
 
         class StandardDriver : public Driver {
         public:
-            StandardDriver(rmt_config_t rmtConfig) : rmtConfig(rmtConfig) {
+            explicit StandardDriver(rmt_config_t rmtConfig) : rmtConfig(rmtConfig) {
                 if (rmt_config(&this->rmtConfig) != ESP_OK) {
                     Log::error(LogTag, "RMT TX Configuration error");
                     return;
@@ -72,18 +73,55 @@ namespace DShot {
             rmt_config_t rmtConfig;
         };
 
+        /**
+         * Many thanks to https://brushlesswhoop.com/dshot-and-bidirectional-dshot/#bidirectional-dshot
+         */
         class BidirectionalTelemetryDriver : public Driver {
         public:
-            BidirectionalTelemetryDriver(rmt_config_t txConfig, rmt_config_t rxConfig) : txConfig(txConfig), rxConfig(rxConfig) {}
+            BidirectionalTelemetryDriver(rmt_config_t txConfig, rmt_config_t rxConfig) : txConfig(txConfig), rxConfig(rxConfig) {
+                if (rmt_driver_install(txConfig.channel, DShotTelemetryBitCount, 0) != ESP_OK) {
+                    Log::error(LogTag, "RMT Driver Configuration error");
+                    return;
+                }
+                // Configure for receive
+                if (rmt_config(&this->rxConfig) != ESP_OK) {
+                    Log::error(LogTag, "RMT RX Configuration error");
+                    return;
+                }
+            }
+
+            static void IRAM_ATTR onPacketSent(rmt_channel_t channel, void *arg) {
+                auto rxConfig = reinterpret_cast<rmt_config_t*>(arg);
+                digitalWrite(26, LOW);
+                if (rmt_config(rxConfig) != ESP_OK) {
+                    Log::error(LogTag, "RMT RX Configuration error"); // TODO this is unsafe in an ISR
+                    return;
+                }
+                // TODO maybe we need to call rmt_rx_start
+            }
 
             void sendPacket(uint16_t packet) override {
-                if (!this->setupForTx()) return;
+                // For bidirectional telemetry, we need to invert the CRC bits
+                packet ^= 0xF;
+
+                // TODO check for a telemetry packet
+                RingbufHandle_t ringbuffer;
+                if (rmt_get_ringbuf_handle(this->rxConfig.channel, &ringbuffer) != ESP_OK) {
+                    Log::error(LogTag, "RMT write error");
+                    return;
+                }
+
+                // Setup for TX
+                if (rmt_config(&this->txConfig) != ESP_OK) {
+                    Log::error(LogTag, "RMT TX Configuration error");
+                    return;
+                }
 
                 rmt_item32_t pulses[DShotBitCount];
                 // Iterate through bits, most-significant first.
                 for (auto & pulse : pulses) {
-                    pulse.level0 = 1;
-                    pulse.level1 = 0;
+                    pulse.level0 = 0;
+                    pulse.level1 = 1;
                     if (packet & 0x8000) {
                         pulse.duration0 = T1H_TickCount;
                         pulse.duration1 = T1L_TickCount;
@@ -94,77 +132,38 @@ namespace DShot {
                     packet <<= 1;
                 }
 
+                digitalWrite(26, HIGH);
                 if (rmt_write_items(txConfig.channel, pulses, DShotBitCount, false) != ESP_OK) {
                     Log::error(LogTag, "RMT write error");
                     return;
                 }
 
-                // TODO once done, reconfigure as RX and wait for telemetry packet
-//                rmt_register_tx_end_callback()
+                rmt_register_tx_end_callback(BidirectionalTelemetryDriver::onPacketSent, &this->rxConfig);
             }
 
         private:
             rmt_config_t txConfig, rxConfig;
-            bool driverInstalled = false;
-
-            bool setupForTx() {
-                if (driverInstalled) {
-                    if (rmt_driver_uninstall(txConfig.channel) != ESP_OK) {
-                        Log::error(LogTag, "RMT Driver uninstall error");
-                        return false;
-                    }
-                }
-                if (rmt_config(&this->txConfig) != ESP_OK) {
-                    Log::error(LogTag, "RMT TX Configuration error");
-                    return false;
-                }
-                if (rmt_driver_install(txConfig.channel, 0, 0) != ESP_OK) {
-                    Log::error(LogTag, "RMT Driver Configuration error");
-                    return false;
-                }
-                driverInstalled = true;
-                return true;
-            }
-
-            bool setupForRx() {
-                if (driverInstalled) {
-                    if (rmt_driver_uninstall(rxConfig.channel) != ESP_OK) {
-                        Log::error(LogTag, "RMT Driver uninstall error");
-                        return false;
-                    }
-                }
-                if (rmt_config(&this->rxConfig) != ESP_OK) {
-                    Log::error(LogTag, "RMT RX Configuration error");
-                    return false;
-                }
-                if (rmt_driver_install(rxConfig.channel, DShotBitCount /* TODO */, 0) != ESP_OK) {
-                    Log::error(LogTag, "RMT Driver Configuration error");
-                    return false;
-                }
-                driverInstalled = true;
-                return true;
-            }
         };
     }
 
     Driver* createDriver(uint32_t pin, Speed speed, bool bidirectionalTelemetry) {
         auto allocatedChannel = allocateRmtChannel();
         if (allocatedChannel >= MaxRmtChannels) return nullptr;
+        Log::info(LogTag, "Allocated RMT channel %d", allocatedChannel);
 
-        uint8_t rmtClockDivider;
+        uint8_t rmtClockDivider = 8;
         switch (speed) {
             case Speed::DShot1200:
-                rmtClockDivider = 1; // To get 12.5ns per tick
+                rmtClockDivider = 1; // 12.5ns per tick
                 break;
             case Speed::DShot600:
-                rmtClockDivider = 2; // To get 25ns per tick
+                rmtClockDivider = 2; // 25ns per tick
                 break;
             case Speed::DShot300:
-                rmtClockDivider = 4; // To get 50ns per tick
+                rmtClockDivider = 4; // 50ns per tick
                 break;
-            default:
             case Speed::DShot150:
-                rmtClockDivider = 8; // To get 100ns per tick
+                rmtClockDivider = 8; // 100ns per tick
                 break;
         }
 
@@ -174,23 +173,19 @@ namespace DShot {
                 .clk_div = rmtClockDivider,
                 .gpio_num = static_cast<gpio_num_t>(pin),
                 .mem_block_num = 1,
-                .tx_config = {
-                        .loop_en = false,
-                        .carrier_freq_hz = 0,
-                        .carrier_duty_percent = 0,
-                        .carrier_level = RMT_CARRIER_LEVEL_LOW,
-                        .carrier_en = false,
-                        .idle_level = RMT_IDLE_LEVEL_LOW,
-                        .idle_output_en = true,
-                }
         };
 
+        memset(&txConfig.tx_config, 0, sizeof(rmt_tx_config_t));
+        txConfig.tx_config.idle_output_en = true;
+
         if (bidirectionalTelemetry) {
+            txConfig.tx_config.idle_level = RMT_IDLE_LEVEL_HIGH;
             auto rxConfig = txConfig;
             rxConfig.rmt_mode = RMT_MODE_RX;
             memset(&rxConfig.rx_config, 0, sizeof(rmt_rx_config_t));
             return new BidirectionalTelemetryDriver(txConfig, rxConfig);
         } else {
+            txConfig.tx_config.idle_level = RMT_IDLE_LEVEL_LOW;
             return new StandardDriver(txConfig);
         }
     }

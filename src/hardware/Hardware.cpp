@@ -94,7 +94,7 @@ namespace Hardware {
                             break;
                         }
                         case MotorConfig_MotorProtocol_DShot: {
-                            auto dshotOutput = DShot::createOutput(pin->number, DShot::Speed::DShot600, false); // TODO configurable speed / isBidirectional
+                            auto dshotOutput = DShot::createOutput(pin->number, DShot::Speed::DShot600, false, false); // TODO configurable speed / isBidirectional / bidirectionalTelemetry
                             if (dshotOutput != nullptr) {
                                 motor = new MotorDrivers::DShotMotor(*dshotOutput);
                             } else {

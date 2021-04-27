@@ -90,7 +90,7 @@ namespace DShot {
      * @param bidirectional Whether the ESC is in bidirectional mode
      * @return The DShot Output, or nullptr if allocating or setting up the output failed.
      */
-    Output* createOutput(uint32_t pin, Speed speed, bool isBidirectional);
+    Output* createOutput(uint32_t pin, Speed speed, bool isBidirectional, bool bidirectionalTelemetry);
 
     /**
      * Sends a DShot command to all motors.

@@ -29,13 +29,13 @@ namespace DShot {
 
     etl::vector<Output*, MaxDShotOutputs> allOutputs;
 
-    Output* createOutput(uint32_t pin, Speed speed, bool isBidirectional) {
+    Output* createOutput(uint32_t pin, Speed speed, bool isBidirectional, bool bidirectionalTelemetry) {
         if (allOutputs.full()) {
             Log::error(LogTag, "Cannot create DShot output: maximum number of outputs reached.");
             return nullptr;
         }
 
-        auto driver = createDriver(pin, speed);
+        auto driver = createDriver(pin, speed, bidirectionalTelemetry);
         if (driver == nullptr) {
             Log::error(LogTag, "Cannot create DShot output: Error initializing driver.");
             return nullptr;
@@ -71,6 +71,6 @@ namespace DShot {
     }
 
     void Output::sendCommand(Command command) {
-        this->driver.sendPacket(assemblePacket(static_cast<uint16_t>(command), false));
+        this->driver.sendPacket(assemblePacket(static_cast<uint16_t>(command), false)); // TODO repeats, schedule inline
     }
 }
