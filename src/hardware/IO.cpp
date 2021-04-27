@@ -4,7 +4,7 @@
 
 #if defined(PLATFORM_ESP32)
 #include <BluetoothSerial.h>
-#include <esp_task_wdt.h>
+//#include <esp_task_wdt.h>
 #include <Preferences.h>
 #elif defined(PLATFORM_STM32)
 #include <IWatchdog.h>

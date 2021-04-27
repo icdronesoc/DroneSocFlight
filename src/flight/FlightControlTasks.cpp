@@ -7,7 +7,7 @@
 
 namespace FlightControlTasks {
     namespace { // private
-        const auto LogTag = "Flight Control Tasks";
+        const auto LogTag = "FC Tasks";
 
         const Scheduler::Name FlightControlScheduleName = "Flight Control";
 

@@ -42,11 +42,8 @@ typedef enum _MixerRule_Source {
 } MixerRule_Source;
 
 typedef enum _CC2500Config_Protocol {
-    CC2500Config_Protocol_FrSkyD8 = 0,
-    CC2500Config_Protocol_FrskyD16 = 1,
-    CC2500Config_Protocol_FrskyD16_LBT = 2,
-    CC2500Config_Protocol_FrSkyL = 3,
-    CC2500Config_Protocol_Redpine = 4
+    CC2500Config_Protocol_FrSky = 0,
+    CC2500Config_Protocol_Redpine = 1
 } CC2500Config_Protocol;
 
 /* Struct definitions */
@@ -254,7 +251,7 @@ typedef struct _Configuration {
 #define _MixerRule_Source_MAX MixerRule_Source_YAW
 #define _MixerRule_Source_ARRAYSIZE ((MixerRule_Source)(MixerRule_Source_YAW+1))
 
-#define _CC2500Config_Protocol_MIN CC2500Config_Protocol_FrSkyD8
+#define _CC2500Config_Protocol_MIN CC2500Config_Protocol_FrSky
 #define _CC2500Config_Protocol_MAX CC2500Config_Protocol_Redpine
 #define _CC2500Config_Protocol_ARRAYSIZE ((CC2500Config_Protocol)(CC2500Config_Protocol_Redpine+1))
 

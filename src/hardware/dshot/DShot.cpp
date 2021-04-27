@@ -54,7 +54,7 @@ namespace DShot {
 
     Output::Output(Driver &driver, bool isBidirectional) : driver(driver), isBidirectional(isBidirectional) {}
 
-    void Output::setThrottle(double throttle) {
+    void Output::writeThrottleValue(double throttle) {
         uint16_t rawValue;
         if (throttle == 0) {
             rawValue = static_cast<uint16_t>(Command::MOTOR_STOP);

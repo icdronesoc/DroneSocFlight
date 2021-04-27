@@ -60,7 +60,7 @@ namespace DShot {
     class Output {
     public:
         Output(Driver& driver, bool isBidirectional);
-        void setThrottle(double throttle);
+        void writeThrottleValue(double throttle);
         void sendCommand(Command command);
 
     private:
