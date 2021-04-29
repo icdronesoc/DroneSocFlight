@@ -2,55 +2,15 @@
 
 #include "PWM.h"
 #include "log/Log.h"
+#include "hardware/target/stm32/Timer.h"
 #include "HardwareTimer.h"
 #include "etl/map.h"
 
 namespace PWM {
     namespace { // private
-        const auto LogTag = "Timer";
-        constexpr size_t MaxTimerCount = 16;
+        const auto LogTag = "PWM";
 
-        enum class TimerPurpose {
-            PWM,
-        };
-
-        struct TimerInfo {
-            TimerInfo(HardwareTimer* timer, TimerPurpose purpose) : timer(timer), purpose(purpose) {}
-            HardwareTimer* timer;
-            TimerPurpose purpose;
-        };
-
-        // TODO move to another module
-        etl::map<TIM_TypeDef*, TimerInfo*, MaxTimerCount> timers;
-        etl::map<TIM_TypeDef*, uint32_t, MaxTimerCount> pwmFrequencies;
-
-        /**
-         * Manages allocation of timers.
-         * Gets an already allocated timer or allocates a timer.
-         * @param timerDescriptor The timer descriptor to get or allocate
-         * @param purpose The purpose of the timer, to avoid collisions.
-         * @return
-         */
-        TimerInfo* getOrAllocateTimer(TIM_TypeDef* timerDescriptor, TimerPurpose purpose) {
-            auto find = timers.find(timerDescriptor);
-            if (find != timers.end()) {
-                // Timer Info already exists (we're already using this timer)
-                auto timerInfo = find->second;
-                // Check for purpose collisions
-                if (timerInfo->purpose != purpose) {
-                    Log::error(LogTag, "Cannot allocate timer because it is being used for a different purpose.");
-                    return nullptr;
-                } else {
-                    return timerInfo;
-                }
-            } else {
-                // Create HardwareTimer (we're now using this timer)
-                auto hardwareTimer = new HardwareTimer(timerDescriptor);
-                auto info = new TimerInfo(hardwareTimer, purpose);
-                timers[timerDescriptor] = info;
-                return info;
-            }
-        }
+        etl::map<TIM_TypeDef*, uint32_t, Timer::MaxTimerCount> pwmFrequencies;
 
         /**
          * Checks that setting up PWM on a timer channel will not overwrite an existing PWM frequency
@@ -86,28 +46,24 @@ namespace PWM {
     }
 
     Output* createOutput(uint32_t pin, uint32_t frequency) {
-        auto timerDescriptor = reinterpret_cast<TIM_TypeDef*>(pinmap_peripheral(digitalPinToPinName(pin), PinMap_PWM));
-        if (timerDescriptor == nullptr) {
-            Log::error(LogTag, "No timer instance exists for pin %d", pin);
-            return nullptr;
-        }
-
-        auto timerInfo = getOrAllocateTimer(timerDescriptor, TimerPurpose::PWM);
+        auto timerInfo = Timer::getOrAllocateTimer(pin, Timer::Purpose::PWM);
         if (timerInfo == nullptr ||timerInfo->timer == nullptr) {
-            Log::error(LogTag, "Could not get or create HardwareTimer");
+            Log::error(LogTag, "Could not get or create timer");
             return nullptr;
         }
 
-        if (checkForPwmFrequencyCollision(timerDescriptor, frequency)) {
+        auto hardwareTimer = new HardwareTimer(timerInfo->timer);
+
+        if (checkForPwmFrequencyCollision(timerInfo->timer, frequency)) {
             Log::error(LogTag, "Error setting PWM frequency: This timer's frequency has already been set to something else, and the older frequency would be overwritten.");
             return nullptr;
         }
 
         auto pinChannel = STM_PIN_CHANNEL(pinmap_function(digitalPinToPinName(pin), PinMap_PWM));
 
-        timerInfo->timer->setPWM(pinChannel, pin, frequency, 0);
+        hardwareTimer->setPWM(pinChannel, pin, frequency, 0);
 
-        return new STM32Output(*timerInfo->timer, pinChannel);
+        return new STM32Output(*hardwareTimer, pinChannel);
     }
 }
 

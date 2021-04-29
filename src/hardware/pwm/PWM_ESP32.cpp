@@ -8,9 +8,10 @@
 
 namespace PWM {
     namespace { // private
-        const auto LogTag = "Timer";
+        const auto LogTag = "PWM";
         constexpr size_t MaxPWMCount = 16;
 
+        // TODO move to another module
         uint8_t numberOfAllocatedPWMChannels = 0;
         /**
          * Every 2 PWM channels shares a timer, so must share the same frequency.
