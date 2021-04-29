@@ -3,6 +3,7 @@
 #include "hardware/IO.h"
 #include "log/Log.h"
 #include "hardware/Hardware.h"
+#include "hardware/target/target.h"
 #include "rc/RC.h"
 #include "scheduler/Scheduler.h"
 #include "flight/AxisControllers.h"
@@ -38,7 +39,7 @@ void setup() {
 int i = 0;
 
 void loop() {
-    IO::resetWatchdogTimer();
+    Target::resetWatchdogTimer();
 //    Scheduler::loop();
     Log::info(LogTag, "Writing DShot packet...");
     auto value = (i++) % 2048;

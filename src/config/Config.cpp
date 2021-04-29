@@ -47,7 +47,7 @@ namespace Config {
 
         auto stream = pb_istream_from_buffer(configBuffer, BufferSize);
 
-        if (IO::loadData(configBuffer, BufferSize) == 0) {
+        if (Target::loadData(configBuffer, BufferSize) == 0) {
             Log::error(LogTag, "Error loading hardware configuration. Reverting to default.");
             config = defaultConfig();
             return;
@@ -70,7 +70,7 @@ namespace Config {
             return;
         }
 
-        if (!IO::storeData(configBuffer, stream.bytes_written)) {
+        if (!Target::storeData(configBuffer, stream.bytes_written)) {
             Log::error(LogTag, "Error storing hardware configuration.");
         }
     }

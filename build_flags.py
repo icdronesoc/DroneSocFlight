@@ -34,11 +34,10 @@ gitRevision = (
 
 # Calculate build target include file
 targetName = env.get("PIOENV")
-buildTarget = "hardware/target/" + targetName + ".h"
 
 env.Append(CPPDEFINES=[
     ("STRINGIFY2(X)", "#X"),
     ("STRINGIFY(X)", "STRINGIFY2(X)"),
     ("BUILD_GIT_REVISION", gitRevision),
-    ("BUILD_TARGET", buildTarget)
+    ("TARGET_NAME", targetName)
 ])

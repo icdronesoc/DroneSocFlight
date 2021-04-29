@@ -1,6 +1,4 @@
-#include "_Setup_STM32.h"
-
-Pin pins[] = {
+const IO::Pin pins[] = {
         // Taken from STM32 Arduino core
         {"PA00", PA0},
         {"PA01", PA1},
@@ -29,13 +27,28 @@ Pin pins[] = {
         {"PB08", PB8},
         {"PB09", PB9},
         {"PB10", PB10},
+        {"PB11", PB11},
         {"PB12", PB12},
         {"PB13", PB13},
         {"PB14", PB14},
         {"PB15", PB15},
+        {"PC00", PC0},
+        {"PC01", PC1},
+        {"PC02", PC2},
+        {"PC03", PC3},
+        {"PC04", PC4},
+        {"PC05", PC5},
+        {"PC06", PC6},
+        {"PC07", PC7},
+        {"PC08", PC8},
+        {"PC09", PC9},
+        {"PC10", PC10},
+        {"PC11", PC11},
+        {"PC12", PC12},
         {"PC13", PC13},
         {"PC14", PC14},
         {"PC15", PC15},
+        {"PD02", PD2},
         {"PH00", PH0},
         {"PH01", PH1},
 };

@@ -1,6 +1,4 @@
-#include "_Setup_ESP32.h"
-
-Pin pins[] = {
+const IO::Pin pins[] = {
         // https://resource.heltec.cn/download/Wireless_Stick/Wireless_Stick.pdf
         // GPIOs:
         {"0",  0},

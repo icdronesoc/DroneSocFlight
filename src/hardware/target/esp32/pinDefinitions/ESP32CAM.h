@@ -1,6 +1,4 @@
-#include "_Setup_ESP32.h"
-
-Pin pins[] = {
+const IO::Pin pins[] = {
         // https://randomnerdtutorials.com/esp32-cam-ai-thinker-pinout/
         // https://github.com/SeeedDocument/forum_doc/raw/master/reg/ESP32_CAM_V1.6.pdf
         {"0",  0},
